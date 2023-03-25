@@ -11,7 +11,10 @@ MEMORY_LIMIT = 512 * 1024 * 1024  # 512 MB
 
 
 def limit_memory():
-    resource.setrlimit(resource.RLIMIT_AS, (MEMORY_LIMIT, MEMORY_LIMIT))
+    try:
+        resource.setrlimit(resource.RLIMIT_AS, (MEMORY_LIMIT, MEMORY_LIMIT))
+    except ValueError:
+        pass
 
 
 class SandBox:
@@ -38,7 +41,17 @@ class SandBox:
     def __del__(self):
         self._working_dir.cleanup()
 
-    def prepare(self, i1: int, j1: int, i2: int, j2: int, S: int, B: int, sea_map: SeaMap):
+    def prepare(
+        self,
+        self_x: int,
+        self_y: int,
+        other_x: int,
+        other_y: int,
+        shield: int,
+        gold: int,
+        remaining_turn: int,
+        sea_map: SeaMap,
+    ):
         """
         Prepare directory for running agent:
         - Delete all files except STATE.OUT
@@ -52,9 +65,9 @@ class SandBox:
                     shutil.rmtree(file)
 
         with open(Path(self._working_dir.name) / 'MAP.INP', 'w', encoding='utf8') as f:
-            f.write(f'{sea_map.M} {sea_map.N} {sea_map.K}\n')
-            f.write(f'{i1} {j1} {i2} {j2}\n')
-            f.write(f'{S} {B}\n')
+            f.write(f'{sea_map.M} {sea_map.N} {remaining_turn}\n')
+            f.write(f'{self_x} {self_y} {other_x} {other_y}\n')
+            f.write(f'{shield} {gold}\n')
             for row in sea_map:
                 f.write(' '.join(map(str, row)) + '\n')
 
@@ -73,7 +86,11 @@ class SandBox:
                 check=True,
             )
 
-            with open(Path(self._working_dir.name) / 'MOVE.OUT', 'r', encoding='utf8') as f:
+            output_file = Path(self._working_dir.name) / 'MOVE.OUT'
+            if not output_file.exists():
+                return -1, -1
+
+            with open(output_file, 'r', encoding='utf8') as f:
                 tmp = list(map(int, f.readline().strip().split(' ')))
                 if len(tmp) != 2:
                     return -1, -1

@@ -1,4 +1,7 @@
-from sea_map import SeaMap
+from pathlib import Path
+
+from match import Match
 
 if __name__ == '__main__':
-    m = SeaMap('../map/sample.txt')
+    match = Match('../map/sample.txt', Path('../algo/hiep1').absolute(), Path('../algo/hiep2').absolute())
+    print(match.next_turn())

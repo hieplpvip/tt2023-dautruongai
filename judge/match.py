@@ -51,8 +51,10 @@ class Match:
 
     def next_turn(self):
         if self.status() != MatchStatus.UNDECIDED:
-            # Game is over
+            print('Match is over')
             return False
+
+        print(f'Turn {self.current_turn}/{self.total_turn}')
 
         if self.current_turn == 1:
             # First turn is for selecting start positions:
@@ -60,22 +62,29 @@ class Match:
             # - If a team chooses an invalid cell, that team is assigned a random free cell.
             # - If both teams choose the same free cell, retry at most 3 times.
             # - After 3 unsuccessful attempts, both teams are assigned two different random free cells.
+            print('Selecting start positions')
+
             move = []
             for attempt in range(3):
                 move.clear()
                 for i in range(2):
-                    self.sandbox[i].prepare(0, 0, 0, 0, 0, 0, self.sea_map)
+                    self.sandbox[i].prepare(0, 0, 0, 0, 0, 0, self.total_turn, self.sea_map)
                     x, y = self.sandbox[i].run()
                     move.append((x - 1, y - 1))
 
                 valid = [self.sea_map.is_valid_pos(x, y) and self.sea_map.is_free(x, y) for x, y in move]
 
-                if valid[0] and valid[1] and move[0] != move[1]:
-                    # Accept if both teams choose valid and different positions
-                    break
+                if valid[0] and valid[1]:
+                    if move[0] != move[1]:
+                        print(f'Attempt {attempt + 1}: Accept both.')
+                        break
+
+                    if attempt < 2:
+                        print(f'Attempt {attempt + 1}: Both choose the same position. Retry.')
+                        continue
 
                 if valid[0] and not valid[1]:
-                    # Randomize position for team 2
+                    print(f'Attempt {attempt + 1}: Accept team 1, randomize team 2.')
                     while True:
                         move[1] = self.sea_map.random_free_cell()
                         if move[0] != move[1]:
@@ -83,24 +92,27 @@ class Match:
                     break
 
                 if valid[1] and not valid[0]:
-                    # Randomize position for team 1
+                    print(f'Attempt {attempt + 1}: Accept team 2, randomize team 1.')
                     while True:
                         move[0] = self.sea_map.random_free_cell()
                         if move[0] != move[1]:
                             break
                     break
 
-                if (not valid[0] and not valid[1]) or attempt == 2:
-                    # Randomize position for both teams
-                    while True:
-                        move[0] = self.sea_map.random_free_cell()
-                        move[1] = self.sea_map.random_free_cell()
-                        if move[0] != move[1]:
-                            break
-                    break
+                print(f'Attempt {attempt + 1}: Randomize both.')
+                while True:
+                    move[0] = self.sea_map.random_free_cell()
+                    move[1] = self.sea_map.random_free_cell()
+                    if move[0] != move[1]:
+                        break
 
             self.position[0] = move[0]
             self.position[1] = move[1]
+            self.current_turn += 1
+
+            print(f'Team 1: {self.position[0][0] + 1} {self.position[0][1] + 1}')
+            print(f'Team 2: {self.position[1][0] + 1} {self.position[1][1] + 1}')
+
             return True
 
         # Every turn since the second turn:
@@ -129,6 +141,7 @@ class Match:
                 self.position[i ^ 1][1] + 1,
                 1 if self.have_shield[i] else 0,
                 self.gold[i],
+                self.total_turn - self.current_turn + 1,
                 self.sea_map,
             )
             x, y = self.sandbox[i].run()
@@ -140,6 +153,7 @@ class Match:
 
         # Eliminate if both teams move to the same cell or swap cells
         if after_pos[0] == after_pos[1] or (after_pos[0] == self.position[1] and after_pos[1] == self.position[0]):
+            print('Teams move to same cell/swap cells. Eliminate both.')
             self.eliminated[0] = True
             self.eliminated[1] = True
             return True
@@ -148,6 +162,7 @@ class Match:
         # Eliminate if team moves to a danger cell without shield
         for i in range(2):
             if valid[i] and self.sea_map.is_danger(*after_pos[i]) and not self.have_shield[i]:
+                print(f'Team {i + 1} moves to danger cell. Eliminate.')
                 self.eliminated[i] = True
 
         # If team is still alive, let them collect gold/shield
@@ -157,10 +172,13 @@ class Match:
 
             x, y = after_pos[i]
             if self.sea_map.is_shield(x, y):
+                print(f'Team {i + 1} collects shield.')
                 self.have_shield[i] = True
                 self.sea_map.free(x, y)
             elif self.sea_map.is_gold(x, y):
-                self.gold[i] += self.sea_map.get(x, y)
+                amount = self.sea_map.get(x, y)
+                print(f'Team {i + 1} collects {amount} gold.')
+                self.gold[i] += amount
                 self.sea_map.free(x, y)
 
         return True
