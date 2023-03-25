@@ -7,4 +7,5 @@
 .python-version
 .vscode
 *.pyc
+*.o
 a.out
