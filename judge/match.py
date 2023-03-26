@@ -149,9 +149,19 @@ class Match:
         #   they collect the gold (or shield) and the cell becomes free.
         # - The collected gold are not lost if the team is eliminated.
 
+        if self.current_turn == self.total_turn // 2 + 1:
+            print_info('Halfway through the match but match is still undecided.')
+            print_error('TREASURE APPEARS')
+
+            value = abs(self.gold[0] - self.gold[1]) * 3 // 4
+            print_info('Treasure value =', value)
+            self.sea_map.set_treasure(value)
+
         move, valid = [], []
         for i in range(2):
             if self.eliminated[i]:
+                # An eliminated team stays in the current cell till the end of the game
+                # No need to run agent
                 move.append((-1, -1))
                 valid.append(False)
                 continue
@@ -171,13 +181,28 @@ class Match:
             valid.append((x, y) in self.sea_map.get_neighbors(*self.position[i]))
 
         # New positions after this turn
+        # If a team makes an invalid move, they stay in the current cell
         after_pos = [move[i] if valid[i] else self.position[i] for i in range(2)]
 
         # Eliminate if both teams move to the same cell or swap cells
-        if after_pos[0] == after_pos[1] or (after_pos[0] == self.position[1] and after_pos[1] == self.position[0]):
-            print_info('Teams move to same cell/swap cells. Eliminate both.')
-            self.eliminated[0] = True
+        if not self.eliminated[0] and not self.eliminated[1]:
+            if after_pos[0] == after_pos[1]:
+                print_info('Teams move to same cell. Eliminate both.')
+                self.eliminated[0] = True
+                self.eliminated[1] = True
+
+            elif after_pos[0] == self.position[1] and after_pos[1] == self.position[0]:
+                print_info('Teams swap cells. Eliminate both.')
+                self.eliminated[0] = True
+                self.eliminated[1] = True
+
+        elif self.eliminated[0] and not self.eliminated[1] and after_pos[1] == self.position[0]:
+            print_info('Team 2 moves to team 1\'s eliminated position. Eliminate team 2.')
             self.eliminated[1] = True
+
+        elif self.eliminated[1] and not self.eliminated[0] and after_pos[0] == self.position[1]:
+            print_info('Team 1 moves to team 2\'s eliminated position. Eliminate team 1.')
+            self.eliminated[0] = True
 
         # valid only checks if the move is valid in terms of sharing sides with current cell
         # Eliminate if team moves to a danger cell without shield
@@ -193,12 +218,12 @@ class Match:
 
             x, y = after_pos[i]
             if self.sea_map.is_shield(x, y):
-                print_info(f'Team {i + 1} collects shield.')
+                print_error(f'Team {i + 1} collects shield.')
                 self.have_shield[i] = True
                 self.sea_map.free(x, y)
             elif self.sea_map.is_gold(x, y):
                 amount = self.sea_map.get(x, y)
-                print_info(f'Team {i + 1} collects {amount} gold.')
+                print_error(f'Team {i + 1} collects {amount} gold.')
                 self.gold[i] += amount
                 self.sea_map.free(x, y)
 

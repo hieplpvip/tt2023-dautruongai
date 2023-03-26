@@ -53,6 +53,9 @@ class SeaMap:
             assert count_free >= 2, 'Map must have at least 2 free cell for starting positions'
             # assert total_gold == 100, 'Sum of gold must be 100'
 
+            # Center of map must be free (so treasure can be placed there)
+            assert self.map[self.M // 2][self.N // 2] == 0, 'Center of map must be free'
+
             # Find any not-danger cell
             start = None
             for i in range(self.M):
@@ -130,6 +133,12 @@ class SeaMap:
     def free(self, x: int, y: int):
         assert self.map[x][y] != 'D', 'Cannot free a danger cell'
         self.map[x][y] = 0
+
+    def set_treasure(self, value: int):
+        x = self.M // 2
+        y = self.N // 2
+        assert self.map[x][y] == 0, 'Center of map is not free'
+        self.map[x][y] = value
 
     def random_free_cell(self):
         candidates = []
