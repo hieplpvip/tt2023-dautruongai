@@ -51,6 +51,7 @@ class SeaMap:
             assert count_free >= 2, 'Map must have at least 2 free cell for starting positions'
             # assert sum_gold == 100, 'Sum of gold must be 100'
 
+            # Find any not-danger cell
             start = None
             for i in range(self.M):
                 for j in range(self.N):
@@ -74,6 +75,28 @@ class SeaMap:
                         visited.add((u, v))
                         q.append((u, v))
             assert len(visited) == self.M * self.N - count_danger, 'Map must be connected'
+
+            # Check if map is symmetric
+            horizontal_symmetric = True
+            vertical_symmetric = True
+            for i in range(self.M):
+                for j in range(self.N):
+                    if self.map[i][j] != self.map[self.M - i - 1][j]:
+                        horizontal_symmetric = False
+                    if self.map[i][j] != self.map[i][self.N - j - 1]:
+                        vertical_symmetric = False
+
+            if not horizontal_symmetric and not vertical_symmetric:
+                assert self.M == self.N, 'Map must be symmetric'
+                main_diagonal_symmetric = True
+                anti_diagonal_symmetric = True
+                for i in range(self.M):
+                    for j in range(self.N):
+                        if self.map[i][j] != self.map[j][i]:
+                            main_diagonal_symmetric = False
+                        if self.map[i][j] != self.map[self.M - j - 1][self.N - i - 1]:
+                            anti_diagonal_symmetric = False
+                assert main_diagonal_symmetric or anti_diagonal_symmetric, 'Map must be symmetric'
 
             # Print map information
             print('Map loaded successfully')
