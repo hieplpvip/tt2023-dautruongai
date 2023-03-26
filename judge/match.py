@@ -104,28 +104,29 @@ class Match:
                         print_debug(f'Attempt {attempt + 1}: Both choose the same position. Retry.')
                         continue
 
-                if valid[0] and not valid[1]:
+                elif valid[0] and not valid[1]:
                     print_debug(f'Attempt {attempt + 1}: Accept team 1, randomize team 2.')
-                    while True:
+                    move[1] = move[0]
+                    while move[0] == move[1]:
                         move[1] = self.sea_map.random_free_cell()
-                        if move[0] != move[1]:
-                            break
+
                     break
 
-                if valid[1] and not valid[0]:
+                elif valid[1] and not valid[0]:
                     print_debug(f'Attempt {attempt + 1}: Accept team 2, randomize team 1.')
-                    while True:
+                    move[0] = move[1]
+                    while move[0] == move[1]:
                         move[0] = self.sea_map.random_free_cell()
-                        if move[0] != move[1]:
-                            break
+
                     break
 
                 print_debug(f'Attempt {attempt + 1}: Randomize both.')
-                while True:
+                move[0] = move[1] = (-1, -1)
+                while move[0] == move[1]:
                     move[0] = self.sea_map.random_free_cell()
                     move[1] = self.sea_map.random_free_cell()
-                    if move[0] != move[1]:
-                        break
+
+                break
 
             self.position[0] = move[0]
             self.position[1] = move[1]
