@@ -18,8 +18,11 @@ class SeaMap:
             self.M = tmp[0]
             self.N = tmp[1]
             self.K = tmp[2]
+            assert self.M <= 15, 'M must be at most 15'
             assert self.M % 2 == 1, 'M must be odd'
+            assert self.N <= 15, 'N must be at most 15'
             assert self.N % 2 == 1, 'N must be odd'
+            assert self.K <= 100, 'K must be at most 100'
             assert self.K % 2 == 0, 'K must be even'
 
             # Read the map
