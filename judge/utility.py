@@ -5,7 +5,7 @@ def reset_color():
     print(Style.RESET_ALL, end='', flush=True)
 
 
-def print_success(*args, **kwargs):
+def print_header(*args, **kwargs):
     print(Fore.GREEN, end='')
     print(*args, **kwargs)
     reset_color()

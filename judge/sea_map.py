@@ -33,7 +33,7 @@ class SeaMap:
             count_danger = 0
             count_shield = 0
             count_free = 0
-            sum_gold = 0
+            total_gold = 0
             for i in range(self.M):
                 for j in range(self.N):
                     cell = self.map[i][j]
@@ -47,11 +47,11 @@ class SeaMap:
                     else:
                         assert cell in ['1', '2', '3', '4', '5'], 'Invalid gold value'
                         self.map[i][j] = int(cell)
-                        sum_gold += int(cell)
+                        total_gold += int(cell)
 
             assert count_shield == 2, 'Map must have exactly 2 shields'
             assert count_free >= 2, 'Map must have at least 2 free cell for starting positions'
-            # assert sum_gold == 100, 'Sum of gold must be 100'
+            # assert total_gold == 100, 'Sum of gold must be 100'
 
             # Find any not-danger cell
             start = None
@@ -101,11 +101,13 @@ class SeaMap:
                 assert main_diagonal_symmetric or anti_diagonal_symmetric, 'Map must be symmetric'
 
             # Print map information
-            print_success('Map loaded successfully')
-            print_info('M =', self.M, 'N =', self.N, 'K =', self.K)
+            print_header('Map loaded successfully')
+            print_info('Number of rows =', self.M)
+            print_info('Number of columns =', self.N)
+            print_info('Number of turns =', self.K)
             print_info('Number of danger cells =', count_danger)
             print_info('Number of free cells =', count_free)
-            print_info('Sum of gold =', sum_gold)
+            print_info('Total gold =', total_gold)
 
     def __iter__(self):
         return iter(self.map)

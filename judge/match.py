@@ -9,7 +9,7 @@ class MatchStatus(Enum):
     UNDECIDED = 0
     FIRST_WIN = 1
     SECOND_WIN = 2
-    DRAW = 2
+    DRAW = 3
 
 
 class Match:
@@ -29,6 +29,11 @@ class Match:
         self.have_shield = [False, False]
         self.gold = [0, 0]
 
+    @property
+    def finished(self):
+        return self.status != MatchStatus.UNDECIDED
+
+    @property
     def status(self):
         if self.current_turn > self.total_turn or (self.eliminated[0] and self.eliminated[1]):
             if self.gold[0] > self.gold[1]:
@@ -50,12 +55,27 @@ class Match:
 
         return MatchStatus.UNDECIDED
 
+    def print_state(self):
+        print_header(f'After turn {self.current_turn - 1}:')
+        for i in range(2):
+            print_info(f'Team {i + 1}:', end='')
+            print_info(f' at ({self.position[i][0] + 1}, {self.position[i][1] + 1}),', end='')
+            if self.eliminated[i]:
+                print_info(' eliminated,', endl='')
+            else:
+                print_info(' alive,', end='')
+            if self.have_shield[i]:
+                print_info(' have shield,', end='')
+            else:
+                print_info(' no shield,', end='')
+            print_info(f' {self.gold[i]} gold')
+
     def next_turn(self):
-        if self.status() != MatchStatus.UNDECIDED:
+        if self.status != MatchStatus.UNDECIDED:
             print_error('Match is over')
             return False
 
-        print_success(f'Turn {self.current_turn}/{self.total_turn}')
+        print_header(f'Turn {self.current_turn}/{self.total_turn}:')
 
         if self.current_turn == 1:
             # First turn is for selecting start positions:
@@ -111,8 +131,8 @@ class Match:
             self.position[1] = move[1]
             self.current_turn += 1
 
-            print_info(f'Starting position of team 1: ({self.position[0][0] + 1}, {self.position[0][1] + 1})')
-            print_info(f'Starting position of team 2: ({self.position[1][0] + 1}, {self.position[1][1] + 1})')
+            print_info(f'Team 1 starts at ({self.position[0][0] + 1}, {self.position[0][1] + 1})')
+            print_info(f'Team 2 starts at ({self.position[1][0] + 1}, {self.position[1][1] + 1})')
 
             return True
 
@@ -157,7 +177,6 @@ class Match:
             print_info('Teams move to same cell/swap cells. Eliminate both.')
             self.eliminated[0] = True
             self.eliminated[1] = True
-            return True
 
         # valid only checks if the move is valid in terms of sharing sides with current cell
         # Eliminate if team moves to a danger cell without shield
@@ -182,4 +201,5 @@ class Match:
                 self.gold[i] += amount
                 self.sea_map.free(x, y)
 
+        self.current_turn += 1
         return True

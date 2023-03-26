@@ -79,6 +79,7 @@ class SandBox:
         assert self._prepared, 'Must call prepare before running'
         self._prepared = False
 
+        print_debug('Running', self._exe, 'in', self._working_dir.name)
         try:
             subprocess.run(
                 [self._exe],
