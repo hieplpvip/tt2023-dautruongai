@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 
 from sea_map import SeaMap
+from utility import *
 
 TIME_LIMIT = 2
 MEMORY_LIMIT = 512 * 1024 * 1024  # 512 MB
@@ -13,7 +14,8 @@ MEMORY_LIMIT = 512 * 1024 * 1024  # 512 MB
 def limit_memory():
     try:
         resource.setrlimit(resource.RLIMIT_AS, (MEMORY_LIMIT, MEMORY_LIMIT))
-    except ValueError:
+    except ValueError as e:
+        print_error(e)
         pass
 
 
@@ -96,6 +98,6 @@ class SandBox:
                     return -1, -1
 
             return (tmp[0], tmp[1])
-        except subprocess.SubprocessError as exception:
-            print(exception)
+        except subprocess.SubprocessError as e:
+            print_error(self._exe, 'failed:', e)
             return -1, -1

@@ -1,6 +1,8 @@
 import random
 from collections import deque
 
+from utility import *
+
 
 class SeaMap:
     """
@@ -99,11 +101,11 @@ class SeaMap:
                 assert main_diagonal_symmetric or anti_diagonal_symmetric, 'Map must be symmetric'
 
             # Print map information
-            print('Map loaded successfully')
-            print('M =', self.M, 'N =', self.N, 'K =', self.K)
-            print('Number of danger cells =', count_danger)
-            print('Number of free cells =', count_free)
-            print('Sum of gold =', sum_gold)
+            print_success('Map loaded successfully')
+            print_info('M =', self.M, 'N =', self.N, 'K =', self.K)
+            print_info('Number of danger cells =', count_danger)
+            print_info('Number of free cells =', count_free)
+            print_info('Sum of gold =', sum_gold)
 
     def __iter__(self):
         return iter(self.map)
