@@ -54,7 +54,7 @@ class SeaMap:
 
             assert count_shield == 2, 'Map must have exactly 2 shields'
             assert count_free >= 2, 'Map must have at least 2 free cell for starting positions'
-            # assert total_gold == 100, 'Sum of gold must be 100'
+            assert total_gold == 100, 'Sum of gold must be 100'
 
             # Center of map must be free (so treasure can be placed there)
             assert self.map[self.M // 2][self.N // 2] == 0, 'Center of map must be free'
