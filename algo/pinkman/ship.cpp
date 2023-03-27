@@ -2,30 +2,25 @@
 
 Ship::Ship() {}
 
-void Ship::Read(ifstream &inp)
-{
+void Ship::Read(ifstream &inp) {
   inp >> x >> y;
 }
 
-void Ship::ReadInfo(ifstream &inp)
-{
+void Ship::ReadInfo(ifstream &inp) {
   // inp >> g >> s;
   inp >> s >> g;
 }
 
-void Ship::Move(int dir)
-{
+void Ship::Move(int dir) {
   x += dx[dir];
   y += dy[dir];
 }
 
-void Ship::Place(int x, int y)
-{
+void Ship::Place(int x, int y) {
   this->x = x;
   this->y = y;
 }
 
-void Ship::Print(ofstream &out)
-{
+void Ship::Print(ofstream &out) {
   out << x << " " << y << endl;
 }

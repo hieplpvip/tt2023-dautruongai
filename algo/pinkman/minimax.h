@@ -1,13 +1,12 @@
 #ifndef MINIMAX_H
 #define MINIMAX_H
 
+#include "heuristic.h"
 #include "main.h"
 #include "map.h"
 #include "ship.h"
-#include "heuristic.h"
 
-class MinimaxAgent
-{
+class MinimaxAgent {
 private:
   int k;
   Ship myShip, enemyShip;
@@ -23,4 +22,4 @@ public:
   void MakeMove(ofstream &out);
 };
 
-#endif // MINIMAX_H
+#endif  // MINIMAX_H

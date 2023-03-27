@@ -3,8 +3,7 @@
 
 #include "main.h"
 
-class Ship
-{
+class Ship {
 public:
   Ship();
 
@@ -18,4 +17,4 @@ public:
   int x, y, g, s;
 };
 
-#endif // SHIP_H
+#endif  // SHIP_H

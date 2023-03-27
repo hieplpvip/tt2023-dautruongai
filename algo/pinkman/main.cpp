@@ -1,8 +1,7 @@
 #include "main.h"
 #include "minimax.h"
 
-int main()
-{
+int main() {
   ifstream inp("MAP.INP");
   ofstream out("MOVE.OUT");
   ofstream sav("STATE.OUT");

@@ -3,8 +3,7 @@
 
 #include "main.h"
 
-class Map
-{
+class Map {
 public:
   Map();
 
@@ -17,4 +16,4 @@ public:
   int val[MAXN][MAXN];
 };
 
-#endif // MAP_H
+#endif  // MAP_H

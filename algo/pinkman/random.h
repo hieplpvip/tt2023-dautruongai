@@ -3,12 +3,11 @@
 
 #include "main.h"
 
-class Random
-{
+class Random {
 public:
   static int rand(int l, int r);
 
   static int rand(int n);
 };
 
-#endif // RANDOM_H
+#endif  // RANDOM_H
