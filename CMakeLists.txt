@@ -33,3 +33,4 @@ function(add_agent NAME)
 endfunction()
 
 add_agent(random)
+add_agent(pinkman)
