@@ -92,6 +92,10 @@ class SandBox:
         self._prepared = True
 
     def run(self):
+        """
+        Run agent and return move (1-indexed)
+        """
+
         assert self._prepared, 'Must call prepare before running'
         self._prepared = False
 
@@ -123,14 +127,14 @@ class SandBox:
 
             output_file = Path(self._working_dir.name) / 'MOVE.OUT'
             if not output_file.exists():
-                return -1, -1
+                return 0, 0
 
             with open(output_file, 'r', encoding='utf8') as f:
                 tmp = list(map(int, f.readline().strip().split(' ')))
                 if len(tmp) != 2:
-                    return -1, -1
+                    return 0, 0
 
             return (tmp[0], tmp[1])
         except Exception as e:
             print_error(self._exe, 'failed:', e)
-            return -1, -1
+            return 0, 0

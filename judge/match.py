@@ -61,7 +61,7 @@ class Match:
             print_info(f'Team {i + 1}:', end='')
             print_info(f' at ({self.position[i][0] + 1}, {self.position[i][1] + 1}),', end='')
             if self.eliminated[i]:
-                print_info(' eliminated,', endl='')
+                print_info(' eliminated,', end='')
             else:
                 print_info(' alive,', end='')
             if self.have_shield[i]:
@@ -91,7 +91,11 @@ class Match:
                 for i in range(2):
                     self.sandbox[i].prepare(0, 0, 0, 0, 0, 0, self.total_turn, self.sea_map)
                     x, y = self.sandbox[i].run()
-                    move.append((x - 1, y - 1))
+                    print_debug(f'Team {i + 1} chooses ({x}, {y})')
+
+                    x -= 1
+                    y -= 1
+                    move.append((x, y))
 
                 valid = [self.sea_map.is_valid_pos(x, y) and self.sea_map.is_free(x, y) for x, y in move]
 
@@ -162,6 +166,7 @@ class Match:
             if self.eliminated[i]:
                 # An eliminated team stays in the current cell till the end of the game
                 # No need to run agent
+                print_debug(f'Team {i + 1} is eliminated. Skip.')
                 move.append((-1, -1))
                 valid.append(False)
                 continue
@@ -177,7 +182,11 @@ class Match:
                 self.sea_map,
             )
             x, y = self.sandbox[i].run()
-            move.append((x - 1, y - 1))
+            print_debug(f'Team {i + 1} chooses ({x}, {y})')
+
+            x -= 1
+            y -= 1
+            move.append((x, y))
             valid.append((x, y) in self.sea_map.get_neighbors(*self.position[i]))
 
         # New positions after this turn
@@ -228,4 +237,5 @@ class Match:
                 self.sea_map.free(x, y)
 
         self.current_turn += 1
+        self.position = after_pos
         return True
