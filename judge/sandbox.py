@@ -1,4 +1,5 @@
 import os
+import platform
 import resource
 import shutil
 import subprocess
@@ -13,11 +14,9 @@ MEMORY_LIMIT = 512 * 1024 * 1024  # 512 MB
 
 
 def limit_memory():
-    try:
+    if platform.system() != 'Darwin':
+        # setrlimit does not work on macos
         resource.setrlimit(resource.RLIMIT_AS, (MEMORY_LIMIT, MEMORY_LIMIT))
-    except ValueError as e:
-        print_error(e)
-        pass
 
 
 class TrackedPopen(subprocess.Popen):
@@ -104,8 +103,20 @@ class SandBox:
                 preexec_fn=limit_memory,
             )
             p.communicate(timeout=TIME_LIMIT)
-            print_debug('Time:', round(p.rusage.ru_utime + p.rusage.ru_stime, 5), 's')
-            print_debug('Memory:', p.rusage.ru_maxrss, 'KB')
+
+            time_usage = round(p.rusage.ru_utime + p.rusage.ru_stime, 5)
+            memory_usage = p.rusage.ru_maxrss
+            if platform.system() == 'Darwin':
+                # macos reports memory usage in bytes
+                # setrlimit does not work on macos, so we check for MLE here
+                if memory_usage > MEMORY_LIMIT:
+                    raise Exception('Exceeded memory limit')
+
+                # convert to KB
+                memory_usage //= 1024
+
+            print_debug('Time:', time_usage, 's')
+            print_debug('Memory:', memory_usage, 'KB')
 
             if p.returncode:
                 print_error(self._exe, 'exited with non-zero code', p.returncode)

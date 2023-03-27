@@ -1,5 +1,7 @@
 from colorama import Fore, Style
 
+__all__ = ['reset_color', 'print_header', 'print_info', 'print_debug', 'print_error']
+
 
 def reset_color():
     print(Style.RESET_ALL, end='', flush=True)
