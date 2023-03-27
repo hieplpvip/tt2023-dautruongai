@@ -1,0 +1,35 @@
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(VERSION 3.15)
+project(tt2023-ai)
+
+set(CMAKE_CXX_STANDARD 17) # this does nothing for MSVC, use target_compile_options below
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
+if(WIN32)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+endif(WIN32)
+
+function(add_agent NAME)
+    file(GLOB SOURCES algo/${NAME}/*.h algo/${NAME}/*.cpp)
+    add_executable(${NAME} ${SOURCES})
+    target_link_libraries(${NAME} ${LIBS})
+
+    if(WIN32)
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+        set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+    elseif(UNIX AND NOT APPLE)
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+    elseif(APPLE)
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin")
+        set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin")
+    endif(WIN32)
+
+    if(MSVC)
+        target_compile_options(${NAME} PRIVATE /std:c++17 /MP)
+        target_link_options(${NAME} PUBLIC /ignore:4099)
+    endif(MSVC)
+endfunction()
+
+add_agent(random)

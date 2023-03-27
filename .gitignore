@@ -9,3 +9,5 @@
 *.pyc
 *.o
 a.out
+bin
+build
