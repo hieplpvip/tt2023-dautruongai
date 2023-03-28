@@ -22,7 +22,7 @@ def main():
     visualize_dir = args.visualize
 
     if visualize_dir:
-        shutil.rmtree(visualize_dir)
+        shutil.rmtree(visualize_dir, ignore_errors=True)
         os.makedirs(visualize_dir, exist_ok=True)
 
     match = Match(map_filename, exe0, exe1)
