@@ -7,8 +7,7 @@ void Ship::Read(ifstream &inp) {
 }
 
 void Ship::ReadInfo(ifstream &inp) {
-  // inp >> g >> s;
-  inp >> s >> g;
+  inp >> g >> s;
 }
 
 void Ship::Move(int dir) {

@@ -22,7 +22,7 @@ int rand(int n) {
 int m, n, k;
 int mat[20][20];
 int our_x, our_y, opp_x, opp_y;
-int has_shield, total_gold;
+int total_gold, has_shield;
 vector<pair<int, int>> shield_pos;
 
 inline bool is_valid(int x, int y) {
@@ -37,7 +37,7 @@ inline void print_move(int x, int y) {
 void input() {
   cin >> m >> n >> k;
   cin >> our_x >> our_y >> opp_x >> opp_y;
-  cin >> has_shield >> total_gold;
+  cin >> total_gold >> has_shield;
 
   string s;
   for (int i = 1; i <= m; ++i) {

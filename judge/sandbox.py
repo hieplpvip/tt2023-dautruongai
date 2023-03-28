@@ -85,7 +85,7 @@ class SandBox:
         with open(Path(self._working_dir.name) / 'MAP.INP', 'w', encoding='utf8') as f:
             f.write(f'{sea_map.M} {sea_map.N} {remaining_turn}\n')
             f.write(f'{self_x} {self_y} {other_x} {other_y}\n')
-            f.write(f'{shield} {gold}\n')
+            f.write(f'{gold} {shield}\n')
             for row in sea_map:
                 f.write(' '.join(map(str, row)) + '\n')
 
