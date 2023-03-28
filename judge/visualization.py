@@ -46,11 +46,11 @@ SHIELD_TILE.blit(SHIELD_TEXT, (
     SHIELD_TILE.get_height() // 2 - SHIELD_TEXT.get_height() // 2,
 ))
 
-FIRST_TEAM_TEXT = ARIAL_FONT_12.render('A', True, GREEN)
-SECOND_TEAM_TEXT = ARIAL_FONT_12.render('B', True, GREEN)
+FIRST_TEAM_TEXT = ARIAL_FONT_24.render('A', True, GREEN)
+SECOND_TEAM_TEXT = ARIAL_FONT_24.render('B', True, GREEN)
 
 
-def _draw_map(sea_map: SeaMap, surface: pygame.Surface, first_pos=None, second_pos=None):
+def _draw_map(sea_map: SeaMap, surface: pygame.Surface, first_pos=None, second_pos=None, treasure_value=None):
     surface.fill(BORDER_COLOR)
 
     for row in range(sea_map.M):
@@ -69,33 +69,40 @@ def _draw_map(sea_map: SeaMap, surface: pygame.Surface, first_pos=None, second_p
                     surface.blit(text, (col * TILE_SIZE + TILE_SIZE // 2 - text.get_width() // 2,
                                         row * TILE_SIZE + TILE_SIZE // 2 - text.get_height() // 2))
 
+    if treasure_value is not None:
+        text = ARIAL_FONT_24.render(str(treasure_value), True, RED)
+        row = sea_map.M // 2
+        col = sea_map.N // 2
+        surface.blit(text, (col * TILE_SIZE + TILE_SIZE // 2 - text.get_width() // 2,
+                            row * TILE_SIZE + TILE_SIZE // 2 - text.get_height() // 2))
+
     if first_pos is not None:
         surface.blit(
             FIRST_TEAM_TEXT,
             (first_pos[1] * TILE_SIZE + TILE_SIZE // 2 - FIRST_TEAM_TEXT.get_width() // 2,
-             first_pos[0] * TILE_SIZE + BORDER_WIDTH),
+             first_pos[0] * TILE_SIZE + BORDER_WIDTH // 2),
         )
 
     if second_pos is not None:
         surface.blit(
             SECOND_TEAM_TEXT,
             (second_pos[1] * TILE_SIZE + TILE_SIZE // 2 - SECOND_TEAM_TEXT.get_width() // 2,
-             second_pos[0] * TILE_SIZE + BORDER_WIDTH),
+             second_pos[0] * TILE_SIZE + BORDER_WIDTH // 2),
         )
 
 
-def visualize_map_to_image(sea_map: SeaMap, filename: str, first_pos=None, second_pos=None):
+def visualize_map_to_image(sea_map: SeaMap, filename: str, first_pos=None, second_pos=None, treasure_value=None):
     # Create the map surface
     map_surface = pygame.Surface((TILE_SIZE * sea_map.N, TILE_SIZE * sea_map.M))
 
     # Draw the map
-    _draw_map(sea_map, map_surface, first_pos, second_pos)
+    _draw_map(sea_map, map_surface, first_pos, second_pos, treasure_value)
 
     # Save the map to an image file
     pygame.image.save(map_surface, filename)
 
 
-def visualize_map_to_screen(sea_map: SeaMap, first_pos=None, second_pos=None):
+def visualize_map_to_screen(sea_map: SeaMap, first_pos=None, second_pos=None, treasure_value=None):
     # Create the display surface
     screen = pygame.display.set_mode((TILE_SIZE * sea_map.N, TILE_SIZE * sea_map.M))
 
@@ -108,7 +115,7 @@ def visualize_map_to_screen(sea_map: SeaMap, first_pos=None, second_pos=None):
                 running = False
 
         # Draw the map
-        _draw_map(sea_map, screen, first_pos, second_pos)
+        _draw_map(sea_map, screen, first_pos, second_pos, treasure_value)
 
         # Update the display
         pygame.display.flip()

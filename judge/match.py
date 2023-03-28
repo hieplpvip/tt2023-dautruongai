@@ -136,7 +136,6 @@ class Match:
 
             # Visualize map
             if visualize_dir:
-                os.makedirs(visualize_dir, exist_ok=True)
                 visualize_map_to_image(
                     self.sea_map,
                     os.path.join(visualize_dir, f'{self.current_turn}.png'),
@@ -165,13 +164,14 @@ class Match:
         #   they collect the gold (or shield) and the cell becomes free.
         # - The collected gold are not lost if the team is eliminated.
 
+        treasure_value = None
         if self.current_turn == self.total_turn // 2 + 1:
             print_info('Halfway through the match but match is still undecided.')
             print_error('TREASURE APPEARS')
 
-            value = abs(self.gold[0] - self.gold[1]) * 3 // 4
-            print_info('Treasure value =', value)
-            self.sea_map.set_treasure(value)
+            treasure_value = abs(self.gold[0] - self.gold[1]) * 3 // 4
+            print_info('Treasure value =', treasure_value)
+            self.sea_map.set_treasure(treasure_value)
 
         move, valid = [], []
         for i in range(2):
@@ -232,16 +232,6 @@ class Match:
                 print_info(f'Team {i + 1} moves to danger cell. Eliminate.')
                 self.eliminated[i] = True
 
-        # Visualize map before collecting gold/shield
-        if visualize_dir:
-            os.makedirs(visualize_dir, exist_ok=True)
-            visualize_map_to_image(
-                self.sea_map,
-                os.path.join(visualize_dir, f'{self.current_turn}.png'),
-                after_pos[0],
-                after_pos[1],
-            )
-
         # If team is still alive, let them collect gold/shield
         for i in range(2):
             if self.eliminated[i]:
@@ -257,6 +247,16 @@ class Match:
                 print_error(f'Team {i + 1} collects {amount} gold.')
                 self.gold[i] += amount
                 self.sea_map.free(x, y)
+
+        # Visualize map
+        if visualize_dir:
+            visualize_map_to_image(
+                self.sea_map,
+                os.path.join(visualize_dir, f'{self.current_turn}.png'),
+                after_pos[0],
+                after_pos[1],
+                treasure_value,
+            )
 
         self.current_turn += 1
         self.position = after_pos
