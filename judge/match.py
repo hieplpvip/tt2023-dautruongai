@@ -60,21 +60,21 @@ class Match:
     def print_state(self):
         print_header(f'After turn {self.current_turn - 1}:')
         for i in range(2):
-            print_info(f'Team {i + 1}:', end='')
-            print_info(f' at ({self.position[i][0] + 1}, {self.position[i][1] + 1}),', end='')
+            print_important(f'Team {i + 1}:', end='')
+            print_important(f' at ({self.position[i][0] + 1}, {self.position[i][1] + 1}),', end='')
             if self.eliminated[i]:
-                print_info(' eliminated,', end='')
+                print_important(' eliminated,', end='')
             else:
-                print_info(' alive,', end='')
+                print_important(' alive,', end='')
             if self.have_shield[i]:
-                print_info(' have shield,', end='')
+                print_important(' have shield,', end='')
             else:
-                print_info(' no shield,', end='')
-            print_info(f' {self.gold[i]} gold')
+                print_important(' no shield,', end='')
+            print_important(f' {self.gold[i]} gold')
 
     def next_turn(self, visualize_dir=None):
         if self.status != MatchStatus.UNDECIDED:
-            print_error('Match is over')
+            print_important('Match is over')
             return False
 
         print_header(f'Turn {self.current_turn}/{self.total_turn}:')
@@ -166,11 +166,11 @@ class Match:
 
         treasure_value = None
         if self.current_turn == self.total_turn // 2 + 1:
-            print_info('Halfway through the match but match is still undecided.')
-            print_error('TREASURE APPEARS')
+            print_debug('Halfway through the match but match is still undecided.')
+            print_important('TREASURE APPEARS')
 
             treasure_value = abs(self.gold[0] - self.gold[1]) * 3 // 4
-            print_info('Treasure value =', treasure_value)
+            print_important('Treasure value =', treasure_value)
             self.sea_map.set_treasure(treasure_value)
 
         move, valid = [], []
@@ -239,12 +239,12 @@ class Match:
 
             x, y = after_pos[i]
             if self.sea_map.is_shield(x, y):
-                print_error(f'Team {i + 1} collects shield.')
+                print_important(f'Team {i + 1} collects shield.')
                 self.have_shield[i] = True
                 self.sea_map.free(x, y)
             elif self.sea_map.is_gold(x, y):
                 amount = self.sea_map.get(x, y)
-                print_error(f'Team {i + 1} collects {amount} gold.')
+                print_important(f'Team {i + 1} collects {amount} gold.')
                 self.gold[i] += amount
                 self.sea_map.free(x, y)
 

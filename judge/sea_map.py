@@ -107,7 +107,7 @@ class SeaMap:
                 assert main_diagonal_symmetric or anti_diagonal_symmetric, 'Map must be symmetric'
 
             # Print map information
-            print_header('Map loaded successfully')
+            print_debug('Map loaded successfully')
             print_info('Number of rows =', self.M)
             print_info('Number of columns =', self.N)
             print_info('Number of turns =', self.K)

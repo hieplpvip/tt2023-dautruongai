@@ -99,7 +99,7 @@ class SandBox:
         assert self._prepared, 'Must call prepare before running'
         self._prepared = False
 
-        print_info('Running', self._exe, 'in', self._working_dir.name)
+        print_debug('Running', self._exe, 'in', self._working_dir.name)
         try:
             p = TrackedPopen(
                 [self._exe],
@@ -123,7 +123,7 @@ class SandBox:
             print_debug('Memory:', memory_usage, 'KB')
 
             if p.returncode:
-                print_error(self._exe, 'exited with non-zero code', p.returncode)
+                print_important(self._exe, 'exited with non-zero code', p.returncode)
 
             output_file = Path(self._working_dir.name) / 'MOVE.OUT'
             if not output_file.exists():
@@ -136,5 +136,5 @@ class SandBox:
 
             return (tmp[0], tmp[1])
         except Exception as e:
-            print_error(self._exe, 'failed:', e)
+            print_important(self._exe, 'failed:', e)
             return 0, 0
