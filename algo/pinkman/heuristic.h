@@ -6,7 +6,8 @@
 #include "random.h"
 #include "ship.h"
 
-class Heuristic {
+class Heuristic
+{
 private:
   // Get the total (gold - dist) in the range (choose 'lim' highest values)
   // Ignoring gold in the enemy zone (dist(enemyShip, pos) <= EZONE)
@@ -22,10 +23,11 @@ public:
   static pair<int, int> FirstPlace(Map &sea);
 
   // TODO: Evaluate treasure
+  // TODO: set range = min(RANGE, TURN_LEFT)
   // (1) Select KSEED posittions having the highest gold in the range RANGE
   // (2) Score is the difference between myShipScore and enemyShipScore
   // (3) If myShip drown (two ship collide or meet barrier), return -INF
   static int Evaluate(Map &sea, const Ship &myShip, const Ship &enemyShip);
 };
 
-#endif  // HEURISTIC_H
+#endif // HEURISTIC_H

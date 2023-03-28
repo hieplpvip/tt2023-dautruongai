@@ -1,16 +1,21 @@
 #include "main.h"
 #include "minimax.h"
 
-int main() {
+int main()
+{
+  MinimaxAgent agent;
+
   ifstream inp("MAP.INP");
+  ifstream loads("STATE.OUT");
+  agent.Input(inp);
+  agent.Load(loads);
+  inp.close();
+  loads.close();
+
   ofstream out("MOVE.OUT");
   ofstream sav("STATE.OUT");
-
-  MinimaxAgent agent;
-  agent.Input(inp);
   agent.MakeMove(out);
-
-  inp.close();
-  sav.close();
+  agent.Save(sav);
   out.close();
+  sav.close();
 }
