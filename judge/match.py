@@ -1,8 +1,10 @@
+import os
 from enum import Enum
 
 from sandbox import SandBox
 from sea_map import SeaMap
 from utility import *
+from visualization import visualize_map_to_image
 
 
 class MatchStatus(Enum):
@@ -70,7 +72,7 @@ class Match:
                 print_info(' no shield,', end='')
             print_info(f' {self.gold[i]} gold')
 
-    def next_turn(self):
+    def next_turn(self, visualize_dir=None):
         if self.status != MatchStatus.UNDECIDED:
             print_error('Match is over')
             return False
@@ -131,6 +133,16 @@ class Match:
                     move[1] = self.sea_map.random_free_cell()
 
                 break
+
+            # Visualize map
+            if visualize_dir:
+                os.makedirs(visualize_dir, exist_ok=True)
+                visualize_map_to_image(
+                    self.sea_map,
+                    os.path.join(visualize_dir, f'{self.current_turn}.png'),
+                    move[0],
+                    move[1],
+                )
 
             self.position[0] = move[0]
             self.position[1] = move[1]
@@ -219,6 +231,16 @@ class Match:
             if valid[i] and self.sea_map.is_danger(*after_pos[i]) and not self.have_shield[i]:
                 print_info(f'Team {i + 1} moves to danger cell. Eliminate.')
                 self.eliminated[i] = True
+
+        # Visualize map before collecting gold/shield
+        if visualize_dir:
+            os.makedirs(visualize_dir, exist_ok=True)
+            visualize_map_to_image(
+                self.sea_map,
+                os.path.join(visualize_dir, f'{self.current_turn}.png'),
+                after_pos[0],
+                after_pos[1],
+            )
 
         # If team is still alive, let them collect gold/shield
         for i in range(2):

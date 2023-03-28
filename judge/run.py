@@ -12,6 +12,7 @@ def main():
     parser.add_argument('map', type=str, help='Path to map file')
     parser.add_argument('exe0', type=str, help='Path to first agent')
     parser.add_argument('exe1', type=str, help='Path to second agent')
+    parser.add_argument('--visualize', type=str, required=False, help='Path to visualization directory')
     args = parser.parse_args()
 
     map_filename = os.path.abspath(args.map)
@@ -21,7 +22,7 @@ def main():
     match = Match(map_filename, exe0, exe1)
     while not match.finished:
         print('')
-        match.next_turn()
+        match.next_turn(args.visualize)
         match.print_state()
 
     print('')
