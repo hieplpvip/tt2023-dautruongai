@@ -51,9 +51,9 @@ void MinimaxAgent::MakeMove(ofstream &out) {
 pair<int, int> MinimaxAgent::MaxNode(int alpha, int beta, int turn, int depth) {
   // check terminal state
   // TODO: check terminal state when 2 ships collide + invalid grid
-  // TODO: score = (gold+1)/2 * (bonus - dist), bonus > dist
   // score = (gold+1)/2 * (bonus - (depth/2 + 1))
-  // TODO: what if only one player die?
+  // what if only one player die?
+  // TODO: use heuristic search farther when not find any move
   if (turn == 0 || depth == MAX_DEPTH || (turn <= totalTurn / 2 && abs(myShip.g - enemyShip.g) > 20)) {
     return make_pair(myShip.score - enemyShip.score, -1);
   }
@@ -86,8 +86,8 @@ pair<int, int> MinimaxAgent::MaxNode(int alpha, int beta, int turn, int depth) {
     }
   }
 
-  bestScore = alpha;
-  bestDir = cand[0].second;
+  bestScore = -INF;
+  bestDir = -1;
   sz = depth < MAX_DEPTH ? 3 : 1;
   // sz = depth < MAX_DEPTH ? 2 : 1;
 
@@ -97,12 +97,17 @@ pair<int, int> MinimaxAgent::MaxNode(int alpha, int beta, int turn, int depth) {
     // save state
     myShip.Move(i);
 
+    if (!sea.isValid(myShip.x, myShip.y, myShip.s)) {
+      myShip.Move(i ^ 1);
+      continue;
+    }
+
     if (sea.at[myShip.x][myShip.y] == "D" && myShip.s) {
       v = 0;
     } else {
       v = sea.val[myShip.x][myShip.y];
     }
-    r = (v + 1) / 2 * (BONUS - (depth / 2 + 1));
+    r = (v + 1) * (BONUS - (depth / 2 + 1));
     myShip.g += v;
     myShip.score += r;
     sea.val[myShip.x][myShip.y] -= v;
@@ -143,7 +148,7 @@ pair<int, int> MinimaxAgent::MinNode(int alpha, int beta, int turn, int depth) {
   }
   sort(cand.rbegin(), cand.rend());
 
-  bestScore = alpha;
+  bestScore = INF;
   bestDir = cand[0].second;
   sz = depth < MAX_DEPTH ? 3 : 1;
   // sz = depth < MAX_DEPTH ? 2 : 1;
@@ -154,17 +159,22 @@ pair<int, int> MinimaxAgent::MinNode(int alpha, int beta, int turn, int depth) {
     // save state
     enemyShip.Move(i);
 
+    if (!sea.isValid(enemyShip.x, enemyShip.y, enemyShip.s)) {
+      enemyShip.Move(i ^ 1);
+      continue;
+    }
+
     if (sea.at[enemyShip.x][enemyShip.y] == "D" && enemyShip.s) {
       v = 0;
     } else {
       v = sea.val[enemyShip.x][enemyShip.y];
     }
-    r = (v + 1) / 2 * (BONUS - (depth / 2 + 1));
+    r = (v + 1) * (BONUS - (depth / 2 + 1));
     enemyShip.g += v;
     enemyShip.score += r;
     sea.val[enemyShip.x][enemyShip.y] -= v;
 
-    auto [score, dir] = MinNode(v, beta, turn, depth + 1);
+    auto [score, dir] = MaxNode(v, beta, turn, depth + 1);
 
     // restore state
     sea.val[enemyShip.x][enemyShip.y] += v;

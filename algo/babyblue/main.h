@@ -6,12 +6,12 @@
 #define MAXN 20
 #define INF 100000000
 
-#define MAX_DEPTH 10
+#define MAX_DEPTH 8
 #define KSEED 15
 #define SHIELD_SCORE 10
 #define KRAND 3
-#define EZONE 5
-#define BONUS 500
+#define EZONE 2
+#define BONUS 120
 #define CONFIDENT 50
 
 #define dist(a, b, c, d) (abs((a) - (c)) + abs((b) - (d)))

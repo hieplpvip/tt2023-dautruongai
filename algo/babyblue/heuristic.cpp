@@ -34,7 +34,7 @@ int Heuristic::Evaluate(Map &sea, const Ship &myShip, const Ship &enemyShip) {
   int n = sea.n, m = sea.m;
   int u = myShip.x, v = myShip.y, s = myShip.s;
   int _u = enemyShip.x, _v = enemyShip.y, _s = enemyShip.s;
-  int range = (n + m) / 3;
+  int range = (n + m) / 2;
 
   vector<int> gold;
 
@@ -52,7 +52,7 @@ int Heuristic::Evaluate(Map &sea, const Ship &myShip, const Ship &enemyShip) {
       // if enemy can reach it first, then set to 1
       val = (dist(u, v, _u, _v) <= min(EZONE, visited[u][v])) ? 1 : sea.val[u][v];
       if (u == n / 2 + 1 && v == m / 2 + 1) val = max(val, 5);
-      gold.push_back((val + 1) / 2 * (BONUS - visited[u][v]));
+      gold.push_back((val + 1) * (BONUS - visited[u][v]));
     }
 
     for (int i = 0; i < 4; ++i) {
