@@ -21,4 +21,4 @@ const int dy[] = {0, 0, -1, 1};
 
 using namespace std;
 
-#endif // MAIN_H
+#endif  // MAIN_H

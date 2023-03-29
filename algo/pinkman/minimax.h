@@ -6,8 +6,7 @@
 #include "map.h"
 #include "ship.h"
 
-class MinimaxAgent
-{
+class MinimaxAgent {
 private:
   int k;
   Ship myShip, enemyShip;
@@ -27,4 +26,4 @@ public:
   void MakeMove(ofstream &out);
 };
 
-#endif // MINIMAX_H
+#endif  // MINIMAX_H

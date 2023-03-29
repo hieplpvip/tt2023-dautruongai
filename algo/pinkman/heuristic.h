@@ -6,8 +6,7 @@
 #include "random.h"
 #include "ship.h"
 
-class Heuristic
-{
+class Heuristic {
 private:
   // Get the total (gold - dist) in the range (choose 'lim' highest values)
   // Ignoring gold in the enemy zone (dist(enemyShip, pos) <= EZONE)
@@ -30,4 +29,4 @@ public:
   static int Evaluate(Map &sea, const Ship &myShip, const Ship &enemyShip);
 };
 
-#endif // HEURISTIC_H
+#endif  // HEURISTIC_H

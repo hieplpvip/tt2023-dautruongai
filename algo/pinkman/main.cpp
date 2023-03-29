@@ -1,8 +1,7 @@
 #include "main.h"
 #include "minimax.h"
 
-int main()
-{
+int main() {
   MinimaxAgent agent;
 
   ifstream inp("MAP.INP");
