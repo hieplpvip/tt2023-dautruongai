@@ -17,9 +17,9 @@ def main():
 
     sea_map = SeaMap(args.map)
     if args.output:
-        visualize_map_to_image(sea_map, args.output)
+        visualize_map_to_image(sea_map, args.output, header_str=args.output)
     else:
-        visualize_map_to_screen(sea_map)
+        visualize_map_to_screen(sea_map, header_str=args.output)
 
 
 if __name__ == '__main__':

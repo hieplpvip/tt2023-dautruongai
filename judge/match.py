@@ -139,13 +139,14 @@ class Match:
                 visualize_map_to_image(
                     self.sea_map,
                     os.path.join(visualize_dir, f'{self.current_turn}.png'),
-                    {
+                    header_str=f'Turn {self.current_turn}/{self.total_turn}',
+                    first_state={
                         'position': move[0],
                         'gold': self.gold[0],
                         'shield': self.have_shield[0],
                         'eliminated': self.eliminated[0],
                     },
-                    {
+                    second_state={
                         'position': move[1],
                         'gold': self.gold[1],
                         'shield': self.have_shield[1],
@@ -263,19 +264,20 @@ class Match:
             visualize_map_to_image(
                 self.sea_map,
                 os.path.join(visualize_dir, f'{self.current_turn}.png'),
-                {
+                header_str=f'Turn {self.current_turn}/{self.total_turn}',
+                first_state={
                     'position': move[0],
                     'gold': self.gold[0],
                     'shield': self.have_shield[0],
                     'eliminated': self.eliminated[0],
                 },
-                {
+                second_state={
                     'position': move[1],
                     'gold': self.gold[1],
                     'shield': self.have_shield[1],
                     'eliminated': self.eliminated[1],
                 },
-                treasure_value,
+                treasure_value=treasure_value,
             )
 
         self.current_turn += 1
