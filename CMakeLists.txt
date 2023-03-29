@@ -37,3 +37,6 @@ endfunction()
 
 add_agent(random)
 add_agent(pinkman)
+add_agent(tahp-estimate-shield-val)
+add_agent(tahp-ignore-opponent)
+add_agent(tahp-ignore-opponent-v2)
