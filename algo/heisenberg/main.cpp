@@ -67,8 +67,8 @@ double calculate_locality(int x, int y) {
   // calculate the sum of the x parts
   bool has_s = s_1;
   double sum = 0;
-  for (int i = -2; i <= 2; ++i) {
-    for (int j = -2; j <= 2; ++j) {
+  for (int i = -n / 2; i <= n / 2; ++i) {
+    for (int j = -m / 2; j <= m / 2; ++j) {
       if (abs(i) + abs(j) > 2) continue;
       if (!can_go(x + i, y + j, 0)) continue;
       if (game_map[x + i][y + j] == 'D') continue;
@@ -111,7 +111,7 @@ void cal_val() {
           if (!s_1) x = 4;
         } else if (game_map[i][j] != 'D') {
           // Value at current cell is highly prioritized
-          x = (game_map[i][j] - '0') * 2.5;
+          x = (game_map[i][j] - '0') * 1.75;
         }
 
         if (game_map[i][j] == '0' || game_map[i][j] == 'D') {
@@ -121,10 +121,10 @@ void cal_val() {
 
         // x += - 1.0 * dist(x_1, y_1, i, j) * 3 / 4 + 1.0 * dist(x_2, y_2, i, j) / 3; // far from 1 is penalized or close to 2
         x += -1.0 * dist(x_1, y_1, i, j) / 4;                              // far from 1 is penalized
-        x += -1.0 * abs(dist(x_1, y_1, i, j) - dist(x_2, y_2, i, j)) / 2;  // prioritize moving to the cell that is closer to both 1 and 2
+        x += -1.0 * abs(dist(x_1, y_1, i, j) - dist(x_2, y_2, i, j)) / 4;  // prioritize moving to the cell that is closer to both 1 and 2
 
-        x += (-(i > 1) - (i < n) - (j > 1) - (j < m)) / 2 * (1 + (n <= 3) + (m <= 3));  // prioritize moving to the corner
-        x += calculate_locality(i, j);                                                  // prioritize moving to the cell with high locality
+        x += 1.0 * (-(i > 1) - (i < n) - (j > 1) - (j < m)) / 2 * (1 + (n <= 3) + (m <= 3));  // prioritize moving to the corner
+        x += calculate_locality(i, j);                                                        // prioritize moving to the cell with high locality
 
         // Add a small bonus for moving to the center when k is close to half of org_k
         if (abs(k - org_k / 2) <= 3) {
@@ -203,7 +203,7 @@ void cook() {
   for (int i = 0; i < 4; i++) {
     int nx = x_1 + dx[i], ny = y_1 + dy[i];
     if (!can_go(nx, ny, s_1)) continue;
-    // if (nx == pre_x && ny == pre_y) continue; // ko di nguoc lai
+    if (nx == pre_x && ny == pre_y) continue;  // ko di nguoc lai
 
     if (game_map[nx][ny] == '4' || game_map[nx][ny] == '5') {
       // Tat nao choi game
