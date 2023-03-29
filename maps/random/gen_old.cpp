@@ -1,5 +1,5 @@
 // clang-format off
-#include "../testlib.h"
+#include "testlib.h"
 #include <bits/stdc++.h>
 // clang-format on
 
