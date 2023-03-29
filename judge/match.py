@@ -139,8 +139,18 @@ class Match:
                 visualize_map_to_image(
                     self.sea_map,
                     os.path.join(visualize_dir, f'{self.current_turn}.png'),
-                    move[0],
-                    move[1],
+                    {
+                        'position': move[0],
+                        'gold': self.gold[0],
+                        'shield': self.have_shield[0],
+                        'eliminated': self.eliminated[0],
+                    },
+                    {
+                        'position': move[1],
+                        'gold': self.gold[1],
+                        'shield': self.have_shield[1],
+                        'eliminated': self.eliminated[1],
+                    },
                 )
 
             self.position[0] = move[0]
@@ -253,8 +263,18 @@ class Match:
             visualize_map_to_image(
                 self.sea_map,
                 os.path.join(visualize_dir, f'{self.current_turn}.png'),
-                after_pos[0],
-                after_pos[1],
+                {
+                    'position': move[0],
+                    'gold': self.gold[0],
+                    'shield': self.have_shield[0],
+                    'eliminated': self.eliminated[0],
+                },
+                {
+                    'position': move[1],
+                    'gold': self.gold[1],
+                    'shield': self.have_shield[1],
+                    'eliminated': self.eliminated[1],
+                },
                 treasure_value,
             )
 
