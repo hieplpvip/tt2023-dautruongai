@@ -35,6 +35,7 @@ function(add_agent NAME)
     endif(MSVC)
 endfunction()
 
+add_agent(heisenberg)
 add_agent(random)
 add_agent(pinkman)
 add_agent(tahp-estimate-shield-val)
