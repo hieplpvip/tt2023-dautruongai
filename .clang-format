@@ -1,0 +1,11 @@
+BasedOnStyle: Google
+IndentWidth: 2
+TabWidth: 2
+ColumnLimit: 0
+UseCRLF: false
+UseTab: Never
+IncludeBlocks: Merge
+SortIncludes: false
+AccessModifierOffset: -2
+FixNamespaceComments: false
+NamespaceIndentation: All
