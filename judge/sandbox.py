@@ -124,11 +124,15 @@ class SandBox:
 
             if p.returncode:
                 print_important(self._exe, 'exited with non-zero code', p.returncode)
+        except Exception as e:
+            print_important(self._exe, 'run failed:', e)
 
-            output_file = Path(self._working_dir.name) / 'MOVE.OUT'
-            if not output_file.exists():
-                return 0, 0
+        output_file = Path(self._working_dir.name) / 'MOVE.OUT'
+        if not output_file.exists():
+            print_important(self._exe, 'did not produce output file')
+            return 0, 0
 
+        try:
             with open(output_file, 'r', encoding='utf8') as f:
                 tmp = list(map(int, f.readline().strip().split(' ')))
                 if len(tmp) != 2:
@@ -136,5 +140,5 @@ class SandBox:
 
             return (tmp[0], tmp[1])
         except Exception as e:
-            print_important(self._exe, 'failed:', e)
+            print_important(self._exe, 'produced invalid output file:', e)
             return 0, 0
