@@ -11,6 +11,19 @@ void MinimaxAgent::Input(ifstream &inp) {
   sea.Read(inp, n, m);
 }
 
+void MinimaxAgent::Load(ifstream &sav) {
+  int u, v;
+  while (sav >> u >> v) {
+    visited.insert(make_pair(u, v));
+  }
+}
+
+void MinimaxAgent::Save(ofstream &sav) {
+  for (auto &[x, y] : visited) {
+    sav << x << ' ' << y << '\n';
+  }
+}
+
 void MinimaxAgent::MakeMove(ofstream &out) {
   if (myShip.x == 0) {
     // First move
@@ -25,6 +38,12 @@ void MinimaxAgent::MakeMove(ofstream &out) {
     myShip.Move(dir);
   }
   myShip.Print(out);
+
+  if (sea.val[myShip.x][myShip.y] > 0) {
+    visited.clear();
+  } else {
+    visited.insert(make_pair(myShip.x, myShip.y));
+  }
 }
 
 pair<int, int> MinimaxAgent::MaxNode(int alpha, int beta, int depth) {
@@ -38,7 +57,9 @@ pair<int, int> MinimaxAgent::MaxNode(int alpha, int beta, int depth) {
 
   for (int i = 0; i < NDIR && v <= beta; ++i) {
     myShip.Move(i);
-    auto [score, dir] = MinNode(v, beta, depth + 1);
+    auto [score, dir] = visited.find(make_pair(myShip.x, myShip.y)) != visited.end()
+                            ? make_pair(-INF, -1)
+                            : MinNode(v, beta, depth + 1);
     myShip.Move(i ^ 1);
 
     if (score > -INF && bestDir == -1) {

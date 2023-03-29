@@ -6,16 +6,22 @@
 #include "map.h"
 #include "ship.h"
 
+/* STATE.OUT
+totalTurn
+enemygold enemyshield
+[[oldmap]]
+*/
+
 class MinimaxAgent {
 private:
-  int k;
+  int n, m, k, totalTurn, lastMove;
   Ship myShip, enemyShip;
-  Map sea;
-  set<pair<int, int>> visited;
+  Map sea, oldsea;
 
   // TODO: Avoid go back old posittion
-  pair<int, int> MaxNode(int alpha, int beta, int depth = 0);
-  pair<int, int> MinNode(int alpha, int beta, int depth = 0);
+  //
+  pair<int, int> MaxNode(int alpha, int beta, int turn, int depth);
+  pair<int, int> MinNode(int alpha, int beta, int turn, int depth);
 
 public:
   MinimaxAgent();

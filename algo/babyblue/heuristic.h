@@ -7,19 +7,10 @@
 #include "ship.h"
 
 class Heuristic {
-private:
-  // Get the total (gold - dist) in the range (choose 'lim' highest values)
-  // Ignoring gold in the enemy zone (dist(enemyShip, pos) <= EZONE)
-  static int bfs(Map &sea, int u, int v, int _u, int _v, int s, int lim, int range);
-
-  // Return value of the first (gold) reached
-  // Ignore gold if enemy can come first
-  static int bfs2(Map &sea, int u, int v, int _u, int _v, int s, int lim);
-
 public:
   // (1) Find position where the ship can be placed to maximize the number of point in the range of RANGE
   // (2) Select 3 candidate positions and choose random to avoid conciding enemy's move
-  static pair<int, int> FirstPlace(Map &sea);
+  static pair<int, int> FirstPlace(Map &sea, Ship &myShip, Ship &enemyShip);
 
   // TODO: Evaluate treasure
   // TODO: set range = min(RANGE, TURN_LEFT)

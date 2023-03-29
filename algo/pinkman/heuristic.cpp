@@ -13,8 +13,8 @@ int Heuristic::bfs(Map &sea, int u, int v, int _u, int _v, int s, int lim, int r
     auto [u, v] = Q.front();
     Q.pop();
 
-    if (visited[u][v] < dist(u, v, _u, _v) || dist(u, v, _u, _v) > EZONE) {
-      gold.push_back(sea.val[u][v] - visited[u][v]);
+    if (sea.val[u][v] > 0 && (visited[u][v] < dist(u, v, _u, _v) || dist(u, v, _u, _v) > EZONE)) {
+      gold.push_back(sea.val[u][v] - visited[u][v] + BONUS_RATE);
     }
 
     for (int i = 0; i < NDIR; ++i) {
@@ -91,7 +91,8 @@ pair<int, int> Heuristic::FirstPlace(Map &sea) {
   }
 
   sort(cand.rbegin(), cand.rend());
-  return cand[Random::rand(3)].second;
+
+  return cand[Random::rand(KRAND)].second;
 }
 
 // TODO: Evaluate treasure
@@ -99,7 +100,7 @@ pair<int, int> Heuristic::FirstPlace(Map &sea) {
 // (2) Score is the difference between myShipScore and enemyShipScore
 // (3) If myShip drown (two ship collide or meet barrier), return -INF
 int Heuristic::Evaluate(Map &sea, const Ship &myShip, const Ship &enemyShip) {
-  if (!sea.isValid(myShip.x, myShip.y, myShip.s) || (myShip.x == enemyShip.x && myShip.y == enemyShip.y))
+  if (!sea.isValid(myShip.x, myShip.y, myShip.s))
     return -INF;
 
   int myShipScore = bfs(sea, myShip.x, myShip.y, enemyShip.x, enemyShip.y, myShip.s, KSEED, INF);
@@ -109,7 +110,7 @@ int Heuristic::Evaluate(Map &sea, const Ship &myShip, const Ship &enemyShip) {
 
   // Give bonus score if the current grid is gold
   if (sea.val[myShip.x][myShip.y] > 0) {
-    myShipScore += 1000;
+    myShipScore += BONUS_RATE * BONUS_RATE * BONUS_RATE;
   }
 
   return myShipScore - enemyShipScore;
