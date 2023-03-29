@@ -266,13 +266,13 @@ class Match:
                 os.path.join(visualize_dir, f'{self.current_turn}.png'),
                 header_str=f'Turn {self.current_turn}/{self.total_turn}',
                 first_state={
-                    'position': move[0],
+                    'position': after_pos[0],
                     'gold': self.gold[0],
                     'shield': self.have_shield[0],
                     'eliminated': self.eliminated[0],
                 },
                 second_state={
-                    'position': move[1],
+                    'position': after_pos[1],
                     'gold': self.gold[1],
                     'shield': self.have_shield[1],
                     'eliminated': self.eliminated[1],
