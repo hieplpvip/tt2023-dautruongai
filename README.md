@@ -2,22 +2,25 @@
 
 ## Build
 
-Must run on Linux or macOS.
-
 Install dependencies:
 
 ```sh
 pip install -r requirements.txt
 ```
 
-Build:
+Build on Linux:
 
 ```sh
-cmake -S . -B build
-cmake --build build
+./build_linux.sh
 ```
 
-### Cross-compile for Windows
+Build on macOS:
+
+```sh
+./build_macos.sh
+```
+
+### Cross-compile for Windows on Linux
 
 Install toolchain:
 
@@ -28,8 +31,7 @@ sudo apt install mingw-w64
 Build:
 
 ```sh
-cmake -DCMAKE_TOOLCHAIN_FILE=mingw-w64-toolchain.cmake -S . -B build
-cmake --build build
+./cross_build_win.sh
 ```
 
 ## Run
