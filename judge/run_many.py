@@ -29,7 +29,11 @@ def main():
     exe1 = os.path.abspath(args.exe1)
     times = args.times
     with open(args.map_list, 'r', encoding='utf8') as f:
-        maps = list(map(str.strip, f.readlines()))
+        maps = []
+        for line in f.readlines():
+            line = line.strip()
+            if not line.startswith('#'):
+                maps.append(line)
 
     result = {}
 
