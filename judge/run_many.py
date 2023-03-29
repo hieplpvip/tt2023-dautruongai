@@ -38,7 +38,7 @@ def main():
     result = {}
 
     for map_filename in maps:
-        map_abs_path = os.path.join(os.path.dirname(args.map_list), map_filename)
+        map_abs_path = os.path.abspath(os.path.join(os.path.dirname(args.map_list), map_filename))
         print_header(f'Running {exe0} VS {exe1} on {map_filename} {times} times')
 
         result[map_filename] = {
