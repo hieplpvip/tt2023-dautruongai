@@ -14,7 +14,8 @@ public:
   void Move(int dir);
   void Place(int x, int y);
 
-  int x, y, g, s, score;
+  int x, y, g, s;
+  score_t score;
 };
 
 #endif  // SHIP_H
