@@ -18,6 +18,8 @@ public:
   // (2) Score is the difference between myShipScore and enemyShipScore
   // (3) If myShip drown (two ship collide or meet barrier), return -INF
   static score_t Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int y, int range, int k, int totalTurn);
+
+  static tuple<score_t, int, int> HighestHeat(Map &sea, Ship &myShip, Ship &enemyShip, int range, int k, int totalTurn);
 };
 
 #endif  // HEURISTIC_H
