@@ -8,13 +8,13 @@ using namespace std;
 #define MAXN 20
 #define INF 100'000'000
 
-#define MAX_DEPTH 4
+#define MAX_DEPTH 10
 #define KSEED 15
 #define DANGER -1000
 #define SHIELD 5      // change if too close to shield
 #define TREASURE 100  // change if too close to treasure
 #define KRAND 3
-#define EZONE 3        // change if too close the enemy ship
+#define EZONE 2        // change if too close the enemy ship
 #define BONUS 100'000  // change if eat too much low gold
 
 #define sqr(a) ((a) * (a))

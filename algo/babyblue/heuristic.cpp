@@ -14,7 +14,8 @@ tuple<score_t, int, int> Heuristic::BestPlace(Map &sea, Ship &myShip, Ship &enem
         myShip.Place(i, j);
         enemyShip.Place(-INF, -INF);
       }
-      score_t gold = Evaluate(sea, myShip, enemyShip, i, j, range, k, totalTurn);
+      // score_t gold = Evaluate(sea, myShip, enemyShip, i, j, range, k, totalTurn);
+      auto [gold, x, y] = HighestHeat(sea, myShip, enemyShip, range, k, totalTurn);
       cand.emplace_back(gold, i, j);
     }
   }
@@ -46,7 +47,7 @@ score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int 
   vector<vector<int>> visited(n + 1, vector<int>(m + 1, -1));
 
   if (k > totalTurn / 2) {
-    sea.val[n / 2 + 1][m / 2 + 1] = sqr(myShip.g - enemyShip.g + 1) / sqr(k - totalTurn / 2 + 3);
+    sea.val[n / 2 + 1][m / 2 + 1] = 5 * ((myShip.g - enemyShip.g) * 3 / 4) / (k - totalTurn / 2 + 2);
   }
 
   Q.emplace(x, y);
@@ -73,16 +74,16 @@ score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int 
         int b = y + dy[i];
         if (!sea.isValid(a, b, s)) {
           continue;
-          if (sea.val[a][b] > 0) v += (sea.val[a][b] + 1) / 2;
         }
+        if (sea.val[a][b] > 0) v += 0.2;
       }
 
       // if enemy can reach it first, then set to 1
       if (dist(x, y, _u, _v) <= min(EZONE, dist(x, y, u, v))) {
-        val = 1;
+        val = val * 1 / 2;
       }
 
-      val = sqr(val + 1) / (dist(x, y, u, v) + 1);
+      val = sqr(val + 1) / sqrt(dist(x, y, u, v) + 1);
       score.push_back(val);
     }
 
@@ -117,4 +118,93 @@ score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int 
   }
 
   return res;
+}
+
+tuple<score_t, int, int> Heuristic::HighestHeat(Map &sea, Ship &myShip, Ship &enemyShip, int range, int k, int totalTurn) {
+  int n = sea.n, m = sea.m;
+  int u = myShip.x, v = myShip.y, s = myShip.s;
+  int _u = enemyShip.x, _v = enemyShip.y, _s = enemyShip.s;
+  score_t val;
+
+  vector<vector<score_t>> table(n + 5, vector<score_t>(m + 5, 0));
+
+  if (k > totalTurn / 2) {
+    sea.val[n / 2 + 1][m / 2 + 1] = 5 * ((myShip.g - enemyShip.g) * 3 / 4) / (k - totalTurn / 2 + 2);
+  }
+
+  for (int x = 1; x <= n; ++x) {
+    for (int y = 1; y <= m; ++y) {
+      if (sea.val[x][y] > 0) {
+        val = sea.val[x][y];
+
+        // re-evaluate shield value
+        if (sea.at[x][y] == "S") {
+          if (s)
+            val = 0;
+          else
+            s = 1;
+        }
+
+        // add bonus for each adjacent gold
+        for (int i = 0; i < 4; ++i) {
+          int a = x + dx[i];
+          int b = y + dy[i];
+          if (!sea.isValid(a, b, s)) {
+            continue;
+          }
+          if (sea.val[a][b] > 0) v += 0.1;
+        }
+
+        // if enemy can reach it first, then set to 1
+        if (dist(x, y, _u, _v) <= min(EZONE, dist(x, y, u, v))) {
+          val = val * 2 / 3;
+        }
+
+        val = sqr(val + 1) / sqrt(dist(x, y, u, v) + 1);
+
+        // accumulate table
+        int i1 = max(1, x - range), j1 = max(1, y - range);
+        int i2 = min(n, x + range), j2 = min(m, y + range);
+        table[i1][j1] += val;
+        table[i1][j2 + 1] -= val;
+        table[i2 + 1][j1] -= val;
+        table[i2 + 1][j2 + 1] += val;
+      }
+    }
+  }
+
+  if (k > totalTurn / 2) {
+    sea.val[n / 2 + 1][m / 2 + 1] = 0;
+  }
+
+  score_t _val;
+  int x = 1, y = 1, _x = 1, _y = 1;
+  val = _val = -INF;
+
+  for (int i = 1; i <= n; ++i) {
+    for (int j = 1; j <= m; ++j) {
+      table[i][j] += table[i - 1][j] + table[i][j - 1] - table[i - 1][j - 1];
+
+      if (table[i][j] > val) {
+        _val = val, _x = x, _y = y;
+        val = table[i][j], x = i, y = j;
+      } else if (table[i][j] > _val) {
+        _val = table[i][j], _x = i, _y = j;
+      }
+    }
+  }
+
+  if (Random::rand(2)) {
+    swap(val, _val);
+    swap(x, _x);
+    swap(y, _y);
+  }
+
+  // if can elinimate enemy in 1 step, bonus
+  // if my gold is higher, the ship will chase the enemy, lmao
+  // if (dist(u, v, _u, _v) <= 2 && myShip.g > enemyShip.g) {
+  //   val += BONUS;
+  // }
+
+  return make_tuple(val, x, y);
 }
