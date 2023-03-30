@@ -23,7 +23,7 @@ public:
 
   // TODO: Evaluate treasure
   // TODO: set range = min(RANGE, TURN_LEFT)
-  // (1) Select KSEED posittions having the highest gold in the range RANGE
+  // (1) Select KSEED positions having the highest gold in the range RANGE
   // (2) Score is the difference between myShipScore and enemyShipScore
   // (3) If myShip drown (two ship collide or meet barrier), return -INF
   static int Evaluate(Map &sea, const Ship &myShip, const Ship &enemyShip);

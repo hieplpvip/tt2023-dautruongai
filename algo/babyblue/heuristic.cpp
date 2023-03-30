@@ -112,7 +112,7 @@ score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int 
     res += score[i];
   }
 
-  // if can elinimate enemy in 1 step, bonus
+  // if can eliminate enemy in 1 step, bonus
   if (dist(u, v, _u, _v) <= 2 && myShip.g > enemyShip.g) {
     res += BONUS;
   }

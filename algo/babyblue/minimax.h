@@ -20,7 +20,7 @@ private:
   int _mx[MAX_DEPTH + 5], _my[MAX_DEPTH + 5], _mg[MAX_DEPTH + 5];
   int _ex[MAX_DEPTH + 5], _ey[MAX_DEPTH + 5], _eg[MAX_DEPTH + 5];
 
-  // TODO: Avoid go back old posittion
+  // TODO: Avoid go back old position
   //
   pair<score_t, int> MaxNode(score_t alpha, score_t beta, int turn, int depth);
   pair<score_t, int> MinNode(score_t alpha, score_t beta, int turn, int depth);

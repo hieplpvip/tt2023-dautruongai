@@ -13,7 +13,7 @@ private:
   Map sea;
   set<pair<int, int>> visited;
 
-  // TODO: Avoid go back old posittion
+  // TODO: Avoid go back old position
   pair<int, int> MaxNode(int alpha, int beta, int depth = 0);
   pair<int, int> MinNode(int alpha, int beta, int depth = 0);
 
