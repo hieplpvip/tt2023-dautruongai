@@ -85,6 +85,7 @@ void random_play() {
   for (int k = 0; k < 4; ++k) {
     int u = our_x + dx[k];
     int v = our_y + dy[k];
+    if (!is_valid(u, v)) continue;
 
     if (mat[u][v] == FREE) {
       free.emplace_back(u, v);
