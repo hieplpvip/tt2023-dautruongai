@@ -21,6 +21,12 @@ bool readInput() {
   fin >> rootState.pos[0].x >> rootState.pos[0].y;
   fin >> rootState.pos[1].x >> rootState.pos[1].y;
 
+  // Convert to 0-index positions
+  --rootState.pos[0].x;
+  --rootState.pos[0].y;
+  --rootState.pos[1].x;
+  --rootState.pos[1].y;
+
   // Read in our gold/shield
   fin >> rootState.gold[0] >> rootState.hasShield[0];
 
@@ -43,18 +49,17 @@ bool readInput() {
   // Close file
   fin.close();
 
-  bool firstTurn = rootState.pos[0].x == 0 && rootState.pos[0].y == 0 && rootState.pos[1].x == 0 && rootState.pos[1].y == 0;
+  bool firstTurn =
+      rootState.pos[0].x == -1 &&
+      rootState.pos[0].y == -1 &&
+      rootState.pos[1].x == -1 &&
+      rootState.pos[1].y == -1;
+
   if (firstTurn) {
     // For first turn, we need to save m, n, k in Store
     Store::M = m;
     Store::N = n;
     Store::K = k;
-  } else {
-    // Convert to 0-index positions
-    --rootState.pos[0].x;
-    --rootState.pos[0].y;
-    --rootState.pos[1].x;
-    --rootState.pos[1].y;
   }
 
   return firstTurn;
