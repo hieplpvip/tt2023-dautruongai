@@ -124,8 +124,6 @@ void handleOtherTurns() {
       rootState.gold[1] += prevCell;
     }
   }
-  cout << "Opponent's gold: " << rootState.gold[1] << endl;
-  cout << "Opponent's shield: " << rootState.hasShield[1] << endl;
 
   // Update store with new data
   Store::currentTurn += 1;
