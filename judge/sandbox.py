@@ -76,7 +76,7 @@ class SandBox:
         - Create MAP.INP
         """
         for file in Path(self._working_dir.name).iterdir():
-            if file.name != 'STATE.OUT':
+            if os.path.basename(file.name) != 'STATE.OUT':
                 if file.is_file():
                     file.unlink()
                 else:
