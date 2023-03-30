@@ -17,11 +17,13 @@ private:
   int n, m, k, totalTurn, lastMove;
   Ship myShip, enemyShip;
   Map sea, oldsea;
+  int _mx[MAX_DEPTH + 5], _my[MAX_DEPTH + 5], _mg[MAX_DEPTH + 5];
+  int _ex[MAX_DEPTH + 5], _ey[MAX_DEPTH + 5], _eg[MAX_DEPTH + 5];
 
   // TODO: Avoid go back old posittion
   //
-  pair<int, int> MaxNode(int alpha, int beta, int turn, int depth);
-  pair<int, int> MinNode(int alpha, int beta, int turn, int depth);
+  pair<score_t, int> MaxNode(score_t alpha, score_t beta, int turn, int depth);
+  pair<score_t, int> MinNode(score_t alpha, score_t beta, int turn, int depth);
 
 public:
   MinimaxAgent();

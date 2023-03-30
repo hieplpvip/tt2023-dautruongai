@@ -1,8 +1,6 @@
 #include "ship.h"
 
-Ship::Ship() {
-  score = 0;
-}
+Ship::Ship() {}
 
 void Ship::Read(ifstream &inp) {
   inp >> x >> y;

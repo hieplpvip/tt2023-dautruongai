@@ -10,9 +10,9 @@ void Map::Read(ifstream &inp, int n, int m, int hasShield) {
       inp >> at[i][j];
 
       if (at[i][j] == "D") {
-        val[i][j] = -INF;
+        val[i][j] = DANGER;
       } else if (at[i][j] == "S") {
-        val[i][j] = hasShield ? 1 : SHIELD_SCORE;
+        val[i][j] = SHIELD;
       } else {
         val[i][j] = stoi(at[i][j]);
       }
