@@ -101,7 +101,7 @@ void random_play() {
     }
   }
 
-  if (!has_shield && shield_x != -1) {
+  if (shield_x != -1) {
     // Take the fucking shield
     print_move(shield_x, shield_y);
     exit(0);
