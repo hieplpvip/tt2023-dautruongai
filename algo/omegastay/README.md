@@ -29,6 +29,8 @@ However, with pure Monte Carlo tree search, we can simulate the game till the en
 - https://int8.io/monte-carlo-tree-search-beginners-guide
 - https://www.geeksforgeeks.org/ml-monte-carlo-tree-search-mcts
 - http://tim.hibal.org/blog/alpha-zero-how-and-why-it-works
+- https://github.com/AdamStelmaszczyk/gtsa
+- https://github.com/Konijnendijk/cpp-mcts
 
 ### NNUE
 

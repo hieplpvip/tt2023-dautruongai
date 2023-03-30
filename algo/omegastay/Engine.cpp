@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
+#include "Constants.h"
 #include "Engine.h"
 #include "Store.h"
 #include "Utility.h"
-#include "Constants.h"
 using namespace std;
 
 #define REPL_ALL_CELL(x, y)          \
@@ -21,8 +21,14 @@ inline bool isValidPos(int x, int y) {
  * find starting position
  */
 void handleFirstTurn() {
-  // Calculate distNoShield using BFS
+  // Calculate distNoShield/distWithShield using BFS
   {
+    REPL_ALL_CELL(x1, y1) {
+      REPL_ALL_CELL(x2, y2) {
+        Store::distNoShield[x1][y1][x2][y2] = Store::distWithShield[x1][y1][x2][y2] = INF;
+      }
+    }
+
 #define dist(x, y) Store::distNoShield[sx][sy][x][y]
     queue<Position> q;
     REPL_ALL_CELL(sx, sy) {
@@ -44,12 +50,8 @@ void handleFirstTurn() {
       }
     }
 #undef dist
-  }
 
-  // Calculate distWithShield using BFS
-  {
 #define dist(x, y) Store::distWithShield[sx][sy][x][y]
-    queue<Position> q;
     REPL_ALL_CELL(sx, sy) {
       dist(sx, sy) = 0;
       q.emplace(sx, sy);
@@ -109,12 +111,71 @@ void handleOtherTurns() {
   // Load store
   Store::load();
 
+  // Update opponent's shield/gold
+  {
+    rootState.gold[1] = Store::pastStates.back().gold[1];
+    rootState.hasShield[1] = Store::pastStates.back().hasShield[1];
+
+    auto [x, y] = rootState.pos[1];
+    int prevCell = Store::pastStates.back().cell[x][y];
+    if (prevCell == SHIELD_CELL) {
+      rootState.hasShield[1] = true;
+    } else if (prevCell != DANGER_CELL && prevCell != EMPTY_CELL) {
+      rootState.gold[1] += prevCell;
+    }
+  }
+  cout << "Opponent's gold: " << rootState.gold[1] << endl;
+  cout << "Opponent's shield: " << rootState.hasShield[1] << endl;
+
   // Update store with new data
   Store::currentTurn += 1;
   Store::pastStates.push_back(rootState);
 
-  // TODO: update opponent's shield/gold
-
   // Save store
-  Store::load();
+  Store::save();
+
+  int gold_x = -1, gold_y = -1, gold_max = 0;
+  int shield_x = -1, shield_y = -1;
+  vector<Position> free;
+
+  for (int k = 0; k < 4; ++k) {
+    int u = rootState.pos[0].x + dx[k];
+    int v = rootState.pos[0].y + dy[k];
+    if (!isValidPos(u, v)) continue;
+
+    if (rootState.cell[u][v] == EMPTY_CELL) {
+      free.emplace_back(u, v);
+    } else if (rootState.cell[u][v] == DANGER_CELL) {
+      if (rootState.hasShield[0]) {
+        free.emplace_back(u, v);
+      }
+    } else if (rootState.cell[u][v] == SHIELD_CELL) {
+      shield_x = u;
+      shield_y = v;
+    } else if (rootState.cell[u][v] > gold_max) {
+      gold_x = u;
+      gold_y = v;
+      gold_max = rootState.cell[u][v];
+    }
+  }
+
+  if (shield_x != -1) {
+    // Take the fucking shield
+    printFinalMove(shield_x, shield_y);
+    return;
+  }
+
+  if (gold_x != -1) {
+    // Take gold
+    printFinalMove(gold_x, gold_y);
+    return;
+  }
+
+  if (!free.empty()) {
+    auto [x, y] = free[Random::rand(free.size())];
+    printFinalMove(x, y);
+    return;
+  }
+
+  printFinalMove(-1, -1);
 }
