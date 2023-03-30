@@ -32,7 +32,7 @@ void handleFirstTurn() {
 #define dist(x, y) Store::distNoShield[sx][sy][x][y]
     queue<Position> q;
     REPL_ALL_CELL(sx, sy) {
-      if (rootState.cell[sx][sy] == DANGER_CELL) continue;
+      if (rootState.at[sx][sy] == DANGER_CELL) continue;
 
       dist(sx, sy) = 0;
       q.emplace(sx, sy);
@@ -42,7 +42,7 @@ void handleFirstTurn() {
         for (int k = 0; k < 4; ++k) {
           int nx = x + dx[k];
           int ny = y + dy[k];
-          if (isValidPos(nx, ny) && rootState.cell[nx][ny] != DANGER_CELL && dist(nx, ny) == INF) {
+          if (isValidPos(nx, ny) && rootState.at[nx][ny] != DANGER_CELL && dist(nx, ny) == INF) {
             dist(nx, ny) = dist(x, y) + 1;
             q.emplace(nx, ny);
           }
@@ -85,7 +85,7 @@ void handleFirstTurn() {
     int minDistToShield = INF;
     vector<array<int, 2>> candidates;
     REPL_ALL_CELL(x, y) {
-      if (rootState.cell[x][y] == EMPTY_CELL) {
+      if (rootState.at[x][y] == EMPTY_CELL) {
         for (auto [shieldX, shieldY] : shieldPos) {
           int dist = Store::distNoShield[x][y][shieldX][shieldY];
           if (dist < minDistToShield) {
@@ -117,7 +117,7 @@ void handleOtherTurns() {
     rootState.hasShield[1] = Store::pastStates.back().hasShield[1];
 
     auto [x, y] = rootState.pos[1];
-    int prevCell = Store::pastStates.back().cell[x][y];
+    int prevCell = Store::pastStates.back().at[x][y];
     if (prevCell == SHIELD_CELL) {
       rootState.hasShield[1] = true;
     } else if (prevCell != DANGER_CELL && prevCell != EMPTY_CELL) {
@@ -143,19 +143,19 @@ void handleOtherTurns() {
     int v = rootState.pos[0].y + dy[k];
     if (!isValidPos(u, v)) continue;
 
-    if (rootState.cell[u][v] == EMPTY_CELL) {
+    if (rootState.at[u][v] == EMPTY_CELL) {
       free.emplace_back(u, v);
-    } else if (rootState.cell[u][v] == DANGER_CELL) {
+    } else if (rootState.at[u][v] == DANGER_CELL) {
       if (rootState.hasShield[0]) {
         free.emplace_back(u, v);
       }
-    } else if (rootState.cell[u][v] == SHIELD_CELL) {
+    } else if (rootState.at[u][v] == SHIELD_CELL) {
       shield_x = u;
       shield_y = v;
-    } else if (rootState.cell[u][v] > gold_max) {
+    } else if (rootState.at[u][v] > gold_max) {
       gold_x = u;
       gold_y = v;
-      gold_max = rootState.cell[u][v];
+      gold_max = rootState.at[u][v];
     }
   }
 

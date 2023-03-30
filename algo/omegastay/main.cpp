@@ -30,12 +30,12 @@ bool readInput() {
     for (int j = 0; j < n; ++j) {
       fin >> s;
       if (s[0] == 'D') {
-        rootState.cell[i][j] = DANGER_CELL;
+        rootState.at[i][j] = DANGER_CELL;
       } else if (s[0] == 'S') {
-        rootState.cell[i][j] = SHIELD_CELL;
+        rootState.at[i][j] = SHIELD_CELL;
         shieldPos.emplace_back(i, j);
       } else {
-        rootState.cell[i][j] = stoi(s);
+        rootState.at[i][j] = stoi(s);
       }
     }
   }

@@ -14,7 +14,7 @@ struct State {
    * 102: shield cell
    * x: gold cell with value x
    */
-  unsigned char cell[15][15];
+  unsigned char at[15][15];
 
   // Number of turns left
   int turnLeft;
