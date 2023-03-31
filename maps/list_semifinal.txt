@@ -15,4 +15,4 @@ semifinal/map_26.txt
 semifinal/map_27.txt
 semifinal/map_28.txt
 semifinal/map_31.txt
-#semifinal/map_34.txt
+semifinal/map_34.txt
