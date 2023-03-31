@@ -14,7 +14,10 @@ struct MonteCarloTreeSearch {
     int numLegalMoves = 0;
     bool isLegalMove[NUM_MOVES] = {};
 
+    // Number of visits through this node
     int numVisits = 0;
+
+    // Sum of score of all visits from the perspective of the player who just has moved
     int sumScore = 0;
 
     Node(const State& gameState);
@@ -23,7 +26,10 @@ struct MonteCarloTreeSearch {
     // Check if the node is fully expanded (i.e. all its children have been created)
     bool isFullyExpanded() const;
 
-    // Return the UCT score of a node
+    /*
+     * Return the UCT score of a node from the perspective
+     * of the player who just has moved.
+     */
     double getUCT() const;
 
     // Return the best child of the node

@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <cmath>
+
 constexpr int INF = 1e9;
 
 constexpr int EMPTY_CELL = 0;
@@ -14,7 +16,7 @@ constexpr int MTCS_ITERATIONS = 1000;
 constexpr int MTCS_MIN_VISITS = 5;
 
 /** C in the UCT formula */
-constexpr float MCTS_C = 0.5;
+const double MCTS_C = sqrt(2);
 
 enum MoveEnum {
   UP = 0,
