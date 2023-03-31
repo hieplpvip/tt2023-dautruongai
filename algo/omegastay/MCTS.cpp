@@ -31,10 +31,22 @@ double Node::getUCT() const {
 }
 
 Node* Node::getBestChild() const {
+  if (numVisits < MTCS_MIN_VISITS) {
+    // Select randomly if the Node has not been visited often enough
+    std::vector<Node*> candidates;
+    for (int k = 0; k < NUM_MOVES; ++k) {
+      if (children[k]) {
+        candidates.push_back(children[k]);
+      }
+    }
+
+    return candidates[Random::rand(candidates.size())];
+  }
+
   Node* bestChild = nullptr;
   double bestScore = -1e9;
   for (int k = 0; k < NUM_MOVES; ++k) {
-    if (!isLegalMove[k] || !children[k]) {
+    if (!children[k]) {
       continue;
     }
     double score = children[k]->getUCT();
