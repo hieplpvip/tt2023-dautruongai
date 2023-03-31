@@ -45,19 +45,18 @@ int main() {
   }
   inp.close();
 
-  cerr << "algo = " << algo << endl;
-
+  // cerr << "algo = " << algo << endl;
   switch (algo) {
     case ALGO_HEISENBERG:
-      cerr << "Running Heisenberg\n";
+      // cerr << "Running Heisenberg\n";
       return Heisenberg::main();
 
     case ALGO_ESTIMATE_SHIELD_VAL:
-      cerr << "Running estimate_shield_val\n";
+      // cerr << "Running estimate_shield_val\n";
       return estimate_shield_val::main();
 
     default:
-      cerr << "Running BabyBlue\n";
+      // cerr << "Running BabyBlue\n";
       return BabyBlue::main();
   }
 }

@@ -16,14 +16,16 @@ def main():
     parser.add_argument('exe1', type=str, help='Path to second agent')
     parser.add_argument('--times', type=int, default=1, help='Number of times to run for each map')
     parser.add_argument('--no-color', default=False, action='store_true', help='Disable color output')
+    parser.add_argument('--no-log', default=False, action='store_true', help='Disable logging')
     args = parser.parse_args()
 
     if args.no_color:
         disable_color()
 
     disable_all_logging()
-    enable_logging('header')
-    enable_logging('important')
+    if not args.no_log:
+        enable_logging('header')
+        enable_logging('important')
 
     exe0 = os.path.abspath(args.exe0)
     exe1 = os.path.abspath(args.exe1)
