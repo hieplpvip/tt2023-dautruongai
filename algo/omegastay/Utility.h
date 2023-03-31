@@ -1,6 +1,8 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+#define isValidPos(x, y) (0 <= x && x < Store::M && 0 <= y && y < Store::N)
+
 namespace Random {
   // Return a random integer in [l, r].
   int rand(int l, int r);

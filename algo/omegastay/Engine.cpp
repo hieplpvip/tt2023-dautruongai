@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include "Constants.h"
 #include "Engine.h"
+#include "MCTS.h"
 #include "Store.h"
 #include "Utility.h"
 using namespace std;
@@ -11,10 +12,6 @@ using namespace std;
 
 State rootState;
 vector<Position> shieldPos;
-
-inline bool isValidPos(int x, int y) {
-  return 0 <= x && x < Store::M && 0 <= y && y < Store::N;
-}
 
 /*
  * Initialize store (distNoShield, distWithShield, currentTurn, etc.) and
@@ -39,7 +36,7 @@ void handleFirstTurn() {
       while (!q.empty()) {
         auto [x, y] = q.front();
         q.pop();
-        for (int k = 0; k < 4; ++k) {
+        for (int k = 0; k < NUM_MOVES; ++k) {
           int nx = x + dx[k];
           int ny = y + dy[k];
           if (isValidPos(nx, ny) && rootState.at[nx][ny] != DANGER_CELL && dist(nx, ny) == INF) {
@@ -58,7 +55,7 @@ void handleFirstTurn() {
       while (!q.empty()) {
         auto [x, y] = q.front();
         q.pop();
-        for (int k = 0; k < 4; ++k) {
+        for (int k = 0; k < NUM_MOVES; ++k) {
           int nx = x + dx[k];
           int ny = y + dy[k];
           if (isValidPos(nx, ny) && dist(nx, ny) == INF) {
@@ -132,48 +129,12 @@ void handleOtherTurns() {
   // Save store
   Store::save();
 
-  int gold_x = -1, gold_y = -1, gold_max = 0;
-  int shield_x = -1, shield_y = -1;
-  vector<Position> free;
-
-  for (int k = 0; k < 4; ++k) {
-    int u = rootState.pos[0].x + dx[k];
-    int v = rootState.pos[0].y + dy[k];
-    if (!isValidPos(u, v)) continue;
-
-    if (rootState.at[u][v] == EMPTY_CELL) {
-      free.emplace_back(u, v);
-    } else if (rootState.at[u][v] == DANGER_CELL) {
-      if (rootState.hasShield[0]) {
-        free.emplace_back(u, v);
-      }
-    } else if (rootState.at[u][v] == SHIELD_CELL) {
-      shield_x = u;
-      shield_y = v;
-    } else if (rootState.at[u][v] > gold_max) {
-      gold_x = u;
-      gold_y = v;
-      gold_max = rootState.at[u][v];
-    }
-  }
-
-  if (shield_x != -1) {
-    // Take the fucking shield
-    printFinalMove(shield_x, shield_y);
-    return;
-  }
-
-  if (gold_x != -1) {
-    // Take gold
-    printFinalMove(gold_x, gold_y);
-    return;
-  }
-
-  if (!free.empty()) {
-    auto [x, y] = free[Random::rand(free.size())];
+  // Find best move using Monte Carlo tree search
+  MonteCarloTreeSearch mtcs(rootState);
+  while (true) {
+    auto move = mtcs.findBestMove(MTCS_ITERATIONS);
+    int x = rootState.pos[0].x + dx[move];
+    int y = rootState.pos[0].y + dy[move];
     printFinalMove(x, y);
-    return;
   }
-
-  printFinalMove(-1, -1);
 }
