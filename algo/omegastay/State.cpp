@@ -76,8 +76,10 @@ void State::performMove(MoveEnum move) {
         auto [x, y] = pos[i];
         if (at[x][y] == SHIELD_CELL) {
           hasShield[i] = true;
+          at[x][y] = EMPTY_CELL;
         } else if (at[x][y] != DANGER_CELL && at[x][y] != EMPTY_CELL) {
           gold[i] += at[x][y];
+          at[x][y] = EMPTY_CELL;
         }
       }
     }

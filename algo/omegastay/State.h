@@ -47,7 +47,7 @@ struct State {
 
   /*
    * Get the result of the game from perspective of first player.
-   * This function must be called only if the state is terminal.
+   * This function can be called only when the state is terminal.
    *
    * @return 0.5 if draw, 1 if first player wins, 0 if second player wins
    */

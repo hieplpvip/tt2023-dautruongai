@@ -18,7 +18,7 @@ struct MonteCarloTreeSearch {
     int numVisits = 0;
 
     // Sum of score of all visits from the perspective of the player who just has moved
-    int sumScore = 0;
+    double sumScore = 0;
 
     Node(const State& gameState);
     Node(const State& gameState, Node* parent);

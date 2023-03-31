@@ -21,7 +21,7 @@ bool Node::isFullyExpanded() const {
 }
 
 double Node::getUCT() const {
-  assert(numVisits > 0);
+  // assert(numVisits > 0);
   double parentVisits = 0.0;
   if (parent != nullptr) {
     parentVisits = parent->numVisits;
@@ -43,7 +43,7 @@ Node* Node::getBestChild() const {
       bestChild = children[k];
     }
   }
-  assert(bestChild != nullptr);  // TODO: remove this
+  // assert(bestChild != nullptr);
   return bestChild;
 }
 
@@ -87,12 +87,10 @@ void MonteCarloTreeSearch::search() {
   // If the node is not a terminal node (hence non fully-expanded),
   // create a new child node for an untried move
   if (!cur->gameState.isTerminal()) {
-    bool found = false;
     for (int k = 0; k < NUM_MOVES; ++k) {
       if (!cur->isLegalMove[k] || cur->children[k]) {
         continue;
       }
-      found = true;
 
       Node* child = new Node(cur->gameState, cur);
       assert(child != nullptr);
@@ -102,7 +100,6 @@ void MonteCarloTreeSearch::search() {
 
       break;
     }
-    assert(found);  // TODO: remove this
   }
 
   // Simulation phase
@@ -117,7 +114,7 @@ void MonteCarloTreeSearch::search() {
   // Update the scores of all the nodes in the path from cur to root
   double result = tmpState.getResult();
   if (cur->gameState.playerToMove == 1) {
-    result = -result;
+    result = 1 - result;
   }
   do {
     cur->numVisits++;
