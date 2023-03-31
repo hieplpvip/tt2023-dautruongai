@@ -191,6 +191,10 @@ namespace estimate_shield_val {
   int main() {
     freopen("MOVE.OUT", "w", stdout);
 
+    ofstream sav("STATE.OUT");
+    sav << ALGO_ESTIMATE_SHIELD_VAL << endl;
+    sav.close();
+
     input();
     calc_weights();
     calc_magic();
@@ -199,10 +203,6 @@ namespace estimate_shield_val {
     } else {
       play();
     }
-
-    ofstream sav("STATE.OUT");
-    sav << ALGO_ESTIMATE_SHIELD_VAL << endl;
-    sav.close();
 
     return 0;
   }

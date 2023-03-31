@@ -37,8 +37,6 @@ int main() {
     if (algo == -1) {
       algo = ALGO_BABYBLUE;
     }
-
-    cerr << "algo = " << algo << endl;
   } else {
     // 2nd turn and later. Load algo from STATE.OUT
     ifstream state("STATE.OUT");
@@ -46,6 +44,8 @@ int main() {
     state.close();
   }
   inp.close();
+
+  cerr << "algo = " << algo << endl;
 
   switch (algo) {
     case ALGO_HEISENBERG:
