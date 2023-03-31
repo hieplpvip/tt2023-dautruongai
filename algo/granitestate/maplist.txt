@@ -4,11 +4,11 @@ semifinal/map_03.txt ALGO_BABYBLUE
 semifinal/map_04.txt ALGO_BABYBLUE
 semifinal/map_05.txt ALGO_BABYBLUE
 semifinal/map_06.txt ALGO_BABYBLUE
-semifinal/map_07.txt ALGO_ESTIMATE_SHIELD_VAL
+semifinal/map_07.txt ALGO_BABYBLUE
 semifinal/map_08.txt ALGO_BABYBLUE
-semifinal/map_09.txt ALGO_ESTIMATE_SHIELD_VAL
-semifinal/map_10.txt ALGO_ESTIMATE_SHIELD_VAL
-semifinal/map_15.txt ALGO_ESTIMATE_SHIELD_VAL
+semifinal/map_09.txt ALGO_BABYBLUE
+semifinal/map_10.txt ALGO_BABYBLUE
+semifinal/map_15.txt ALGO_BABYBLUE
 semifinal/map_21.txt ALGO_HEISENBERG
 semifinal/map_23.txt ALGO_BABYBLUE
 semifinal/map_26.txt ALGO_HEISENBERG

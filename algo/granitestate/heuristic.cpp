@@ -243,12 +243,6 @@ tuple<score_t, int, int> Heuristic::HighestHeat(Map &sea, Ship &myShip, Ship &en
     }
   }
 
-  if (Random::rand(2)) {
-    swap(val, _val);
-    swap(x, _x);
-    swap(y, _y);
-  }
-
   // if can elinimate enemy in 1 step, bonus
   // if my gold is higher, the ship will chase the enemy, lmao
   // if (dist(u, v, _u, _v) <= 2 && myShip.g > enemyShip.g) {
