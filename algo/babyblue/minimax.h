@@ -17,8 +17,8 @@ private:
   int n, m, k, totalTurn, lastMove;
   Ship myShip, enemyShip;
   Map sea, oldsea;
-  int _mx[MAX_DEPTH + 5], _my[MAX_DEPTH + 5], _mg[MAX_DEPTH + 5];
-  int _ex[MAX_DEPTH + 5], _ey[MAX_DEPTH + 5], _eg[MAX_DEPTH + 5];
+  int _mx[MAX_DEPTH + 5], _my[MAX_DEPTH + 5], _mg[MAX_DEPTH + 5], _ms[MAX_DEPTH + 5];
+  int _ex[MAX_DEPTH + 5], _ey[MAX_DEPTH + 5], _eg[MAX_DEPTH + 5], _es[MAX_DEPTH + 5];
 
   // TODO: Avoid go back old position
   //

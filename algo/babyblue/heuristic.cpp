@@ -15,7 +15,7 @@ tuple<score_t, int, int> Heuristic::BestPlace(Map &sea, Ship &myShip, Ship &enem
         enemyShip.Place(-INF, -INF);
       }
       // score_t gold = Evaluate(sea, myShip, enemyShip, i, j, range, k, totalTurn);
-      auto [gold, x, y] = HighestHeat(sea, myShip, enemyShip, range, k, totalTurn);
+      auto [gold, x, y] = HighestHeat(sea, myShip, enemyShip, range, k, totalTurn, false);
       cand.emplace_back(gold, i, j);
     }
   }
@@ -83,7 +83,8 @@ score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int 
         val = val * 1 / 2;
       }
 
-      val = sqr(val + 1) / sqrt(dist(x, y, u, v) + 1);
+      // val = sqr(val + 1) / pow(dist(x, y, u, v) + 1, 1. / 3);
+      val = f(val + 1, dist(x, y, u, v) + 1);
       score.push_back(val);
     }
 
@@ -120,29 +121,59 @@ score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int 
   return res;
 }
 
-tuple<score_t, int, int> Heuristic::HighestHeat(Map &sea, Ship &myShip, Ship &enemyShip, int range, int k, int totalTurn) {
+tuple<score_t, int, int> Heuristic::HighestHeat(Map &sea, Ship &myShip, Ship &enemyShip, int range, int k, int totalTurn, bool ignoreShield, bool debug) {
   int n = sea.n, m = sea.m;
   int u = myShip.x, v = myShip.y, s = myShip.s;
   int _u = enemyShip.x, _v = enemyShip.y, _s = enemyShip.s;
   score_t val;
 
+  if (ignoreShield) {
+    s = 1;
+  }
+
   vector<vector<score_t>> table(n + 5, vector<score_t>(m + 5, 0));
 
   if (k > totalTurn / 2) {
-    sea.val[n / 2 + 1][m / 2 + 1] = 5 * ((myShip.g - enemyShip.g) * 3 / 4) / (k - totalTurn / 2 + 2);
+    sea.val[n / 2 + 1][m / 2 + 1] = sqr(abs(myShip.g - enemyShip.g) * 3 / 4) / (k - totalTurn / 2 + 2);
+    if (debug) {
+      cerr << "Treasure: " << sea.val[n / 2 + 1][m / 2 + 1] << endl;
+    }
+  }
+
+  queue<pair<int, int>> Q;
+  vector<vector<int>> visited(n + 1, vector<int>(m + 1, -1));
+
+  Q.emplace(u, v);
+  visited[u][v] = 0;
+
+  while (!Q.empty()) {
+    auto [x, y] = Q.front();
+    Q.pop();
+
+    for (int i = 0; i < 4; ++i) {
+      int a = x + dx[i];
+      int b = y + dy[i];
+      if (!sea.isValid(a, b, s) || visited[a][b] != -1) {
+        continue;
+      }
+
+      visited[a][b] = visited[x][y] + 1;
+      Q.emplace(a, b);
+    }
   }
 
   for (int x = 1; x <= n; ++x) {
     for (int y = 1; y <= m; ++y) {
-      if (sea.val[x][y] > 0) {
-        val = sea.val[x][y];
+      if (visited[x][y] != -1) {
+        if (sea.val[x][y] > 0) {
+          val = sea.val[x][y];
+        } else {
+          val = 0;
+        }
 
         // re-evaluate shield value
         if (sea.at[x][y] == "S") {
-          if (s)
-            val = 0;
-          else
-            s = 1;
+          if (s) val = 0;
         }
 
         // add bonus for each adjacent gold
@@ -152,15 +183,26 @@ tuple<score_t, int, int> Heuristic::HighestHeat(Map &sea, Ship &myShip, Ship &en
           if (!sea.isValid(a, b, s)) {
             continue;
           }
-          if (sea.val[a][b] > 0) v += 0.1;
+          if (sea.val[a][b] > 0 && (!s || sea.at[a][b] != "S")) {
+            val += 0.7 * sea.val[a][b];
+          }
         }
 
         // if enemy can reach it first, then set to 1
-        if (dist(x, y, _u, _v) <= min(EZONE, dist(x, y, u, v))) {
+        // if (dist(x, y, _u, _v) <= min(EZONE, visited[x][y])) {
+        //   val = val * 2 / 3;
+        // }
+
+        if (dist(x, y, _u, _v) <= visited[x][y]) {
           val = val * 2 / 3;
         }
 
-        val = sqr(val + 1) / sqrt(dist(x, y, u, v) + 1);
+        if (debug && val < 0) cerr << "WTF_1 " << x << ' ' << y << '\n';
+
+        // val = sqr(val + 1) / pow(visited[x][y] + 1, 1. / 3);
+        val = f(val + 1, visited[x][y] + 1);
+
+        if (debug && val < 0) cerr << "WTF_2 " << x << ' ' << y << '\n';
 
         // accumulate table
         int i1 = max(1, x - range), j1 = max(1, y - range);
@@ -169,9 +211,16 @@ tuple<score_t, int, int> Heuristic::HighestHeat(Map &sea, Ship &myShip, Ship &en
         table[i1][j2 + 1] -= val;
         table[i2 + 1][j1] -= val;
         table[i2 + 1][j2 + 1] += val;
-      }
+      } else
+        val = 0;
+
+      if (debug) cerr << setfill(' ') << setw(7) << setprecision(2) << fixed << val << ' ';
     }
+
+    if (debug) cerr << endl;
   }
+
+  if (debug) cerr << endl;
 
   if (k > totalTurn / 2) {
     sea.val[n / 2 + 1][m / 2 + 1] = 0;
@@ -205,6 +254,23 @@ tuple<score_t, int, int> Heuristic::HighestHeat(Map &sea, Ship &myShip, Ship &en
   // if (dist(u, v, _u, _v) <= 2 && myShip.g > enemyShip.g) {
   //   val += BONUS;
   // }
+
+  if (debug) {
+    cerr << "accumulated table:\n";
+    for (int i = 1; i <= n; ++i) {
+      for (int j = 1; j <= m; ++j) {
+        cerr << setfill(' ') << setw(7) << setprecision(2) << fixed << table[i][j] << " ";
+      }
+      cerr << endl;
+    }
+
+    cerr << endl;
+
+    cerr << "highest heat: " << val << " at (" << x << ", " << y << ")\n";
+    cerr << "second heat: " << _val << " at (" << _x << ", " << _y << ")\n";
+
+    cerr << endl;
+  }
 
   return make_tuple(val, x, y);
 }

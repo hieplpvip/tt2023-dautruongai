@@ -24,16 +24,16 @@ void MinimaxAgent::Load(ifstream &sav) {
     }
 
     // FIXME: change rate
-    myShip.score = sqr(myShip.g + 1);
-    enemyShip.score = sqr(enemyShip.g + 1);
+    // myShip.score = sqr(myShip.g + 1);
+    // enemyShip.score = sqr(enemyShip.g + 1);
   } else {
     totalTurn = k;
     lastMove = -1;
     enemyShip.g = 0, enemyShip.s = 0;
-
-    myShip.score = 0;
-    enemyShip.score = 0;
   }
+
+  myShip.score = 0;
+  enemyShip.score = 0;
 }
 
 void MinimaxAgent::Save(ofstream &sav) {
@@ -47,6 +47,7 @@ void MinimaxAgent::MakeMove(ofstream &out) {
   if (myShip.x == 0) {
     // First move
     // auto [g, x, y] = Heuristic::BestPlace(sea, myShip, enemyShip, (n + m) / 3, k, totalTurn);
+    // TODO: Use better method, the current not spawn near the shield
     auto [g, x, y] = Heuristic::BestPlace(sea, myShip, enemyShip, min(max(n, m) / 4, 4), k, totalTurn);
     myShip.Place(x, y);
     myShip.Print(out);
@@ -62,15 +63,31 @@ void MinimaxAgent::MakeMove(ofstream &out) {
 
 // pair(score, dir)
 pair<score_t, int> MinimaxAgent::MaxNode(score_t alpha, score_t beta, int turn, int depth) {
-  _mx[depth] = myShip.x, _my[depth] = myShip.y, _mg[depth] = myShip.g;
+  _mx[depth] = myShip.x, _my[depth] = myShip.y, _mg[depth] = myShip.g, _ms[depth] = myShip.s;
 
   // check terminal state when 2 ships collide
   if ((depth > 0 && myShip.x == enemyShip.x && myShip.y == enemyShip.y) ||
       (depth > 0 && _mx[depth - 2] == enemyShip.x && _my[depth - 2] == enemyShip.y &&
        myShip.x == _ex[depth - 1] && myShip.y == _ey[depth - 1])) {
-    score_t score = _mg[depth - 2] > _eg[depth - 1] ? INF : -INF;
-    if (_mg[depth - 2] == _eg[depth - 1]) score = myShip.score - enemyShip.score;
-    return make_pair(score, -1);
+    // score_t score = _mg[depth - 2] > _eg[depth - 1] ? INF : -INF;
+    // if (_mg[depth - 2] == _eg[depth - 1]) score = myShip.score - enemyShip.score;
+    // return make_pair(score, -1);
+
+    auto [myShipScore, mx, my] = Heuristic::HighestHeat(sea, myShip, enemyShip, bval(2, 3, turn / 2), turn, totalTurn, true);
+    myShipScore += myShip.score;
+
+    // cerr << "COLLISION: turn: " << turn;
+    // cerr << " myShip pos: " << myShip.x << ' ' << myShip.y;
+    // cerr << " myShipGold: " << _mg[depth - 2] << endl;
+    // cerr << " enemyShip pos: " << enemyShip.x << ' ' << enemyShip.y;
+    // cerr << " enemyShipGold: " << _eg[depth - 1] << endl;
+
+    // cerr << " myShipScore: " << setprecision(2) << myShip.score << endl;
+    // cerr << " myShipScore': " << setprecision(2) << myShipScore << endl;
+
+    if (_mg[depth - 2] <= _eg[depth - 1]) {
+      return make_pair(-INF + myShipScore, -1);
+    }
   }
 
   // what if only one player die?
@@ -79,7 +96,11 @@ pair<score_t, int> MinimaxAgent::MaxNode(score_t alpha, score_t beta, int turn, 
   // check terminal state
   if (turn == 0 || (turn <= totalTurn / 2 && abs(myShip.g - enemyShip.g) > 20)) {
     score_t score = myShip.g > enemyShip.g ? INF : (-INF + 5);
-    score += myShip.score - enemyShip.score;
+    if (score < 0) {
+      score += myShip.score;
+    } else {
+      score += myShip.score - enemyShip.score;
+    }
     return make_pair(score, -1);
   }
 
@@ -90,12 +111,26 @@ pair<score_t, int> MinimaxAgent::MaxNode(score_t alpha, score_t beta, int turn, 
     // auto [mg, mx, my] = Heuristic::BestPlace(sea, myShip, enemyShip, bval(2, 5, turn / 2), turn, totalTurn, false);
     // auto [eg, ex, ey] = Heuristic::BestPlace(sea, enemyShip, myShip, bval(2, 5, turn / 2), turn, totalTurn, false);
 
-    auto [mg, mx, my] = Heuristic::HighestHeat(sea, myShip, enemyShip, bval(2, 3, turn / 2), turn, totalTurn);
-    auto [eg, ex, ey] = Heuristic::HighestHeat(sea, enemyShip, myShip, bval(2, 3, turn / 2), turn, totalTurn);
+    auto [mg, mx, my] = Heuristic::HighestHeat(sea, myShip, enemyShip, bval(2, 3, turn / 2), turn, totalTurn, true);
+    auto [eg, ex, ey] = Heuristic::HighestHeat(sea, enemyShip, myShip, bval(2, 3, turn / 2), turn, totalTurn, true);
 
     score_t myShipScore = myShip.score + mg;
     score_t enemyShipScore = enemyShip.score + eg;
+
+    // cerr << " turn: " << turn;
+    // cerr << " myShip pos: " << myShip.x << ' ' << myShip.y;
+    // cerr << " myShipScore: " << setprecision(2) << myShipScore;
+    // cerr << " myShip heat: " << setprecision(2) << mg << endl;
+
+    // cerr << " enemyShip pos: " << enemyShip.x << ' ' << enemyShip.y;
+    // cerr << " enemyShipScore: " << setprecision(2) << enemyShipScore;
+    // cerr << " enemyShip heat: " << setprecision(2) << eg << endl;
+
+    // cerr << " diff: " << setprecision(2) << myShipScore - enemyShipScore << endl;
+    // cerr << " diff: " << setprecision(2) << mg - eg << endl;
+
     return make_pair(myShipScore - enemyShipScore, -1);
+    // return make_pair(mg - eg, -1);
   }
 
   // gen treasure
@@ -114,7 +149,7 @@ pair<score_t, int> MinimaxAgent::MaxNode(score_t alpha, score_t beta, int turn, 
   //   myShip.Move(i ^ 1);
   // }
 
-  auto [g, x, y] = Heuristic::HighestHeat(sea, myShip, enemyShip, bval(2, 3, turn / 2), turn, totalTurn);
+  auto [g, x, y] = Heuristic::HighestHeat(sea, myShip, enemyShip, bval(2, 3, turn / 2), turn, totalTurn, false);
   for (int i = 0; i < 4; ++i) {
     myShip.Move(i);
     cand.emplace_back(dist(myShip.x, myShip.y, x, y), i);
@@ -163,8 +198,20 @@ pair<score_t, int> MinimaxAgent::MaxNode(score_t alpha, score_t beta, int turn, 
       v = sea.val[myShip.x][myShip.y];
     }
 
-    r = sqr(v + 1) / sqrt(depth / 2 + 1);
-    if (v > 0 && depth == 0) r += BONUS;
+    if (v > 0) {
+      r = f(v * RATE, depth / 2 + 1);
+    } else {
+      r = 0;
+    }
+    if (sea.at[myShip.x][myShip.y] == "S" && !myShip.s) {
+      // r += BONUS;
+      myShip.s = true;
+    }
+
+    // if (r < -INF || r > INF) {
+    //   cerr << "depth: " << depth << " i: " << i << " r: " << r << endl;
+    //   cerr << "v: " << v << endl;
+    // }
 
     if (sea.at[myShip.x][myShip.y] != "S") myShip.g += v;
     myShip.score += r;
@@ -173,11 +220,16 @@ pair<score_t, int> MinimaxAgent::MaxNode(score_t alpha, score_t beta, int turn, 
 
     auto [score, dir] = MinNode(max(bestScore, alpha), beta, turn, depth + 1);
 
+    if (depth == 0) {
+      // cerr << "depth: " << depth << " i: " << i << " score: " << score << " dir: " << dir << endl;
+    }
+
     // restore state
     if (sea.at[myShip.x][myShip.y] != "D")
       sea.val[myShip.x][myShip.y] += v;
     if (sea.at[myShip.x][myShip.y] != "S") myShip.g -= v;
     myShip.score -= r;
+    myShip.s = _ms[depth];
     myShip.Move(i ^ 1);
 
     if (score > bestScore) {
@@ -185,7 +237,7 @@ pair<score_t, int> MinimaxAgent::MaxNode(score_t alpha, score_t beta, int turn, 
       bestDir = i;
     }
 
-    if (bestDir == -1) sz = 4;
+    // if (bestDir == -1) sz = 4;
   }
 
   // revert treasure
@@ -197,7 +249,7 @@ pair<score_t, int> MinimaxAgent::MaxNode(score_t alpha, score_t beta, int turn, 
 }
 
 pair<score_t, int> MinimaxAgent::MinNode(score_t alpha, score_t beta, int turn, int depth) {
-  _ex[depth] = enemyShip.x, _ey[depth] = enemyShip.y, _eg[depth] = enemyShip.g;
+  _ex[depth] = enemyShip.x, _ey[depth] = enemyShip.y, _eg[depth] = enemyShip.g, _es[depth] = enemyShip.s;
 
   int sz, bestDir;
   score_t v, r, bestScore;
@@ -210,7 +262,7 @@ pair<score_t, int> MinimaxAgent::MinNode(score_t alpha, score_t beta, int turn, 
   //   enemyShip.Move(i ^ 1);
   // }
 
-  auto [g, x, y] = Heuristic::HighestHeat(sea, enemyShip, myShip, bval(2, 3, turn / 2), turn, totalTurn);
+  auto [g, x, y] = Heuristic::HighestHeat(sea, enemyShip, myShip, bval(2, 3, turn / 2), turn, totalTurn, false);
   for (int i = 0; i < 4; ++i) {
     enemyShip.Move(i);
     cand.emplace_back(dist(enemyShip.x, enemyShip.y, x, y), i);
@@ -251,8 +303,16 @@ pair<score_t, int> MinimaxAgent::MinNode(score_t alpha, score_t beta, int turn, 
       v = sea.val[enemyShip.x][enemyShip.y];
     }
 
-    r = sqr(v + 1) / sqrt(depth / 2 + 1);
-    if (v > 0 && depth == 1) r += BONUS;
+    if (v > 0) {
+      // r = sqr(v) / (depth / 2 + 1);
+      r = f(v * RATE, depth / 2 + 1);
+    } else {
+      r = 0;
+    }
+    if (sea.at[enemyShip.x][enemyShip.y] == "S" && !enemyShip.s) {
+      // r += BONUS;
+      enemyShip.s = true;
+    }
 
     if (sea.at[enemyShip.x][enemyShip.y] != "S") enemyShip.g += v;
     enemyShip.score += r;
@@ -266,6 +326,7 @@ pair<score_t, int> MinimaxAgent::MinNode(score_t alpha, score_t beta, int turn, 
       sea.val[enemyShip.x][enemyShip.y] += v;
     if (sea.at[enemyShip.x][enemyShip.y] != "S") enemyShip.g -= v;
     enemyShip.score -= r;
+    enemyShip.s = _es[depth];
     enemyShip.Move(i ^ 1);
 
     if (score < bestScore) {
