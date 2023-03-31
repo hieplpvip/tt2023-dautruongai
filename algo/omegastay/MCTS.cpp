@@ -1,6 +1,7 @@
 #include "MCTS.h"
 #include "Store.h"
 #include "Utility.h"
+#include <cassert>
 #include <cmath>
 #include <vector>
 
@@ -108,6 +109,7 @@ void MonteCarloTreeSearch::search() {
       found = true;
 
       Node* child = new Node(cur->gameState, cur);
+      assert(child != nullptr);
       child->gameState.performMove(static_cast<MoveEnum>(k));
       cur->children[k] = child;
       cur = child;

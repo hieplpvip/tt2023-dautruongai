@@ -17,6 +17,8 @@ bool readInput() {
   int m, n, k;
   fin >> m >> n >> k;
 
+  rootState.turnLeft = k;
+
   // Read in positions
   fin >> rootState.pos[0].x >> rootState.pos[0].y;
   fin >> rootState.pos[1].x >> rootState.pos[1].y;
