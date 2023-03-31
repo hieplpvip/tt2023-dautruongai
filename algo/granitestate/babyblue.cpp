@@ -20,5 +20,7 @@ namespace BabyBlue {
     ofstream sav("STATE.OUT");
     agent.Save(sav);
     sav.close();
+
+    return 0;
   }
 }

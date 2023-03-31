@@ -9,7 +9,7 @@ semifinal/map_08.txt ALGO_BABYBLUE
 semifinal/map_09.txt ALGO_BABYBLUE
 semifinal/map_10.txt ALGO_BABYBLUE
 semifinal/map_15.txt ALGO_BABYBLUE
-semifinal/map_21.txt ALGO_BABYBLUE
+semifinal/map_21.txt ALGO_HEISENBERG
 semifinal/map_23.txt ALGO_BABYBLUE
 semifinal/map_26.txt ALGO_BABYBLUE
 semifinal/map_27.txt ALGO_BABYBLUE

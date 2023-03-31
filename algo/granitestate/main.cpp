@@ -9,11 +9,12 @@ using namespace std;
 int main() {
   int algo = -1;
 
-  int m, n, k;
+  int m, n, k, gold, shield;
   int x1, y1, x2, y2;
   ifstream inp("MAP.INP");
   inp >> m >> n >> k;
   inp >> x1 >> y1 >> x2 >> y2;
+  inp >> gold >> shield;
 
   if (x1 == 0 && y1 == 0 && x2 == 0 && y2 == 0) {
     // First turn. Select algorithm.
@@ -27,7 +28,7 @@ int main() {
     }
 
     for (int k = 0; k < MAPLIST_LEN; ++k) {
-      if (m == MAP_M[k] && m == MAP_N[k] && A == MAPS[k]) {
+      if (m == MAP_M[k] && n == MAP_N[k] && A == MAPS[k]) {
         algo = ALGOS[k];
         break;
       }
@@ -49,19 +50,14 @@ int main() {
   switch (algo) {
     case ALGO_HEISENBERG:
       cerr << "Running Heisenberg\n";
-      Heisenberg::main();
-      break;
+      return Heisenberg::main();
 
     case ALGO_ESTIMATE_SHIELD_VAL:
       cerr << "Running estimate_shield_val\n";
-      estimate_shield_val::main();
-      break;
+      return estimate_shield_val::main();
 
     default:
       cerr << "Running BabyBlue\n";
-      BabyBlue::main();
-      break;
+      return BabyBlue::main();
   }
-
-  return 0;
 }
