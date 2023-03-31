@@ -8,7 +8,7 @@ bool State::isTerminal() const {
     return false;
   }
 
-  if (turnLeft == 0 || (!alive[0] && !alive[1])) {
+  if (turnLeft == 0 || (eliminated[0] && eliminated[1])) {
     return true;
   }
 

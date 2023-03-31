@@ -24,7 +24,7 @@ struct MonteCarloTreeSearch {
     bool isFullyExpanded() const;
 
     // Return the UCT score of a node
-    double get_uct() const;
+    double getUCT() const;
 
     // Return the best child of the node
     Node* getBestChild() const;
@@ -41,6 +41,9 @@ struct MonteCarloTreeSearch {
 private:
   // Perform an iteration of Monte Carlo tree search
   void search();
+
+  // Return a random move from the given state
+  MoveEnum getRandomMove(const State& state) const;
 };
 
 #endif

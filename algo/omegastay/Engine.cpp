@@ -110,6 +110,8 @@ void handleOtherTurns() {
 
   // Update opponent's shield/gold
   {
+    rootState.eliminated[0] = Store::pastStates.back().eliminated[0];
+    rootState.eliminated[1] = Store::pastStates.back().eliminated[1];
     rootState.gold[1] = Store::pastStates.back().gold[1];
     rootState.hasShield[1] = Store::pastStates.back().hasShield[1];
 
@@ -117,7 +119,11 @@ void handleOtherTurns() {
     int prevCell = Store::pastStates.back().at[x][y];
     if (prevCell == SHIELD_CELL) {
       rootState.hasShield[1] = true;
-    } else if (prevCell != DANGER_CELL && prevCell != EMPTY_CELL) {
+    } else if (prevCell == DANGER_CELL) {
+      if (!rootState.hasShield[1]) {
+        rootState.eliminated[1] = true;
+      }
+    } else if (prevCell != EMPTY_CELL) {
       rootState.gold[1] += prevCell;
     }
   }

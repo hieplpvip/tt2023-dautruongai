@@ -35,8 +35,8 @@ struct State {
   // Whether players have shield
   bool hasShield[2];
 
-  // Whether players are alive
-  bool alive[2];
+  // Whether players are eliminated
+  bool eliminated[2];
 
   /*
    * Check if the state is terminal:

@@ -1,6 +1,8 @@
 #include "MCTS.h"
 #include "Store.h"
+#include "Utility.h"
 #include <cmath>
+#include <vector>
 
 using Node = MonteCarloTreeSearch::Node;
 
@@ -27,7 +29,7 @@ bool Node::isFullyExpanded() const {
   return numChildren == numLegalMoves;
 }
 
-double Node::get_uct() const {
+double Node::getUCT() const {
   assert(numVisits > 0);
   double parentVisits = 0.0;
   if (parent != nullptr) {
@@ -48,7 +50,7 @@ Node* Node::getBestChild() const {
     if (!legalMoves[k] || !children[k]) {
       continue;
     }
-    double score = children[k]->get_uct();
+    double score = children[k]->getUCT();
     if (score > bestScore) {
       bestScore = score;
       bestChild = children[k];
@@ -72,7 +74,7 @@ MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {
   int bestMove = -1;
   int mostVisited = 0;
   for (int k = 0; k < NUM_MOVES; ++k) {
-    if (!root->legalMoves[k]) {
+    if (!root->children[k]) {
       continue;
     }
     if (root->children[k]->numVisits > mostVisited) {
@@ -119,7 +121,8 @@ void MonteCarloTreeSearch::search() {
   // Play out the game randomly from the new node until the end
   State tmpState = cur->gameState;
   while (!tmpState.isTerminal()) {
-    // TODO
+    auto move = getRandomMove(tmpState);
+    tmpState.performMove(move);
   }
 
   // Backpropagation phase
@@ -134,4 +137,21 @@ void MonteCarloTreeSearch::search() {
     cur = cur->parent;
     result = 1 - result;
   } while (cur != nullptr);
+}
+
+MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state) const {
+  // TODO: use better simulation strategy
+  int x = state.pos[state.playerToMove].x;
+  int y = state.pos[state.playerToMove].y;
+  bool hasShield = state.hasShield[state.playerToMove];
+  std::vector<MoveEnum> legalMoves;
+  for (int k = 0; k < NUM_MOVES; ++k) {
+    int nx = x + dx[k];
+    int ny = y + dy[k];
+    if (isValidPos(nx, ny) && (state.at[nx][ny] != DANGER_CELL || hasShield)) {
+      legalMoves.push_back(static_cast<MoveEnum>(k));
+    }
+  }
+  assert(!legalMoves.empty());  // TODO: remove this
+  return legalMoves[Random::rand(legalMoves.size())];
 }
