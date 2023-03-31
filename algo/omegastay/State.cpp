@@ -33,16 +33,62 @@ int State::getResult() const {
   }
 }
 
-void State::performMove(MoveEnum move) {
-  lastMove[playerToMove] = move;
+void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
+  memset(isLegalMove, 0, NUM_MOVES * sizeof(bool));
+  numLegalMoves = 0;
 
-  if (playerToMove == 1) {
-    auto [x, y] = pos[playerToMove];
+  if (eliminated[playerToMove]) {
+    isLegalMove[0] = true;
+    numLegalMoves = 1;
+    return;
+  }
+
+  int x = pos[playerToMove].x;
+  int y = pos[playerToMove].y;
+  bool shield = hasShield[playerToMove];
+  for (int k = 0; k < NUM_MOVES; ++k) {
+    int nx = x + dx[k];
+    int ny = y + dy[k];
+    if (isValidPos(nx, ny) && (at[nx][ny] != DANGER_CELL || shield)) {
+      isLegalMove[k] = true;
+      ++numLegalMoves;
+    }
+  }
+}
+
+void State::performMove(MoveEnum move) {
+  lastPos[playerToMove] = pos[playerToMove];
+  if (!eliminated[playerToMove]) {
+    auto &[x, y] = pos[playerToMove];
     x += dx[move];
     y += dy[move];
-    pos[playerToMove] = {x, y};
+  }
+
+  if (playerToMove == 1) {
+    // Perform checks
+    if (pos[0] == pos[1]) {
+      // Move to same cell. Eliminate both.
+      eliminated[0] = eliminated[1] = true;
+    } else {
+      // getLegalMoves guarantees ship will not move to danger cell
+      // without shield, so no need to check that
+      for (int i = 0; i < 2; ++i) {
+        auto [x, y] = pos[i];
+        if (at[x][y] == SHIELD_CELL) {
+          hasShield[i] = true;
+        } else if (at[x][y] != DANGER_CELL && at[x][y] != EMPTY_CELL) {
+          gold[i] += at[x][y];
+        }
+      }
+    }
 
     --turnLeft;
+
+    // Treasure appears after half of the game has passed
+    if (turnLeft == Store::K / 2) {
+      int treasureValue = abs(gold[0] - gold[1]) * 3 / 4;
+      at[Store::M / 2][Store::N / 2] = treasureValue;
+    }
   }
 
   playerToMove = 1 - playerToMove;

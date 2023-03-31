@@ -9,17 +9,7 @@ using Node = MonteCarloTreeSearch::Node;
 
 Node::Node(const State& gameState) : gameState(gameState) {
   // Populate legal moves
-  int x = gameState.pos[gameState.playerToMove].x;
-  int y = gameState.pos[gameState.playerToMove].y;
-  bool hasShield = gameState.hasShield[gameState.playerToMove];
-  for (int k = 0; k < NUM_MOVES; ++k) {
-    int nx = x + dx[k];
-    int ny = y + dy[k];
-    if (isValidPos(nx, ny) && (gameState.at[nx][ny] != DANGER_CELL || hasShield)) {
-      legalMoves[k] = true;
-      ++numLegalMoves;
-    }
-  }
+  gameState.getLegalMoves(&isLegalMove[0], numLegalMoves);
 }
 
 Node::Node(const State& gameState, Node* parent) : Node(gameState) {
@@ -48,7 +38,7 @@ Node* Node::getBestChild() const {
   Node* bestChild = nullptr;
   double bestScore = -1e9;
   for (int k = 0; k < NUM_MOVES; ++k) {
-    if (!legalMoves[k] || !children[k]) {
+    if (!isLegalMove[k] || !children[k]) {
       continue;
     }
     double score = children[k]->getUCT();
@@ -103,7 +93,7 @@ void MonteCarloTreeSearch::search() {
   if (!cur->gameState.isTerminal()) {
     bool found = false;
     for (int k = 0; k < NUM_MOVES; ++k) {
-      if (!cur->legalMoves[k] || cur->children[k]) {
+      if (!cur->isLegalMove[k] || cur->children[k]) {
         continue;
       }
       found = true;
@@ -143,14 +133,14 @@ void MonteCarloTreeSearch::search() {
 
 MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state) const {
   // TODO: use better simulation strategy
-  int x = state.pos[state.playerToMove].x;
-  int y = state.pos[state.playerToMove].y;
-  bool hasShield = state.hasShield[state.playerToMove];
+
+  int numLegalMoves;
+  bool isLegalMove[NUM_MOVES];
+  state.getLegalMoves(isLegalMove, numLegalMoves);
+
   std::vector<MoveEnum> legalMoves;
   for (int k = 0; k < NUM_MOVES; ++k) {
-    int nx = x + dx[k];
-    int ny = y + dy[k];
-    if (isValidPos(nx, ny) && (state.at[nx][ny] != DANGER_CELL || hasShield)) {
+    if (isLegalMove[k]) {
       legalMoves.push_back(static_cast<MoveEnum>(k));
     }
   }

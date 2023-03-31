@@ -23,8 +23,8 @@ struct State {
   // Player to make the next move
   int playerToMove;
 
-  // Last moves of players
-  MoveEnum lastMove[2];
+  // Last position of players
+  Position lastPos[2];
 
   // Position of players
   Position pos[2];
@@ -52,6 +52,11 @@ struct State {
    * @return 0 if draw, 1 if first player wins, -1 if second player wins
    */
   int getResult() const;
+
+  /*
+   * Get legal moves for the current player.
+   */
+  void getLegalMoves(bool *isLegalMove, int &numLegalMoves) const;
 
   /*
    * Perform a move.

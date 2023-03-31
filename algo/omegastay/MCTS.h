@@ -12,7 +12,7 @@ struct MonteCarloTreeSearch {
     Node* children[NUM_MOVES] = {};
     int numChildren = 0;
     int numLegalMoves = 0;
-    bool legalMoves[NUM_MOVES] = {};
+    bool isLegalMove[NUM_MOVES] = {};
 
     int numVisits = 0;
     int sumScore = 0;
