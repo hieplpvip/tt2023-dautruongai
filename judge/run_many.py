@@ -63,7 +63,7 @@ def main():
             elif match.status == MatchStatus.DRAW:
                 result[map_filename]['draw'] += 1
 
-    table = BeautifulTable()
+    table = BeautifulTable(maxwidth=9999)
     for map_filename in maps:
         table.rows.append([
             result[map_filename][args.exe0],
