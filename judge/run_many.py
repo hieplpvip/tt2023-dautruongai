@@ -56,7 +56,7 @@ def main():
                 match.next_turn()
                 match.print_state()
             print_header('Result:', match.status)
-            print('')
+            print_header('')
 
             if match.status == MatchStatus.FIRST_WIN:
                 result[map_filename][args.exe0] += 1
