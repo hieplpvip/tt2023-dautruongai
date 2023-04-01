@@ -8,6 +8,13 @@ namespace Heisenberg {
 
   const double EPS = 1e-9;
 
+  // PRNG
+  mt19937_64 rng(chrono::high_resolution_clock::now().time_since_epoch().count());
+
+  int rand(int l, int r) {
+    return uniform_int_distribution<int>(l, r)(rng);
+  }
+
   ifstream fin("MAP.INP");
   ofstream fout("MOVE.OUT");
 
@@ -243,7 +250,8 @@ namespace Heisenberg {
 
     if (x_1 == 0) {
       s_1 = true;  // chon lay vi en
-      vector<pair<int, ii> > st;
+      int best_val = INT_MIN;
+      vector<ii> st;
       for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
           if (game_map[i][j] == 'D') continue;
@@ -254,15 +262,20 @@ namespace Heisenberg {
             if (!can_go(nx, ny, 0)) continue;
             if (game_map[nx][ny] != '0') continue;
 
-            st.push_back({-val, {nx, ny}});
+            if (val >= best_val) {
+              if (val > best_val) {
+                best_val = val;
+                st.clear();
+              }
+              st.emplace_back(nx, ny);
+            }
           }
         }
       }
 
-      sort(st.begin(), st.end());
-
-      int best_x = st[0].second.first, best_y = st[0].second.second;  // TODO: can choose multiple place with same value, will be considered later
-      fout << best_x << ' ' << best_y << '\n';                        // choose best first place
+      int ind = rand(0, (int)st.size() - 1);
+      auto [best_x, best_y] = st[ind];
+      fout << best_x << ' ' << best_y << '\n';
 
       ofstream sav("STATE.OUT");
       sav << ALGO_HEISENBERG << endl;
@@ -351,13 +364,7 @@ namespace Heisenberg {
   }
 
   int main() {
-    // freopen("MAP.INP", "r", stdin);
-    // freopen("MOVE.OUT", "w", stdout);
-
-    srand(time(NULL));
-
     cook();
-
     return 0;
   }
 }
