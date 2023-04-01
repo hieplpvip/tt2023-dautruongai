@@ -44,8 +44,8 @@ def main():
         print_header(f'Running {exe0} VS {exe1} on {map_filename} {times} times')
 
         result[map_filename] = {
-            args.exe0: 0,
-            args.exe1: 0,
+            'first_win': 0,
+            'second_win': 0,
             'draw': 0,
         }
 
@@ -59,17 +59,17 @@ def main():
             print_header('')
 
             if match.status == MatchStatus.FIRST_WIN:
-                result[map_filename][args.exe0] += 1
+                result[map_filename]['first_win'] += 1
             elif match.status == MatchStatus.SECOND_WIN:
-                result[map_filename][args.exe1] += 1
+                result[map_filename]['second_win'] += 1
             elif match.status == MatchStatus.DRAW:
                 result[map_filename]['draw'] += 1
 
     table = BeautifulTable(maxwidth=9999)
     for map_filename in maps:
         table.rows.append([
-            result[map_filename][args.exe0],
-            result[map_filename][args.exe1],
+            result[map_filename]['first_win'],
+            result[map_filename]['second_win'],
             result[map_filename]['draw'],
         ])
     table.rows.header = maps
