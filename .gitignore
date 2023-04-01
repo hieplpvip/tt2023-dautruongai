@@ -8,7 +8,9 @@
 .vscode
 *.pyc
 *.o
-*.png
 a.out
 bin
 build
+
+*.png
+!maps/**/*.png
