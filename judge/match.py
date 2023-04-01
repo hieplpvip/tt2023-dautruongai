@@ -180,7 +180,7 @@ class Match:
             print_debug('Halfway through the match but match is still undecided.')
             print_important('TREASURE APPEARS')
 
-            treasure_value = abs(self.gold[0] - self.gold[1]) * 3 // 4
+            treasure_value = max(1, abs(self.gold[0] - self.gold[1]) * 3 // 4)
             print_important('Treasure value =', treasure_value)
             self.sea_map.set_treasure(treasure_value)
 
