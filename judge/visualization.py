@@ -138,7 +138,7 @@ def _draw_map(
         else:
             text += ' alive,'
         if first_state['shield']:
-            text += ' have shield,'
+            text += ' has shield,'
         else:
             text += ' no shield,'
         text += f' {first_state["gold"]} gold'
@@ -166,7 +166,7 @@ def _draw_map(
         else:
             text += ' alive,'
         if second_state['shield']:
-            text += ' have shield,'
+            text += ' has shield,'
         else:
             text += ' no shield,'
         text += f' {second_state["gold"]} gold'

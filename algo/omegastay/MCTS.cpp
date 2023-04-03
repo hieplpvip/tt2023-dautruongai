@@ -1,19 +1,21 @@
 #include "MCTS.h"
 #include "Store.h"
 #include "Utility.h"
-#include <cassert>
-#include <cmath>
-#include <vector>
+#include <bits/stdc++.h>
 
+using namespace std;
 using Node = MonteCarloTreeSearch::Node;
 
 Node::Node(const State& gameState) : gameState(gameState) {
   // Populate legal moves
-  gameState.getLegalMoves(&isLegalMove[0], numLegalMoves);
+  this->gameState.getLegalMoves(&isLegalMove[0], numLegalMoves);
 }
 
-Node::Node(const State& gameState, Node* parent) : Node(gameState) {
-  this->parent = parent;
+Node::Node(const State& gameState, Node* parent, MoveEnum move) : gameState(gameState), parent(parent) {
+  this->gameState.performMove(move);
+
+  // Populate legal moves
+  this->gameState.getLegalMoves(&isLegalMove[0], numLegalMoves);
 }
 
 bool Node::isFullyExpanded() const {
@@ -21,7 +23,7 @@ bool Node::isFullyExpanded() const {
 }
 
 double Node::getUCT() const {
-  // assert(numVisits > 0);
+  assert(numVisits > 0);
   double parentVisits = 0.0;
   if (parent != nullptr) {
     parentVisits = parent->numVisits;
@@ -33,7 +35,7 @@ double Node::getUCT() const {
 Node* Node::getBestChild() const {
   if (numVisits < MTCS_MIN_VISITS) {
     // Select randomly if the Node has not been visited often enough
-    std::vector<Node*> candidates;
+    vector<Node*> candidates;
     for (int k = 0; k < NUM_MOVES; ++k) {
       if (children[k]) {
         candidates.push_back(children[k]);
@@ -55,7 +57,7 @@ Node* Node::getBestChild() const {
       bestChild = children[k];
     }
   }
-  // assert(bestChild != nullptr);
+  assert(bestChild != nullptr);
   return bestChild;
 }
 
@@ -81,7 +83,7 @@ MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {
       bestMove = k;
     }
   }
-  assert(bestMove != -1);  // TODO: remove this
+  assert(bestMove != -1);
   return static_cast<MoveEnum>(bestMove);
 }
 
@@ -104,10 +106,10 @@ void MonteCarloTreeSearch::search() {
         continue;
       }
 
-      Node* child = new Node(cur->gameState, cur);
+      Node* child = new Node(cur->gameState, cur, static_cast<MoveEnum>(k));
       assert(child != nullptr);
-      child->gameState.performMove(static_cast<MoveEnum>(k));
       cur->children[k] = child;
+      cur->numChildren++;
       cur = child;
 
       break;
@@ -143,12 +145,12 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state) const {
   bool isLegalMove[NUM_MOVES];
   state.getLegalMoves(isLegalMove, numLegalMoves);
 
-  std::vector<MoveEnum> legalMoves;
+  vector<MoveEnum> legalMoves;
   for (int k = 0; k < NUM_MOVES; ++k) {
     if (isLegalMove[k]) {
       legalMoves.push_back(static_cast<MoveEnum>(k));
     }
   }
-  assert(!legalMoves.empty());  // TODO: remove this
+  assert(!legalMoves.empty());
   return legalMoves[Random::rand(legalMoves.size())];
 }

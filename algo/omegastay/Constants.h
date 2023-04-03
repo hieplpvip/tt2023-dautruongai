@@ -1,6 +1,9 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// Comment out to disable debug mode
+#define ENABLE_DEBUG_MODE
+
 #include <cmath>
 
 constexpr int INF = 1e9;

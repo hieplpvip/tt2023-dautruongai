@@ -1,6 +1,8 @@
 #include "State.h"
 #include "Store.h"
+#include <cassert>
 #include <cstring>
+#include <iostream>
 
 bool State::isTerminal() const {
   // TODO: cache this value
@@ -63,6 +65,7 @@ void State::performMove(MoveEnum move) {
     auto &[x, y] = pos[playerToMove];
     x += dx[move];
     y += dy[move];
+    assert(isValidPos(x, y) && (at[x][y] != DANGER_CELL || hasShield[playerToMove]));
   }
 
   if (playerToMove == 1) {
@@ -95,4 +98,41 @@ void State::performMove(MoveEnum move) {
   }
 
   playerToMove = 1 - playerToMove;
+}
+
+void State::printState() const {
+#ifdef ENABLE_DEBUG_MODE
+  using std::cout, std::endl;
+
+  cout << turnLeft << " turns left" << endl;
+  cout << (playerToMove ? "Second" : "First") << " player to move" << endl;
+  for (int i = 0; i < 2; ++i) {
+    cout << (i ? "Second" : "First") << " player: at (";
+    cout << (pos[i].x + 1) << ", " << (pos[i].y + 1) << "), ";
+    cout << (eliminated[i] ? "eliminated" : "alive") << ", ";
+    cout << (hasShield[i] ? "has shield" : "no shield") << ", ";
+    cout << gold[i] << " gold" << endl;
+  }
+
+  for (int i = 0; i < Store::M; ++i) {
+    for (int j = 0; j < Store::N; ++j) {
+      switch (at[i][j]) {
+        case DANGER_CELL:
+          cout << 'D';
+          break;
+
+        case SHIELD_CELL:
+          cout << 'S';
+          break;
+
+        default:
+          // Gold
+          cout << (int)at[i][j];
+          break;
+      }
+      cout << ' ';
+    }
+    cout << endl;
+  }
+#endif
 }

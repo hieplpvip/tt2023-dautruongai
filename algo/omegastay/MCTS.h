@@ -7,10 +7,20 @@
 
 struct MonteCarloTreeSearch {
   struct Node {
+    // Game state corresponding to this node
     State gameState;
+
+    // Parent node
     Node* parent = nullptr;
-    Node* children[NUM_MOVES] = {};
+
+    /*
+     * Number of created child nodes
+     * numChildren <= numLegalMoves
+     */
     int numChildren = 0;
+    Node* children[NUM_MOVES] = {};
+
+    // Number of legal moves
     int numLegalMoves = 0;
     bool isLegalMove[NUM_MOVES] = {};
 
@@ -20,8 +30,11 @@ struct MonteCarloTreeSearch {
     // Sum of score of all visits from the perspective of the player who just has moved
     double sumScore = 0;
 
+    // Create a node with the given game state
     Node(const State& gameState);
-    Node(const State& gameState, Node* parent);
+
+    // Create a child node by cloning parent and performing the given move
+    Node(const State& gameState, Node* parent, MoveEnum move);
 
     // Check if the node is fully expanded (i.e. all its children have been created)
     bool isFullyExpanded() const;

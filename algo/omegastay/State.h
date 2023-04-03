@@ -67,6 +67,12 @@ struct State {
    * We split into two moves for MCTS/Minimax to work.
    */
   void performMove(MoveEnum move);
+
+  /*
+   * Print state for debugging.
+   * This function will do nothing if macro ENABLE_DEBUG_MODE is defined.
+   */
+  void printState() const;
 };
 
 #endif

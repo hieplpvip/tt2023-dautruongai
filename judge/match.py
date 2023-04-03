@@ -67,7 +67,7 @@ class Match:
             else:
                 print_important(' alive,', end='')
             if self.have_shield[i]:
-                print_important(' have shield,', end='')
+                print_important(' has shield,', end='')
             else:
                 print_important(' no shield,', end='')
             print_important(f' {self.gold[i]} gold')
