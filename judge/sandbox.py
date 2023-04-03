@@ -100,32 +100,34 @@ class SandBox:
         self._prepared = False
 
         print_debug('Running', self._exe, 'in', self._working_dir.name)
+
+        p = TrackedPopen(
+            [self._exe],
+            cwd=self._working_dir.name,
+            preexec_fn=limit_memory,
+        )
         try:
-            p = TrackedPopen(
-                [self._exe],
-                cwd=self._working_dir.name,
-                preexec_fn=limit_memory,
-            )
             p.communicate(timeout=TIME_LIMIT)
+        except subprocess.TimeoutExpired:
+            print_important(self._exe, 'exceeded time limit')
+            p.kill()
 
-            time_usage = round(p.rusage.ru_utime + p.rusage.ru_stime, 5)
-            memory_usage = p.rusage.ru_maxrss
-            if platform.system() == 'Darwin':
-                # macos reports memory usage in bytes
-                # setrlimit does not work on macos, so we check for MLE here
-                if memory_usage > MEMORY_LIMIT:
-                    raise Exception('Exceeded memory limit')
+        time_usage = round(p.rusage.ru_utime + p.rusage.ru_stime, 5)
+        memory_usage = p.rusage.ru_maxrss
+        if platform.system() == 'Darwin':
+            # macos reports memory usage in bytes
+            # setrlimit does not work on macos, so we check for MLE here
+            if memory_usage > MEMORY_LIMIT:
+                print_important(self._exe, 'exceeded memory limit')
 
-                # convert to KB
-                memory_usage //= 1024
+            # convert to KB
+            memory_usage //= 1024
 
-            print_debug('Time:', time_usage, 's')
-            print_debug('Memory:', memory_usage, 'KB')
+        print_debug('Time:', time_usage, 's')
+        print_debug('Memory:', memory_usage, 'KB')
 
-            if p.returncode:
-                print_important(self._exe, 'exited with non-zero code', p.returncode)
-        except Exception as e:
-            print_important(self._exe, 'run failed:', e)
+        if p.returncode:
+            print_important(self._exe, 'exited with non-zero code', p.returncode)
 
         output_file = Path(self._working_dir.name) / 'MOVE.OUT'
         if not output_file.exists():
