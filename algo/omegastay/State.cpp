@@ -1,5 +1,6 @@
 #include "State.h"
 #include "Store.h"
+#include <cstring>
 
 bool State::isTerminal() const {
   // TODO: cache this value
