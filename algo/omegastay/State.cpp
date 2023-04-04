@@ -5,8 +5,6 @@
 #include <iostream>
 
 bool State::isTerminal() const {
-  // TODO: cache this value
-
   if (playerToMove != 0) {
     return false;
   }

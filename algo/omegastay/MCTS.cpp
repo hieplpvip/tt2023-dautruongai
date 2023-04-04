@@ -7,12 +7,15 @@ using namespace std;
 using Node = MonteCarloTreeSearch::Node;
 
 Node::Node(const State& gameState) : gameState(gameState) {
+  this->isTerminal = this->gameState.isTerminal();
+
   // Populate legal moves
   this->gameState.getLegalMoves(&isLegalMove[0], numLegalMoves);
 }
 
 Node::Node(const State& gameState, Node* parent, MoveEnum move) : gameState(gameState), parent(parent) {
   this->gameState.performMove(move);
+  this->isTerminal = this->gameState.isTerminal();
 
   // Populate legal moves
   this->gameState.getLegalMoves(&isLegalMove[0], numLegalMoves);
@@ -23,7 +26,7 @@ bool Node::isFullyExpanded() const {
 }
 
 double Node::getUCT() const {
-  assert(numVisits > 0);
+  dassert(numVisits > 0);
   double parentVisits = 0.0;
   if (parent != nullptr) {
     parentVisits = parent->numVisits;
@@ -57,7 +60,7 @@ Node* Node::getBestChild() const {
       bestChild = children[k];
     }
   }
-  assert(bestChild != nullptr);
+  dassert(bestChild != nullptr);
   return bestChild;
 }
 
@@ -83,7 +86,7 @@ MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {
       bestMove = k;
     }
   }
-  assert(bestMove != -1);
+  dassert(bestMove != -1);
   return static_cast<MoveEnum>(bestMove);
 }
 
@@ -100,14 +103,14 @@ void MonteCarloTreeSearch::search() {
   // Expansion phase
   // If the node is not a terminal node (hence non fully-expanded),
   // create a new child node for an untried move
-  if (!cur->gameState.isTerminal()) {
+  if (!cur->isTerminal) {
     for (int k = 0; k < NUM_MOVES; ++k) {
       if (!cur->isLegalMove[k] || cur->children[k]) {
         continue;
       }
 
       Node* child = new Node(cur->gameState, cur, static_cast<MoveEnum>(k));
-      assert(child != nullptr);
+      dassert(child != nullptr);
       cur->children[k] = child;
       cur->numChildren++;
       cur = child;
@@ -151,6 +154,6 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state) const {
       legalMoves.push_back(static_cast<MoveEnum>(k));
     }
   }
-  assert(!legalMoves.empty());
+  dassert(!legalMoves.empty());
   return legalMoves[Random::rand(legalMoves.size())];
 }

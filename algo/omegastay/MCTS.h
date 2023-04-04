@@ -30,6 +30,9 @@ struct MonteCarloTreeSearch {
     // Sum of score of all visits from the perspective of the player who just has moved
     double sumScore = 0;
 
+    // Cached value of gameState.isTerminal()
+    bool isTerminal = false;
+
     // Create a node with the given game state
     Node(const State& gameState);
 

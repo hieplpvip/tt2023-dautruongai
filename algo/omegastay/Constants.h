@@ -2,7 +2,17 @@
 #define CONSTANTS_H
 
 // Comment out to disable debug mode
-#define ENABLE_DEBUG_MODE
+// #define ENABLE_DEBUG_MODE
+
+// Comment out to run until timed out
+#define LIMIT_NUMBER_OF_ITERATIONS
+#define MAX_ITERATIONS 1000
+
+#ifdef ENABLE_DEBUG_MODE
+#define dassert assert
+#else
+#define dassert(...)
+#endif
 
 #include <cmath>
 

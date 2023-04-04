@@ -137,10 +137,26 @@ void handleOtherTurns() {
 
   // Find best move using Monte Carlo tree search
   MonteCarloTreeSearch mtcs(rootState);
+  int lastMove = -1;
+#if defined(LIMIT_NUMBER_OF_ITERATIONS) || defined(ENABLE_DEBUG_MODE)
+  int count = 0;
+#endif
+#ifdef LIMIT_NUMBER_OF_ITERATIONS
+  while (count < MTCS_ITERATIONS) {
+    ++count;
+#else
   while (true) {
+#endif
     auto move = mtcs.findBestMove(MTCS_ITERATIONS);
-    int x = rootState.pos[0].x + dx[move];
-    int y = rootState.pos[0].y + dy[move];
-    printFinalMove(x, y);
+    if (move != lastMove) {
+      lastMove = move;
+      int x = rootState.pos[0].x + dx[move];
+      int y = rootState.pos[0].y + dy[move];
+      printFinalMove(x, y);
+
+#ifdef ENABLE_DEBUG_MODE
+      cout << "Found new best move " << x + 1 << ' ' << y + 1 << ' ' << count << endl;
+#endif
+    }
   }
 }
