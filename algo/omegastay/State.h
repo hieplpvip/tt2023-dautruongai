@@ -49,9 +49,9 @@ struct State {
    * Get the result of the game from perspective of first player.
    * This function can be called only when the state is terminal.
    *
-   * @return 0.5 if draw, 1 if first player wins, 0 if second player wins
+   * @return 0 if draw, 1 if first player wins, -1 if second player wins
    */
-  double getResult() const;
+  int getResult() const;
 
   /*
    * Get legal moves for the current player.

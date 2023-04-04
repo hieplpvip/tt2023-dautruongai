@@ -142,7 +142,7 @@ void handleOtherTurns() {
   int count = 0;
 #endif
 #ifdef LIMIT_NUMBER_OF_ITERATIONS
-  while (count < MTCS_ITERATIONS) {
+  while (count < MAX_ITERATIONS) {
     ++count;
 #else
   while (true) {

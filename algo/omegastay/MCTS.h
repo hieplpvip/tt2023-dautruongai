@@ -28,7 +28,7 @@ struct MonteCarloTreeSearch {
     int numVisits = 0;
 
     // Sum of score of all visits from the perspective of the player who just has moved
-    double sumScore = 0;
+    int sumScore = 0;
 
     // Cached value of gameState.isTerminal()
     bool isTerminal = false;

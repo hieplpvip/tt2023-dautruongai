@@ -24,13 +24,13 @@ bool State::isTerminal() const {
   return false;
 }
 
-double State::getResult() const {
+int State::getResult() const {
   if (gold[0] > gold[1]) {
     return 1;
   } else if (gold[0] < gold[1]) {
-    return 0;
+    return -1;
   } else {
-    return 0.5;
+    return 0;
   }
 }
 

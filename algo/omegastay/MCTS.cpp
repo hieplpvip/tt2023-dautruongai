@@ -31,7 +31,7 @@ double Node::getUCT() const {
   if (parent != nullptr) {
     parentVisits = parent->numVisits;
   }
-  double uct = (numVisits - sumScore) / numVisits + MCTS_C * sqrt(log(parentVisits) / numVisits);
+  double uct = (double)-sumScore / numVisits + MCTS_C * sqrt(log(parentVisits) / numVisits);
   return uct;
 }
 
@@ -129,15 +129,15 @@ void MonteCarloTreeSearch::search() {
 
   // Backpropagation phase
   // Update the scores of all the nodes in the path from cur to root
-  double result = tmpState.getResult();
+  int result = tmpState.getResult();
   if (cur->gameState.playerToMove == 1) {
-    result = 1 - result;
+    result = -result;
   }
   do {
     cur->numVisits++;
     cur->sumScore += result;
     cur = cur->parent;
-    result = 1 - result;
+    result = -result;
   } while (cur != nullptr);
 }
 

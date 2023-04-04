@@ -6,7 +6,7 @@
 
 // Comment out to run until timed out
 #define LIMIT_NUMBER_OF_ITERATIONS
-#define MAX_ITERATIONS 1000
+#define MAX_ITERATIONS 200
 
 #ifdef ENABLE_DEBUG_MODE
 #define dassert assert
