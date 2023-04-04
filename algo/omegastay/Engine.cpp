@@ -155,7 +155,7 @@ void handleOtherTurns() {
       printFinalMove(x, y);
 
 #ifdef ENABLE_DEBUG_MODE
-      cout << "Found new best move " << x + 1 << ' ' << y + 1 << ' ' << count << endl;
+      cerr << "Found new best move " << x + 1 << ' ' << y + 1 << ' ' << count << endl;
 #endif
     }
   }

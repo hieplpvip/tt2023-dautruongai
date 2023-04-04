@@ -18,6 +18,7 @@ bool readInput() {
   fin >> m >> n >> k;
 
   rootState.turnLeft = k;
+  assert(rootState.turnLeft > 0);
 
   // Read in positions
   fin >> rootState.pos[0].x >> rootState.pos[0].y;
