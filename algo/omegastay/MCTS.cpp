@@ -1,4 +1,5 @@
 #include "MCTS.h"
+#include "Random.h"
 #include "Store.h"
 #include "Utility.h"
 #include <bits/stdc++.h>

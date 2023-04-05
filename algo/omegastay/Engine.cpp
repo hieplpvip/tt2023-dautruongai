@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include "Engine.h"
 #include "MCTS.h"
+#include "Random.h"
 #include "Store.h"
 #include "Utility.h"
 using namespace std;

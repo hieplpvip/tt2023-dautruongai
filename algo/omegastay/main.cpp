@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include "Engine.h"
 #include "Store.h"
+#include "Random.h"
 using namespace std;
 
 /*
@@ -69,6 +70,9 @@ bool readInput() {
 }
 
 int main() {
+  // Seed our random number generator
+  Random::seed(chrono::high_resolution_clock::now().time_since_epoch().count());
+
   bool firstTurn = readInput();
   if (firstTurn) {
     handleFirstTurn();
