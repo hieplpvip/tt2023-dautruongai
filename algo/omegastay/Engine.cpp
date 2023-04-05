@@ -14,7 +14,7 @@ using namespace std;
 State rootState;
 vector<Position> shieldPos;
 
-// Initialize store (distNoShield, distWithShield, currentTurn, etc.)
+// Initialize store (distNoShield, distWithShield, etc.)
 void initializeStore() {
   // Calculate distNoShield/distWithShield using BFS
   {
@@ -93,7 +93,7 @@ void initializeStore() {
   }
 
   // Initialize other fields of store
-  // M, N, K is already set in main::readInput()
+  // M, N, K, HALF_K is already set in main::readInput()
   Store::currentTurn = 1;
   Store::pastStates.push_back(rootState);
 

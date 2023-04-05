@@ -37,9 +37,11 @@ double Node::getUCT() const {
 }
 
 Node* Node::getBestChild() const {
+  static vector<Node*> candidates(NUM_MOVES);
+
   if (numVisits < MTCS_MIN_VISITS) {
     // Select randomly if the Node has not been visited often enough
-    vector<Node*> candidates;
+    candidates.clear();
     for (int k = 0; k < NUM_MOVES; ++k) {
       if (children[k]) {
         candidates.push_back(children[k]);

@@ -13,7 +13,7 @@ bool State::isTerminal() const {
     return true;
   }
 
-  if (turnLeft > Store::K / 2 + 1) {
+  if (turnLeft > Store::HALF_K + 1) {
     return false;
   }
 
@@ -90,7 +90,7 @@ void State::performMove(MoveEnum move) {
     --turnLeft;
 
     // Treasure appears after half of the game has passed
-    if (turnLeft == Store::K / 2) {
+    if (turnLeft == Store::HALF_K) {
       int treasureValue = abs(gold[0] - gold[1]) * 3 / 4;
       at[Store::M / 2][Store::N / 2] = treasureValue;
     }

@@ -64,6 +64,7 @@ bool readInput() {
     Store::M = m;
     Store::N = n;
     Store::K = k;
+    Store::HALF_K = k / 2;
   }
 
   return firstTurn;

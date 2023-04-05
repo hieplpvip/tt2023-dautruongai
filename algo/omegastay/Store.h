@@ -18,6 +18,9 @@ namespace Store {
   // Number of turns
   extern int K;
 
+  // Half the number of turns
+  extern int HALF_K;
+
   // Current turn
   extern int currentTurn;
 
