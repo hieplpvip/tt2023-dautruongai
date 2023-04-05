@@ -27,7 +27,7 @@ bool Node::isFullyExpanded() const {
 }
 
 double Node::getUCT() const {
-  dassert(numVisits > 0);
+  assert(numVisits > 0);
   double parentVisits = 0.0;
   if (parent != nullptr) {
     parentVisits = parent->numVisits;
@@ -61,7 +61,7 @@ Node* Node::getBestChild() const {
       bestChild = children[k];
     }
   }
-  dassert(bestChild != nullptr);
+  assert(bestChild != nullptr);
   return bestChild;
 }
 
@@ -87,7 +87,7 @@ MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {
       bestMove = k;
     }
   }
-  dassert(bestMove != -1);
+  assert(bestMove != -1);
   return static_cast<MoveEnum>(bestMove);
 }
 
@@ -111,7 +111,7 @@ void MonteCarloTreeSearch::search() {
       }
 
       Node* child = new Node(cur->gameState, cur, static_cast<MoveEnum>(k));
-      dassert(child != nullptr);
+      assert(child != nullptr);
       cur->children[k] = child;
       cur->numChildren++;
       cur = child;
@@ -156,7 +156,7 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state) const {
   for (int k = 1; k < NUM_MOVES; ++k) {
     prob[k] += prob[k - 1];
   }
-  dassert(prob[NUM_MOVES - 1] > 0);
+  assert(prob[NUM_MOVES - 1] > 0);
 
   int r = Random::rand(prob[NUM_MOVES - 1]);
   for (int k = 0; k < NUM_MOVES; ++k) {

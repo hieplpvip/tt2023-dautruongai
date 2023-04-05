@@ -75,6 +75,7 @@ int main() {
 
   bool firstTurn = readInput();
   if (firstTurn) {
+    initializeStore();
     handleFirstTurn();
   } else {
     handleOtherTurns();

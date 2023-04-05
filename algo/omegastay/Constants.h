@@ -6,18 +6,15 @@
 // Comment out to disable
 #define DRAW_IS_UNACCEPTABLE
 
+// Comment out to enable assert
+#define NDEBUG
+
 // Comment out to disable debug mode
 // #define ENABLE_DEBUG_MODE
 
 // Comment out to run until timed out
 #define LIMIT_NUMBER_OF_ITERATIONS
 #define MAX_ITERATIONS 400
-
-#ifdef ENABLE_DEBUG_MODE
-#define dassert assert
-#else
-#define dassert(...)
-#endif
 
 #include <cmath>
 

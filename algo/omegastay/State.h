@@ -71,7 +71,7 @@ struct State {
 
   /*
    * Print state for debugging.
-   * This function will do nothing if macro ENABLE_DEBUG_MODE is defined.
+   * This function will do nothing if macro ENABLE_DEBUG_MODE is not defined.
    */
   void printState() const;
 };

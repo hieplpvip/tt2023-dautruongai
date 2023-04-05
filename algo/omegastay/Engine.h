@@ -8,6 +8,7 @@
 extern State rootState;
 extern std::vector<Position> shieldPos;
 
+void initializeStore();
 void handleFirstTurn();
 void handleOtherTurns();
 

@@ -38,26 +38,23 @@ int State::getResult() const {
 #endif
 }
 
-void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
-  memset(isLegalMove, 0, NUM_MOVES * sizeof(bool));
-  numLegalMoves = 0;
+const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};
 
+void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
   if (eliminated[playerToMove]) {
-    isLegalMove[0] = true;
     numLegalMoves = 1;
+    memcpy(isLegalMove, isLegalMoveWhenEliminated, NUM_MOVES * sizeof(bool));
     return;
   }
 
   int x = pos[playerToMove].x;
   int y = pos[playerToMove].y;
-  bool shield = hasShield[playerToMove];
-  for (int k = 0; k < NUM_MOVES; ++k) {
-    int nx = x + dx[k];
-    int ny = y + dy[k];
-    if (isValidPos(nx, ny) && (at[nx][ny] != DANGER_CELL || shield)) {
-      isLegalMove[k] = true;
-      ++numLegalMoves;
-    }
+  if (hasShield[playerToMove]) {
+    numLegalMoves = Store::numLegalMovesWithShield[x][y];
+    memcpy(isLegalMove, Store::isLegalMoveWithShield[x][y], NUM_MOVES * sizeof(bool));
+  } else {
+    numLegalMoves = Store::numLegalMovesNoShield[x][y];
+    memcpy(isLegalMove, Store::isLegalMoveNoShield[x][y], NUM_MOVES * sizeof(bool));
   }
 }
 

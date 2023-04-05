@@ -14,11 +14,8 @@ using namespace std;
 State rootState;
 vector<Position> shieldPos;
 
-/*
- * Initialize store (distNoShield, distWithShield, currentTurn, etc.) and
- * find starting position
- */
-void handleFirstTurn() {
+// Initialize store (distNoShield, distWithShield, currentTurn, etc.)
+void initializeStore() {
   // Calculate distNoShield/distWithShield using BFS
   {
     REPL_ALL_CELL(x1, y1) {
@@ -69,13 +66,42 @@ void handleFirstTurn() {
 #undef dist
   }
 
-  // Initialize other field of store
+  // Calculate numLegalMovesNoShield/numLegalMovesWithShield/isLegalMoveNoShield/isLegalMoveWithShield
+  {
+    memset(Store::numLegalMovesNoShield, 0, sizeof(Store::numLegalMovesNoShield));
+    memset(Store::numLegalMovesWithShield, 0, sizeof(Store::numLegalMovesWithShield));
+
+    memset(Store::isLegalMoveNoShield, 0, sizeof(Store::isLegalMoveNoShield));
+    memset(Store::isLegalMoveWithShield, 0, sizeof(Store::isLegalMoveWithShield));
+
+    REPL_ALL_CELL(x, y) {
+      for (int k = 0; k < NUM_MOVES; ++k) {
+        int nx = x + dx[k];
+        int ny = y + dy[k];
+
+        if (isValidPos(nx, ny)) {
+          ++Store::numLegalMovesWithShield[x][y];
+          Store::isLegalMoveWithShield[x][y][k] = true;
+
+          if (rootState.at[nx][ny] != DANGER_CELL) {
+            ++Store::numLegalMovesNoShield[x][y];
+            Store::isLegalMoveNoShield[x][y][k] = true;
+          }
+        }
+      }
+    }
+  }
+
+  // Initialize other fields of store
+  // M, N, K is already set in main::readInput()
   Store::currentTurn = 1;
   Store::pastStates.push_back(rootState);
 
   // Save store
   Store::save();
+}
 
+void handleFirstTurn() {
   // Find starting position
   // For now, we just find the nearest-to-shield empty cell
   // FIXME: better algorithm
