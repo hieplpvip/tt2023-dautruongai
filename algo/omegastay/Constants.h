@@ -1,12 +1,17 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// When this is defined, a draw will get a score of -1 instead of 0.
+// In other words, the AI will try to win at all costs.
+// Comment out to disable
+#define DRAW_IS_UNACCEPTABLE
+
 // Comment out to disable debug mode
 // #define ENABLE_DEBUG_MODE
 
 // Comment out to run until timed out
 #define LIMIT_NUMBER_OF_ITERATIONS
-#define MAX_ITERATIONS 200
+#define MAX_ITERATIONS 400
 
 #ifdef ENABLE_DEBUG_MODE
 #define dassert assert

@@ -25,6 +25,9 @@ bool State::isTerminal() const {
 }
 
 int State::getResult() const {
+#ifdef DRAW_IS_UNACCEPTABLE
+  return (gold[0] > gold[1]) ? 1 : -1;
+#else
   if (gold[0] > gold[1]) {
     return 1;
   } else if (gold[0] < gold[1]) {
@@ -32,6 +35,7 @@ int State::getResult() const {
   } else {
     return 0;
   }
+#endif
 }
 
 void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
