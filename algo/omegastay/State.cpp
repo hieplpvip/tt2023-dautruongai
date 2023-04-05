@@ -1,5 +1,6 @@
 #include "State.h"
 #include "Store.h"
+#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <iostream>
@@ -13,7 +14,7 @@ bool State::isTerminal() const {
     return true;
   }
 
-  if (turnLeft > Store::HALF_K + 1) {
+  if (turnLeft > Store::HALF_K) {
     return false;
   }
 
@@ -68,7 +69,7 @@ void State::performMove(MoveEnum move) {
   }
 
   if (playerToMove == 1) {
-    // Perform checks
+    // Both players have moved. Update the game state.
     if (pos[0] == pos[1]) {
       // Move to same cell. Eliminate both.
       eliminated[0] = eliminated[1] = true;
@@ -91,7 +92,7 @@ void State::performMove(MoveEnum move) {
 
     // Treasure appears after half of the game has passed
     if (turnLeft == Store::HALF_K) {
-      int treasureValue = abs(gold[0] - gold[1]) * 3 / 4;
+      int treasureValue = std::max(1, abs(gold[0] - gold[1]) * 3 / 4);
       at[Store::M / 2][Store::N / 2] = treasureValue;
     }
   }
