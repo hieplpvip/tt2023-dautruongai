@@ -30,6 +30,9 @@ struct MonteCarloTreeSearch {
     // Sum of score of all visits from the perspective of the player who just has moved
     int sumScore = 0;
 
+    // Values used for fast calculation of UCT
+    double averageScore = 0, sqrtLogNumVisits = 0, CDivSqrtNumVisits = 0;
+
     // Cached value of gameState.isTerminal()
     bool isTerminal = false;
 

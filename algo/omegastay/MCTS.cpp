@@ -27,9 +27,10 @@ bool Node::isFullyExpanded() const {
 }
 
 double Node::getUCT() const {
-  // We never call this function on root, so parent is always non-null
   assert(numVisits > 0);
-  return (double)-sumScore / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits);
+  // We never call this function on root, so parent is always non-null
+  // UCT = -sumScore / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits);
+  return -averageScore + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
 }
 
 Node* Node::getBestChild() const {
@@ -135,6 +136,9 @@ void MonteCarloTreeSearch::search() {
   do {
     cur->numVisits++;
     cur->sumScore += result;
+    cur->averageScore = (double)cur->sumScore / cur->numVisits;
+    cur->sqrtLogNumVisits = sqrt(log(cur->numVisits));
+    cur->CDivSqrtNumVisits = MCTS_C / sqrt(cur->numVisits);
     cur = cur->parent;
     result = -result;
   } while (cur != nullptr);
