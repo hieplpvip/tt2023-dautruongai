@@ -145,16 +145,24 @@ void MonteCarloTreeSearch::search() {
 MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state) const {
   // TODO: use better simulation strategy
 
-  int numLegalMoves;
-  bool isLegalMove[NUM_MOVES];
+  static int prob[NUM_MOVES];
+  static int numLegalMoves;
+  static bool isLegalMove[NUM_MOVES];
   state.getLegalMoves(isLegalMove, numLegalMoves);
 
-  vector<MoveEnum> legalMoves;
   for (int k = 0; k < NUM_MOVES; ++k) {
-    if (isLegalMove[k]) {
-      legalMoves.push_back(static_cast<MoveEnum>(k));
+    prob[k] = isLegalMove[k];
+  }
+  for (int k = 1; k < NUM_MOVES; ++k) {
+    prob[k] += prob[k - 1];
+  }
+  dassert(prob[NUM_MOVES - 1] > 0);
+
+  int r = Random::rand(prob[NUM_MOVES - 1]);
+  for (int k = 0; k < NUM_MOVES; ++k) {
+    if (r < prob[k]) {
+      return static_cast<MoveEnum>(k);
     }
   }
-  dassert(!legalMoves.empty());
-  return legalMoves[Random::rand(legalMoves.size())];
+  __builtin_unreachable();
 }
