@@ -27,13 +27,9 @@ bool Node::isFullyExpanded() const {
 }
 
 double Node::getUCT() const {
+  // We never call this function on root, so parent is always non-null
   assert(numVisits > 0);
-  double parentVisits = 0.0;
-  if (parent != nullptr) {
-    parentVisits = parent->numVisits;
-  }
-  double uct = (double)-sumScore / numVisits + MCTS_C * sqrt(log(parentVisits) / numVisits);
-  return uct;
+  return (double)-sumScore / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits);
 }
 
 Node* Node::getBestChild() const {
