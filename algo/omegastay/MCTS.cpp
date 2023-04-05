@@ -22,11 +22,11 @@ Node::Node(const State& gameState, Node* parent, MoveEnum move) : gameState(game
   this->gameState.getLegalMoves(&isLegalMove[0], numLegalMoves);
 }
 
-bool Node::isFullyExpanded() const {
+inline bool Node::isFullyExpanded() const {
   return numChildren == numLegalMoves;
 }
 
-double Node::getUCT() const {
+inline double Node::getUCT() const {
   assert(numVisits > 0);
   // We never call this function on root, so parent is always non-null
   // UCT = -sumScore / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits);

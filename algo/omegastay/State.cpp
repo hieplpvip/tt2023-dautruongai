@@ -70,8 +70,8 @@ void State::performMove(MoveEnum move) {
 
   if (playerToMove == 1) {
     // Both players have moved. Update the game state.
-    if (pos[0] == pos[1]) {
-      // Move to same cell. Eliminate both.
+    if (pos[0] == pos[1] || (pos[0] == lastPos[1] && pos[1] == lastPos[0])) {
+      // Move to same cell or swap cells. Eliminate both.
       eliminated[0] = eliminated[1] = true;
     } else {
       // getLegalMoves guarantees ship will not move to danger cell
