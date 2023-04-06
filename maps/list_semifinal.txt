@@ -8,6 +8,8 @@ semifinal/map_07.txt
 semifinal/map_08.txt
 semifinal/map_09.txt
 semifinal/map_10.txt
+semifinal/map_11.txt
+semifinal/map_12.txt
 semifinal/map_15.txt
 semifinal/map_21.txt
 semifinal/map_23.txt
