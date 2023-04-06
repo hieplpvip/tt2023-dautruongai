@@ -3,14 +3,6 @@
 
 #define isValidPos(x, y) (0 <= x && x < Store::M && 0 <= y && y < Store::N)
 
-namespace Random {
-  // Return a random integer in [l, r].
-  int rand(int l, int r);
-
-  // Return a random integer in [0, n - 1].
-  int rand(int n);
-};
-
 struct Position {
   int x;
   int y;
@@ -18,7 +10,7 @@ struct Position {
   Position() {}
   Position(int x, int y) : x(x), y(y) {}
 
-  bool operator==(const Position &other) const {
+  inline bool operator==(const Position &other) const {
     return x == other.x && y == other.y;
   }
 };

@@ -28,13 +28,13 @@ struct MonteCarloTreeSearch {
     int numVisits = 0;
 
     // Sum of score of all visits from the perspective of the player who just has moved
-    double sumScore = 0;
+    int sumScore = 0;
 
-    // Create a node with the given game state
-    Node(const State& gameState);
+    // Values used for fast calculation of UCT
+    double averageScore = 0, sqrtLogNumVisits = 0, CDivSqrtNumVisits = 0;
 
-    // Create a child node by cloning parent and performing the given move
-    Node(const State& gameState, Node* parent, MoveEnum move);
+    // Cached value of gameState.isTerminal()
+    bool isTerminal = false;
 
     // Check if the node is fully expanded (i.e. all its children have been created)
     bool isFullyExpanded() const;

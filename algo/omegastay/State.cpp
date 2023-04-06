@@ -1,12 +1,11 @@
 #include "State.h"
 #include "Store.h"
+#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <iostream>
 
 bool State::isTerminal() const {
-  // TODO: cache this value
-
   if (playerToMove != 0) {
     return false;
   }
@@ -15,7 +14,7 @@ bool State::isTerminal() const {
     return true;
   }
 
-  if (turnLeft > Store::K / 2 + 1) {
+  if (turnLeft > Store::HALF_K) {
     return false;
   }
 
@@ -26,36 +25,37 @@ bool State::isTerminal() const {
   return false;
 }
 
-double State::getResult() const {
+int State::getResult() const {
+#ifdef DRAW_IS_UNACCEPTABLE
+  return (gold[0] > gold[1]) ? 1 : -1;
+#else
   if (gold[0] > gold[1]) {
     return 1;
   } else if (gold[0] < gold[1]) {
-    return 0;
+    return -1;
   } else {
-    return 0.5;
+    return 0;
   }
+#endif
 }
 
-void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
-  memset(isLegalMove, 0, NUM_MOVES * sizeof(bool));
-  numLegalMoves = 0;
+const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};
 
+void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
   if (eliminated[playerToMove]) {
-    isLegalMove[0] = true;
     numLegalMoves = 1;
+    memcpy(isLegalMove, isLegalMoveWhenEliminated, NUM_MOVES * sizeof(bool));
     return;
   }
 
   int x = pos[playerToMove].x;
   int y = pos[playerToMove].y;
-  bool shield = hasShield[playerToMove];
-  for (int k = 0; k < NUM_MOVES; ++k) {
-    int nx = x + dx[k];
-    int ny = y + dy[k];
-    if (isValidPos(nx, ny) && (at[nx][ny] != DANGER_CELL || shield)) {
-      isLegalMove[k] = true;
-      ++numLegalMoves;
-    }
+  if (hasShield[playerToMove]) {
+    numLegalMoves = Store::numLegalMovesWithShield[x][y];
+    memcpy(isLegalMove, Store::isLegalMoveWithShield[x][y], NUM_MOVES * sizeof(bool));
+  } else {
+    numLegalMoves = Store::numLegalMovesNoShield[x][y];
+    memcpy(isLegalMove, Store::isLegalMoveNoShield[x][y], NUM_MOVES * sizeof(bool));
   }
 }
 
@@ -69,9 +69,9 @@ void State::performMove(MoveEnum move) {
   }
 
   if (playerToMove == 1) {
-    // Perform checks
-    if (pos[0] == pos[1]) {
-      // Move to same cell. Eliminate both.
+    // Both players have moved. Update the game state.
+    if (pos[0] == pos[1] || (pos[0] == lastPos[1] && pos[1] == lastPos[0])) {
+      // Move to same cell or swap cells. Eliminate both.
       eliminated[0] = eliminated[1] = true;
     } else {
       // getLegalMoves guarantees ship will not move to danger cell
@@ -91,8 +91,8 @@ void State::performMove(MoveEnum move) {
     --turnLeft;
 
     // Treasure appears after half of the game has passed
-    if (turnLeft == Store::K / 2) {
-      int treasureValue = abs(gold[0] - gold[1]) * 3 / 4;
+    if (turnLeft == Store::HALF_K) {
+      int treasureValue = std::max(1, abs(gold[0] - gold[1]) * 3 / 4);
       at[Store::M / 2][Store::N / 2] = treasureValue;
     }
   }

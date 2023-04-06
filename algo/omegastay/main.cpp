@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include "Engine.h"
 #include "Store.h"
+#include "Random.h"
 using namespace std;
 
 /*
@@ -18,6 +19,7 @@ bool readInput() {
   fin >> m >> n >> k;
 
   rootState.turnLeft = k;
+  assert(rootState.turnLeft > 0);
 
   // Read in positions
   fin >> rootState.pos[0].x >> rootState.pos[0].y;
@@ -62,14 +64,19 @@ bool readInput() {
     Store::M = m;
     Store::N = n;
     Store::K = k;
+    Store::HALF_K = k / 2;
   }
 
   return firstTurn;
 }
 
 int main() {
+  // Seed our random number generator
+  Random::seed(chrono::high_resolution_clock::now().time_since_epoch().count());
+
   bool firstTurn = readInput();
   if (firstTurn) {
+    initializeStore();
     handleFirstTurn();
   } else {
     handleOtherTurns();

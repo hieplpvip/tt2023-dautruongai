@@ -49,9 +49,10 @@ struct State {
    * Get the result of the game from perspective of first player.
    * This function can be called only when the state is terminal.
    *
-   * @return 0.5 if draw, 1 if first player wins, 0 if second player wins
+   * @return 1 if first player wins, -1 if second player wins.
+   * Draw get -1 or 0 depends on whether DRAW_IS_UNACCEPTABLE is defined.
    */
-  double getResult() const;
+  int getResult() const;
 
   /*
    * Get legal moves for the current player.
@@ -70,7 +71,7 @@ struct State {
 
   /*
    * Print state for debugging.
-   * This function will do nothing if macro ENABLE_DEBUG_MODE is defined.
+   * This function will do nothing if macro ENABLE_DEBUG_MODE is not defined.
    */
   void printState() const;
 };
