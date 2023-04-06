@@ -16,6 +16,9 @@
 #define LIMIT_NUMBER_OF_ITERATIONS
 #define MAX_ITERATIONS 400
 
+// Number of nodes to be preallocated to avoid overhead of new
+#define NUMBER_OF_PREALLOCATED_NODES 1000000
+
 #include <cmath>
 
 constexpr int INF = 1e9;

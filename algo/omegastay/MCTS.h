@@ -36,12 +36,6 @@ struct MonteCarloTreeSearch {
     // Cached value of gameState.isTerminal()
     bool isTerminal = false;
 
-    // Create a node with the given game state
-    Node(const State& gameState);
-
-    // Create a child node by cloning parent and performing the given move
-    Node(const State& gameState, Node* parent, MoveEnum move);
-
     // Check if the node is fully expanded (i.e. all its children have been created)
     bool isFullyExpanded() const;
 

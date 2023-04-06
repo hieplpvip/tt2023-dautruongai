@@ -7,19 +7,35 @@
 using namespace std;
 using Node = MonteCarloTreeSearch::Node;
 
-Node::Node(const State& gameState) : gameState(gameState) {
-  this->isTerminal = this->gameState.isTerminal();
+static int numNodes = 0;
+static vector<Node> nodes(NUMBER_OF_PREALLOCATED_NODES);
 
-  // Populate legal moves
-  this->gameState.getLegalMoves(&isLegalMove[0], numLegalMoves);
+Node* newNode(const State& gameState) {
+  if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
+    cerr << "Out of preallocated nodes" << endl;
+    exit(1);
+  }
+
+  auto& node = nodes[numNodes];
+  node.gameState = gameState;
+  node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
+  node.isTerminal = node.gameState.isTerminal();
+  return &nodes[numNodes++];
 }
 
-Node::Node(const State& gameState, Node* parent, MoveEnum move) : gameState(gameState), parent(parent) {
-  this->gameState.performMove(move);
-  this->isTerminal = this->gameState.isTerminal();
+Node* newNode(const State& gameState, Node* parent, MoveEnum move) {
+  if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
+    cerr << "Out of preallocated nodes" << endl;
+    exit(1);
+  }
 
-  // Populate legal moves
-  this->gameState.getLegalMoves(&isLegalMove[0], numLegalMoves);
+  auto& node = nodes[numNodes];
+  node.parent = parent;
+  node.gameState = gameState;
+  node.gameState.performMove(move);
+  node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
+  node.isTerminal = node.gameState.isTerminal();
+  return &nodes[numNodes++];
 }
 
 inline bool Node::isFullyExpanded() const {
@@ -65,7 +81,7 @@ Node* Node::getBestChild() const {
 }
 
 MonteCarloTreeSearch::MonteCarloTreeSearch(const State& rootState) {
-  root = new Node(rootState);
+  root = newNode(rootState);
 }
 
 MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {
@@ -109,7 +125,7 @@ void MonteCarloTreeSearch::search() {
         continue;
       }
 
-      Node* child = new Node(cur->gameState, cur, static_cast<MoveEnum>(k));
+      Node* child = newNode(cur->gameState, cur, static_cast<MoveEnum>(k));
       assert(child != nullptr);
       cur->children[k] = child;
       cur->numChildren++;
