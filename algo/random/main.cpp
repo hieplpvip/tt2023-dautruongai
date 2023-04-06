@@ -124,8 +124,8 @@ void random_play() {
 }
 
 int main() {
-  freopen("MAP.INP", "r", stdin);
-  freopen("MOVE.OUT", "w", stdout);
+  assert(freopen("MAP.INP", "r", stdin) == stdin);
+  assert(freopen("MOVE.OUT", "w", stdout) == stdout);
 
   input();
   if (our_x == 0) {

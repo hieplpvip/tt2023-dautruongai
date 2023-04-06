@@ -23,7 +23,7 @@ inline void print_move(int x, int y) {
 }
 
 void input() {
-  freopen("MAP.INP", "r", stdin);
+  assert(freopen("MAP.INP", "r", stdin) == stdin);
   cin >> m >> n >> k;
   cin >> our_x >> our_y >> opp_x >> opp_y;
   cin >> total_gold >> has_shield;
@@ -88,7 +88,7 @@ double heuristic(int nx, int ny) {
 }
 
 void first_turn() {
-  array<int, 2> next_move;
+  array<int, 2> next_move = {-1, -1};
   double best = -INF;
   for (int x = 1; x <= m; ++x) {
     for (int y = 1; y <= n; ++y) {
@@ -123,7 +123,7 @@ void play() {
 }
 
 int main() {
-  freopen("MOVE.OUT", "w", stdout);
+  assert(freopen("MOVE.OUT", "w", stdout) == stdout);
 
   input();
   if (our_x == 0) {
