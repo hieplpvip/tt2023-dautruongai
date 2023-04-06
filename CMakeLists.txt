@@ -5,8 +5,8 @@ project(tt2023-ai)
 set(CMAKE_CXX_STANDARD 17) # this does nothing for MSVC, use target_compile_options below
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pipe")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -m64 -flto -ffat-lto-objects -feliminate-unused-debug-types -fno-stack-protector -fno-trapping-math")
 
 if(WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "-static")
