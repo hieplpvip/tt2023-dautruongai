@@ -36,3 +36,10 @@ However, with pure Monte Carlo tree search, we can simulate the game till the en
 
 - https://en.wikipedia.org/wiki/Efficiently_updatable_neural_network
 - https://github.com/glinscott/nnue-pytorch/blob/master/docs/nnue.md
+
+### Random number generators
+
+Yes, we need to generate so many random numbers that `mt19937` is not fast enough.
+
+- https://prng.di.unimi.it/
+- https://www.pcg-random.org/posts/bounded-rands.html

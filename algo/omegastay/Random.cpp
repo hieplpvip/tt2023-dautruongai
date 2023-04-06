@@ -31,11 +31,29 @@ namespace Random {
     return result;
   }
 
-  uint32_t rand(uint32_t l, uint32_t r) {
-    return l + next() % (r - l + 1);
+  uint32_t rand(uint32_t n) {
+    // Lemire's nearly divisionless method
+    uint32_t x = next();
+    uint64_t m = uint64_t(x) * uint64_t(n);
+    uint32_t l = uint32_t(m);
+    if (l < n) {
+      uint32_t t = -n;
+      if (t >= n) {
+        t -= n;
+        if (t >= n) {
+          t %= n;
+        }
+      }
+      while (l < t) {
+        x = next();
+        m = uint64_t(x) * uint64_t(n);
+        l = uint32_t(m);
+      }
+    }
+    return m >> 32;
   }
 
-  uint32_t rand(uint32_t n) {
-    return rand(0, n - 1);
+  inline uint32_t rand(uint32_t l, uint32_t r) {
+    return l + rand(r - l + 1);
   }
 }
