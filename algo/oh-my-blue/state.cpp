@@ -1,9 +1,11 @@
 #include "state.h"
 #include "store.h"
+#include "heuristic.h"
 
 #include <assert.h>
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 
 #define dist(player, x, y) (Store::dist[hasShield[player]][pos[player].x][pos[player].y][x][y])
 
@@ -25,15 +27,23 @@ bool State::isTerminal() const {
   return false;
 }
 
-int State::getResult() const {
-  // FIXME: if it does not prioritize collecting gold, change to (BASE * gold - penalty)
-  if (eliminated[0] && eliminated[1]) {
-    if (gold[0] == gold[1]) {
-      return 0;
-    }
-    return gold[0] > gold[1] ? INF : -INF;
+score_t State::getResult() const {
+  // std::cerr << "Eliminate: " << gold[0] << ", " << gold[1] << ", " << score[0] << ", " << score[1] << '\n';
+
+  if (gold[0] > gold[1]) {
+    return INF + score[0] - score[1];
+  }
+  if (gold[0] < gold[1]) {
+    return -INF + score[0] - score[1];
   }
   return score[0] - score[1];
+}
+
+score_t State::getScore() const {
+  // std::cerr << "Evaluate: " << gold[0] << ", " << gold[1] << ", " << score[0] << ", " << score[1] << '\n';
+  // std::cerr << "Heuristic: " << Heuristic::GetHighestHeat(*this, PlayerEnum::ME) << '\n';
+  // std::cerr << "Heuristic: " << Heuristic::GetHighestHeat(*this, PlayerEnum::ENEMY) << '\n';
+  return (score[0] + Heuristic::GetHighestHeat(*this, PlayerEnum::ME)) - (score[1] + Heuristic::GetHighestHeat(*this, PlayerEnum::ENEMY));
 }
 
 void State::performMove(PlayerEnum player, MoveEnum move) {
@@ -57,62 +67,14 @@ void State::performMove(PlayerEnum player, MoveEnum move) {
         auto [x, y] = pos[i];
         if (at[x][y] == SHIELD_CELL) {
           if (!hasShield[i]) {
-            score[i] += SHIELD_CELL - dist(i, x, y);  // make sure shield is always picked up
+            score[i] += SHIELD_CELL;  // make sure shield is always picked up
           }
           hasShield[i] = true;
           at[x][y] = EMPTY_CELL;
         } else if (at[x][y] != DANGER_CELL && at[x][y] != EMPTY_CELL) {
           gold[i] += at[x][y];
-          score[i] += BASE_GOLD * at[x][y] - dist(i, x, y);
+          score[i] += at[x][y] + BONUS - sqrt(Store::K - turnLeft - Store::currentTurn + 2);
           at[x][y] = EMPTY_CELL;
-        }
-      }
-    }
-
-    --turnLeft;
-
-    // Treasure appears after half of the game has passed
-    if (turnLeft == Store::HALF_K) {
-      int treasureValue = std::max(1, abs(gold[0] - gold[1]) * 3 / 4);
-      at[Store::M / 2][Store::N / 2] = treasureValue;
-    }
-  }
-}
-
-void State::performMoveWithMagnet(PlayerEnum player, MoveEnum move) {
-  lastPos[player] = pos[player];
-  if (!eliminated[player]) {
-    auto &[x, y] = pos[player];
-    x += dx[move];
-    y += dy[move];
-    assert(isValidPos(x, y) && (at[x][y] != DANGER_CELL || hasShield[player]));
-  }
-
-  if (player == PlayerEnum::ENEMY) {
-    // Both players have moved. Update the game state.
-    if (pos[0] == pos[1] || (pos[0] == lastPos[1] && pos[1] == lastPos[0])) {
-      // Move to same cell or swap cells. Eliminate both.
-      eliminated[0] = eliminated[1] = true;
-    } else {
-      // getLegalMoves guarantees ship will not move to danger cell
-      // without shield, so no need to check that
-      for (int i = 0; i < 2; ++i) {
-        auto [a, b] = pos[i];
-        REPL_MAGNET_CELL(x, y, a, b) {
-          if (!isValidPos(x, y) || at[x][y] == DANGER_CELL) {
-            continue;
-          }
-
-          if (at[x][y] == SHIELD_CELL) {
-            if (!hasShield[i]) {
-              score[i] += MAGNET_RATE * SHIELD_CELL - dist(i, x, y);  // make sure shield is always picked up
-            }
-            hasShield[i] = true;
-            at[x][y] = EMPTY_CELL;
-          } else if (at[x][y] != DANGER_CELL && at[x][y] != EMPTY_CELL) {
-            score[i] += BASE_GOLD * MAGNET_RATE * at[x][y] - dist(i, x, y);
-            at[x][y] = EMPTY_CELL;
-          }
         }
       }
     }

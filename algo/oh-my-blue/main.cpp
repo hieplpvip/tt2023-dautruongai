@@ -68,59 +68,18 @@ bool input() {
 void makeFirstMove() {
   MiniMaxAlgorithm minimax;
 
-  score_t bestScore = -INF, secondBestScore = -INF;
-  Position bestMove, secondBestMove;
-
-  // FIXME: Find candidate positions for first move and remove turnLeft limit
-  // limit turnLeft to 10
-  rootState.turnLeft = std::min(rootState.turnLeft, 10);
-
-  // FIXME: Do we need to evaluate opponent's first move?
-  REPL_ALL_CELL(x, y) {
-    if (rootState.at[x][y] != EMPTY_CELL) {
-      continue;
-    }
-
-    score_t minScore = INF;
-
-    REPL_ALL_CELL(u, v) {
-      if (rootState.at[u][v] != EMPTY_CELL || (x == u && y == v)) {
-        continue;
-      }
-
-      rootState.pos[0] = rootState.lastPos[0] = Position(x, y);
-      rootState.pos[1] = rootState.lastPos[1] = Position(u, v);
-
-      auto [score, _] = minimax.MaxNode(-INF, INF, MAX_DEPTH, rootState);  // start with MAX_DEPTH to use magnet
-
-      if (score < minScore) {
-        minScore = score;
-      }
-    }
-
-    if (minScore > bestScore) {
-      secondBestScore = bestScore;
-      secondBestMove = bestMove;
-      bestScore = minScore;
-      bestMove = Position(x, y);
-    } else if (minScore > secondBestScore) {
-      secondBestScore = minScore;
-      secondBestMove = Position(x, y);
-    }
-  }
-
-  // FIXME: Use random(2) if needed
+  auto [score, move] = minimax.MaxStartNode(2 * -INF, 2 * INF, 2, rootState);
 
   // Write result to file
   std::ofstream fout("MOVE.OUT");
-  fout << bestMove.x + 1 << " " << bestMove.y + 1;
+  fout << move.x + 1 << " " << move.y + 1;
   fout.close();
 }
 
 void makeMove() {
   MiniMaxAlgorithm minimax;
 
-  auto [score, move] = minimax.MaxNode(-INF, INF, 0, rootState);
+  auto [score, move] = minimax.MaxNode(2 * -INF, 2 * INF, 0, rootState);
 
   // Write result to file
   std::ofstream fout("MOVE.OUT");

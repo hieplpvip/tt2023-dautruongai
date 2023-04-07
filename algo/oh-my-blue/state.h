@@ -9,7 +9,7 @@
 
 #define isValidPos(x, y) (0 <= x && x < Store::M && 0 <= y && y < Store::N)
 
-typedef float score_t;
+typedef double score_t;
 
 struct Position {
   int x;
@@ -20,6 +20,10 @@ struct Position {
 
   inline bool operator==(const Position &other) const {
     return x == other.x && y == other.y;
+  }
+
+  inline bool operator<(const Position &other) const {
+    return x < other.x && (x == other.x && y < other.y);
   }
 };
 
@@ -66,9 +70,18 @@ struct State {
    * Get the result of the game from perspective of first player.
    * This function can be called only when the state is terminal.
    *
-   * @return the gold difference between the two players.
+   * @return 0 if draw, INF if player 1 wins, otherwise -INF.
+   * The score will be add into this to encourage player countinuing their move.
    */
-  int getResult() const;
+  score_t getResult() const;
+
+  /*
+   * Get the score of the game from perspective of first player.
+   * This function can be called only when the minimax search reach max depth.
+   *
+   * @return the score (with heuristic) difference between two players.
+   */
+  score_t getScore() const;
 
   /*
    * Perform a move.
