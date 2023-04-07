@@ -25,6 +25,7 @@ However, with pure Monte Carlo tree search, we can simulate the game till the en
 ### Monte Carlo tree search
 
 - https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
+- https://project.dke.maastrichtuniversity.nl/games/files/phd/Chaslot_thesis.pdf
 - https://web.archive.org/web/20160308043415/http://mcts.ai:80/index.html
 - https://int8.io/monte-carlo-tree-search-beginners-guide
 - https://www.geeksforgeeks.org/ml-monte-carlo-tree-search-mcts
