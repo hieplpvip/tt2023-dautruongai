@@ -61,10 +61,14 @@ struct State {
   // Whether players are eliminated
   bool eliminated[2];
 
+  // Current phase of the game
+  GamePhaseEnum phase;
+
   /*
    * Check if the state is terminal
    */
-  bool isTerminal() const;
+  bool
+  isTerminal() const;
 
   /*
    * Get the result of the game from perspective of first player.
@@ -91,13 +95,6 @@ struct State {
    * We split into two moves for MCTS/Minimax to work.
    */
   void performMove(PlayerEnum player, MoveEnum move);
-
-  /*
-   * Perform a move with magnet.
-   *
-   * Similar to performMove, but this will collect all golds in the MAGNET_RADIUS.
-   */
-  void performMoveWithMagnet(PlayerEnum player, MoveEnum move);
 };
 
 extern State rootState;

@@ -56,12 +56,6 @@ namespace Store {
       rootState.gold[1] = Store::pastState.gold[1];
       rootState.hasShield[1] = Store::pastState.hasShield[1];
 
-      rootState.score[0] = rootState.gold[0];
-      rootState.score[1] = rootState.gold[1];
-
-      rootState.lastPos[0] = Store::pastState.pos[0];
-      rootState.lastPos[1] = Store::pastState.pos[1];
-
       auto [x, y] = rootState.pos[1];
       int prevCell = Store::pastState.at[x][y];
       if (prevCell == SHIELD_CELL) {
@@ -72,6 +66,27 @@ namespace Store {
         }
       } else if (prevCell != EMPTY_CELL) {
         rootState.gold[1] += prevCell;
+      }
+    }
+
+    // Update score, gold, lastPos
+    {
+      rootState.score[0] = rootState.gold[0];
+      rootState.score[1] = rootState.gold[1];
+
+      rootState.lastPos[0] = Store::pastState.pos[0];
+      rootState.lastPos[1] = Store::pastState.pos[1];
+    }
+
+    // Set current phase
+    {
+      int sum = Store::pastState.gold[0] + Store::pastState.gold[1];
+      if (sum <= THRESHOLD_EARLY_GAME) {
+        rootState.phase = GamePhaseEnum::EARLY_GAME;
+      } else if (sum <= THRESHOLD_MID_GAME) {
+        rootState.phase = GamePhaseEnum::MID_GAME;
+      } else {
+        rootState.phase = GamePhaseEnum::LATE_GAME;
       }
     }
 
@@ -87,9 +102,17 @@ namespace Store {
       rootState.eliminated[1] = false;
       rootState.gold[1] = 0;
       rootState.hasShield[1] = false;
+    }
 
+    // Init score
+    {
       rootState.score[0] = 0;
       rootState.score[1] = 0;
+    }
+
+    // Game phase
+    {
+      rootState.phase = EARLY_GAME;
     }
 
     // Calculate distNoShield/distWithShield using BFS

@@ -32,8 +32,15 @@ namespace Heuristic {
         val = 1.f / 3 * val;
       }
 
-      // Heuristic: reduce the value of the cell if it is far from the player
-      val = val + BONUS - sqrt(dist(player, x, y));
+      if (state.phase == GamePhaseEnum::EARLY_GAME) {
+        val = val * BONUS - sqrt(dist(player, x, y));
+      } else if (state.phase == GamePhaseEnum::MID_GAME) {
+        // Heuristic: reduce the value of the cell if it is far from the player
+        val = val + BONUS - sqrt(dist(player, x, y));
+      } else {
+        // Heuristic: incease the gold value by squaring
+        val = BONUS * sqr(val + 1) / sqrt(dist(player, x, y) + 1);
+      }
 
       // accumulate table
       int i1 = std::max(1, x + 1 - HEAT_RADIUS), j1 = std::max(1, y + 1 - HEAT_RADIUS);

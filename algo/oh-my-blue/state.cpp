@@ -28,8 +28,6 @@ bool State::isTerminal() const {
 }
 
 score_t State::getResult() const {
-  // std::cerr << "Eliminate: " << gold[0] << ", " << gold[1] << ", " << score[0] << ", " << score[1] << '\n';
-
   if (gold[0] > gold[1]) {
     return INF + score[0] - score[1];
   }
@@ -40,9 +38,6 @@ score_t State::getResult() const {
 }
 
 score_t State::getScore() const {
-  // std::cerr << "Evaluate: " << gold[0] << ", " << gold[1] << ", " << score[0] << ", " << score[1] << '\n';
-  // std::cerr << "Heuristic: " << Heuristic::GetHighestHeat(*this, PlayerEnum::ME) << '\n';
-  // std::cerr << "Heuristic: " << Heuristic::GetHighestHeat(*this, PlayerEnum::ENEMY) << '\n';
   return (score[0] + Heuristic::GetHighestHeat(*this, PlayerEnum::ME)) - (score[1] + Heuristic::GetHighestHeat(*this, PlayerEnum::ENEMY));
 }
 
@@ -73,7 +68,13 @@ void State::performMove(PlayerEnum player, MoveEnum move) {
           at[x][y] = EMPTY_CELL;
         } else if (at[x][y] != DANGER_CELL && at[x][y] != EMPTY_CELL) {
           gold[i] += at[x][y];
-          score[i] += at[x][y] + BONUS - sqrt(Store::K - turnLeft - Store::currentTurn + 2);
+          if (phase == GamePhaseEnum::EARLY_GAME) {
+            score[i] += at[x][y] * BONUS - sqrt(Store::K - turnLeft - Store::currentTurn + 3);
+          } else if (phase == GamePhaseEnum::MID_GAME) {
+            score[i] += at[x][y] + BONUS - sqrt(Store::K - turnLeft - Store::currentTurn + 3);
+          } else {
+            score[i] += BONUS * sqr(at[x][y] + 1) / sqrt(Store::K - turnLeft - Store::currentTurn + 3);
+          }
           at[x][y] = EMPTY_CELL;
         }
       }
