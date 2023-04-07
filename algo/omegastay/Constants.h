@@ -6,6 +6,10 @@
 // Comment out to disable
 #define DRAW_IS_UNACCEPTABLE
 
+// Take shield immediately if it standing next to one and not having shield yet.
+// Comment out to disable
+#define TAKE_SHIELD_IMMEDIATELY
+
 // Comment out to enable assert
 #define NDEBUG
 

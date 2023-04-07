@@ -166,6 +166,21 @@ namespace TurboFan {
     // Save store
     Store::save();
 
+#ifdef TAKE_SHIELD_IMMEDIATELY
+    if (!rootState.hasShield[0]) {
+      // Take shield if not taken yet and standing next to one
+      auto [x, y] = rootState.pos[0];
+      for (int k = 0; k < 4; ++k) {
+        int nx = x + dx[k];
+        int ny = y + dy[k];
+        if (isValidPos(nx, ny) && rootState.at[nx][ny] == SHIELD_CELL) {
+          printFinalMove(nx, ny);
+          return;
+        }
+      }
+    }
+#endif
+
     // Find best move using Monte Carlo tree search
     MonteCarloTreeSearch mtcs(rootState);
     int lastMove = -1;
