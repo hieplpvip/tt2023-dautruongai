@@ -31,7 +31,7 @@ struct MonteCarloTreeSearch {
     int sumScore = 0;
 
     // Values used for fast calculation of UCT
-    double averageScore = 0, sqrtLogNumVisits = 0, CDivSqrtNumVisits = 0;
+    double winRate = 0, sqrtLogNumVisits = 0, CDivSqrtNumVisits = 0, heuristicValue = 0;
 
     // Cached value of gameState.isTerminal()
     bool isTerminal = false;

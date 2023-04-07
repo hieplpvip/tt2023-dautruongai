@@ -1,14 +1,9 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-// When this is defined, a draw will get a score of -1 instead of 0.
-// In other words, the AI will try to win at all costs.
-// Comment out to disable
-#define DRAW_IS_UNACCEPTABLE
-
 // Take shield immediately if it standing next to one and not having shield yet.
 // Comment out to disable
-#define TAKE_SHIELD_IMMEDIATELY
+// #define TAKE_SHIELD_IMMEDIATELY
 
 // Comment out to enable assert
 #define NDEBUG
@@ -18,7 +13,10 @@
 
 // Comment out to run until timed out
 #define LIMIT_NUMBER_OF_ITERATIONS
-#define MAX_ITERATIONS 100
+#define MAX_ITERATIONS 200
+
+// Least margin to be considered as win
+#define WIN_MARGIN 5
 
 // Number of nodes to be preallocated to avoid overhead of new
 #define NUMBER_OF_PREALLOCATED_NODES 1000000
@@ -35,10 +33,10 @@ constexpr int SHIELD_CELL = 102;
 constexpr int MTCS_ITERATIONS = 1000;
 
 // Number of visits until a node can be selected using UCT instead of randomly
-constexpr int MTCS_MIN_VISITS = 5;
+constexpr int MTCS_MIN_VISITS = 50;
 
 // C in the UCT formula
-const double MCTS_C = sqrt(2);
+const double MCTS_C = 10;
 
 /*
  * All possible moves.

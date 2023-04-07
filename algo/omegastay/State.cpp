@@ -26,17 +26,7 @@ bool State::isTerminal() const {
 }
 
 int State::getResult() const {
-#ifdef DRAW_IS_UNACCEPTABLE
-  return (gold[0] > gold[1]) ? 1 : -1;
-#else
-  if (gold[0] > gold[1]) {
-    return 1;
-  } else if (gold[0] < gold[1]) {
-    return -1;
-  } else {
-    return 0;
-  }
-#endif
+  return (gold[0] > gold[1] + WIN_MARGIN) ? 1 : 0;
 }
 
 const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};

@@ -27,12 +27,14 @@ namespace Store {
   /*
    * All-pairs shortest path between cells when we **DO NOT** have shield
    * (i.e. can not go through danger cell)
+   * INF means no path
    */
   extern int distNoShield[15][15][15][15];
 
   /*
    * All-pairs shortest path between cells when we **DO** have shield
    * (i.e. can go through danger cell)
+   * INF means no path
    */
   extern int distWithShield[15][15][15][15];
 

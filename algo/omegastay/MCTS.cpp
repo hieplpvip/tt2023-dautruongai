@@ -1,4 +1,5 @@
 #include "MCTS.h"
+#include "Heuristic.h"
 #include "Random.h"
 #include "Store.h"
 #include "Utility.h"
@@ -20,6 +21,10 @@ Node* newNode(const State& gameState) {
   node.gameState = gameState;
   node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
   node.isTerminal = node.gameState.isTerminal();
+
+  int lastPlayer = node.gameState.playerToMove ^ 1;
+  node.heuristicValue = Heuristic::evaluate(node.gameState, node.gameState.hasShield[lastPlayer], node.gameState.pos[lastPlayer].x, node.gameState.pos[lastPlayer].y);
+
   return &nodes[numNodes++];
 }
 
@@ -35,6 +40,10 @@ Node* newNode(const State& gameState, Node* parent, MoveEnum move) {
   node.gameState.performMove(move);
   node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
   node.isTerminal = node.gameState.isTerminal();
+
+  int lastPlayer = node.gameState.playerToMove ^ 1;
+  node.heuristicValue = Heuristic::evaluate(node.gameState, node.gameState.hasShield[lastPlayer], node.gameState.pos[lastPlayer].x, node.gameState.pos[lastPlayer].y);
+
   return &nodes[numNodes++];
 }
 
@@ -45,8 +54,9 @@ inline bool Node::isFullyExpanded() const {
 inline double Node::getUCT() const {
   assert(numVisits > 0);
   // We never call this function on root, so parent is always non-null
-  // UCT = -sumScore / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits);
-  return -averageScore + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
+  // UCT = (numVisits - sumScore) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits) + progressive bias
+  // progressive bias = heuristicValue / (numVisits + 1)
+  return 1 - winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits + heuristicValue / (numVisits + 1);
 }
 
 Node* Node::getBestChild() const {
@@ -137,8 +147,8 @@ void MonteCarloTreeSearch::search() {
 
   // Simulation phase
   // Play out the game randomly from the new node until the end
-  State tmpState = cur->gameState;
   int lastMove[2] = {-1, -1};
+  State tmpState = cur->gameState;
   while (!tmpState.isTerminal()) {
     auto move = getRandomMove(tmpState, lastMove[tmpState.playerToMove]);
     lastMove[tmpState.playerToMove] = move;
@@ -149,22 +159,20 @@ void MonteCarloTreeSearch::search() {
   // Update the scores of all the nodes in the path from cur to root
   int result = tmpState.getResult();
   if (cur->gameState.playerToMove == 1) {
-    result = -result;
+    result = 1 - result;
   }
   do {
     cur->numVisits++;
     cur->sumScore += result;
-    cur->averageScore = (double)cur->sumScore / cur->numVisits;
+    cur->winRate = (double)cur->sumScore / cur->numVisits;
     cur->sqrtLogNumVisits = sqrt(log(cur->numVisits));
     cur->CDivSqrtNumVisits = MCTS_C / sqrt(cur->numVisits);
     cur = cur->parent;
-    result = -result;
+    result = 1 - result;
   } while (cur != nullptr);
 }
 
 MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state, int lastMove) const {
-  // TODO: use better simulation strategy
-
   static int prob[NUM_MOVES];
   static int numLegalMoves;
   static bool isLegalMove[NUM_MOVES];

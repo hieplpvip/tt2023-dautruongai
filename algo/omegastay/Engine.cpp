@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include "Constants.h"
 #include "Engine.h"
+#include "Heuristic.h"
 #include "MCTS.h"
 #include "Random.h"
 #include "Store.h"
@@ -103,34 +104,64 @@ namespace Ignition {
     Store::save();
   }
 
-  void findStartingPosition() {
+  void findStartingPositionOld() {
     // Find starting position
     // For now, we just find the nearest-to-shield empty cell
-    // FIXME: better algorithm
-    {
-      int minDistToShield = INF;
-      vector<array<int, 2>> candidates;
-      REPL_ALL_CELL(x, y) {
-        if (rootState.at[x][y] == EMPTY_CELL) {
-          for (auto [shieldX, shieldY] : shieldPos) {
-            int dist = Store::distNoShield[x][y][shieldX][shieldY];
-            if (dist < minDistToShield) {
-              minDistToShield = dist;
-              candidates.clear();
-              candidates.push_back({x, y});
-            } else if (dist == minDistToShield) {
-              candidates.push_back({x, y});
-            }
+    int minDistToShield = INF;
+    vector<array<int, 2>> candidates;
+    REPL_ALL_CELL(x, y) {
+      if (rootState.at[x][y] == EMPTY_CELL) {
+        for (auto [shieldX, shieldY] : shieldPos) {
+          int dist = Store::distNoShield[x][y][shieldX][shieldY];
+          if (dist < minDistToShield) {
+            minDistToShield = dist;
+            candidates.clear();
+            candidates.push_back({x, y});
+          } else if (dist == minDistToShield) {
+            candidates.push_back({x, y});
           }
         }
       }
-      assert(!candidates.empty());
-
-      // Randomly choose one of the candidates
-      int idx = Random::rand(candidates.size());
-      auto [x, y] = candidates[idx];
-      printFinalMove(x, y);
     }
+    assert(!candidates.empty());
+
+    // Randomly choose one of the candidates
+    int idx = Random::rand(candidates.size());
+    auto [x, y] = candidates[idx];
+    printFinalMove(x, y);
+  }
+
+  void findStartingPosition() {
+    vector<tuple<double, int, int>> cand;
+
+    // Place opponent ship at some danger cell to ignore opponent in heuristic
+    rootState.pos[1] = {0, 0};
+    REPL_ALL_CELL(x, y) {
+      if (rootState.at[x][y] == DANGER_CELL) {
+        rootState.pos[1] = {x, y};
+        break;
+      }
+    }
+
+    // Evaluate all empty cells
+    REPL_ALL_CELL(x, y) {
+      if (rootState.at[x][y] != EMPTY_CELL) {
+        continue;
+      }
+      rootState.pos[0] = {x, y};
+      auto [gold, _, __] = Heuristic::HighestHeat(rootState, min(max(Store::M, Store::N) / 4, 4), 0);
+      cand.emplace_back(gold, x, y);
+    }
+
+    // Restore positions
+    rootState.pos[0] = rootState.pos[1] = {-1, -1};
+
+    // Sort decreasingly by gold, and choose randomly among top 3
+    int k = 3;
+    sort(cand.rbegin(), cand.rend());
+    while (k && get<0>(cand[k - 1]) <= -INF + 5) --k;
+    auto [_, x, y] = cand[Random::rand(k)];
+    printFinalMove(x, y);
   }
 }
 
