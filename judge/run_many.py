@@ -74,6 +74,9 @@ def single_thread(args):
 
 
 def run_job(map_filename, exe0, exe1):
+    disable_color()
+    disable_all_logging()
+
     match = Match(map_filename, exe0, exe1)
     while not match.finished:
         match.next_turn()
