@@ -8,8 +8,17 @@
 extern State rootState;
 extern std::vector<Position> shieldPos;
 
-void initializeStore();
-void handleFirstTurn();
-void handleOtherTurns();
+namespace Ignition {
+  // Initialize store (distNoShield, distWithShield, etc.)
+  void initializeStore();
+
+  // Find starting position (turn 1)
+  void findStartingPosition();
+}
+
+namespace TurboFan {
+  // Find next move (turn 2 and later)
+  void findNextMove();
+}
 
 #endif
