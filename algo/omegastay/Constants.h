@@ -14,7 +14,7 @@
 
 // Comment out to run until timed out
 #define LIMIT_NUMBER_OF_ITERATIONS
-#define MAX_ITERATIONS 400
+#define MAX_ITERATIONS 100
 
 // Number of nodes to be preallocated to avoid overhead of new
 #define NUMBER_OF_PREALLOCATED_NODES 1000000
@@ -33,9 +33,13 @@ constexpr int MTCS_ITERATIONS = 1000;
 // Number of visits until a node can be selected using UCT instead of randomly
 constexpr int MTCS_MIN_VISITS = 5;
 
-/** C in the UCT formula */
+// C in the UCT formula
 const double MCTS_C = sqrt(2);
 
+/*
+ * All possible moves.
+ * Guaranteed that UP ^ DOWN = 1, LEFT ^ RIGHT = 1
+ */
 enum MoveEnum {
   UP = 0,
   DOWN = 1,

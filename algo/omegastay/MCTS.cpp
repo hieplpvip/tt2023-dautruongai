@@ -138,8 +138,10 @@ void MonteCarloTreeSearch::search() {
   // Simulation phase
   // Play out the game randomly from the new node until the end
   State tmpState = cur->gameState;
+  int lastMove[2] = {-1, -1};
   while (!tmpState.isTerminal()) {
-    auto move = getRandomMove(tmpState);
+    auto move = getRandomMove(tmpState, lastMove[tmpState.playerToMove]);
+    lastMove[tmpState.playerToMove] = move;
     tmpState.performMove(move);
   }
 
@@ -160,7 +162,7 @@ void MonteCarloTreeSearch::search() {
   } while (cur != nullptr);
 }
 
-MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state) const {
+MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state, int lastMove) const {
   // TODO: use better simulation strategy
 
   static int prob[NUM_MOVES];
@@ -169,7 +171,8 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state) const {
   state.getLegalMoves(isLegalMove, numLegalMoves);
 
   for (int k = 0; k < NUM_MOVES; ++k) {
-    prob[k] = isLegalMove[k];
+    // Avoid going back unless there is no other choice
+    prob[k] = (isLegalMove[k] && ((k ^ 1) != lastMove || numLegalMoves == 1));
   }
   for (int k = 1; k < NUM_MOVES; ++k) {
     prob[k] += prob[k - 1];
