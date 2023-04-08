@@ -5,6 +5,12 @@
 #include "State.h"
 #include <vector>
 
+#define isValidPos(x, y) (0 <= x && x < Store::M && 0 <= y && y < Store::N)
+
+#define REPL_ALL_CELL(x, y)          \
+  for (int x = 0; x < Store::M; ++x) \
+    for (int y = 0; y < Store::N; ++y)
+
 /**
  * Persistent store for program state.
  */

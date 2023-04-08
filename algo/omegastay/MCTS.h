@@ -62,7 +62,7 @@ private:
   void search();
 
   // Return a random move from the given state
-  MoveEnum getRandomMove(const State& state, int lastMove) const;
+  MoveEnum getRandomMove(State& state, int lastMove) const;
 };
 
 #endif

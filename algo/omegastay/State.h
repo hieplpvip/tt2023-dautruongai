@@ -4,6 +4,22 @@
 #include "Constants.h"
 #include "Utility.h"
 
+struct Position {
+  int x;
+  int y;
+
+  Position() {}
+  Position(int x, int y) : x(x), y(y) {}
+
+  inline bool operator==(const Position &other) const {
+    return x == other.x && y == other.y;
+  }
+
+  inline bool operator<(const Position &other) const {
+    return x < other.x && (x == other.x && y < other.y);
+  }
+};
+
 /*
  * A game state.
  */

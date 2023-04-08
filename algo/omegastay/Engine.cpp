@@ -8,10 +8,6 @@
 #include "Utility.h"
 using namespace std;
 
-#define REPL_ALL_CELL(x, y)          \
-  for (int x = 0; x < Store::M; ++x) \
-    for (int y = 0; y < Store::N; ++y)
-
 State rootState;
 vector<Position> shieldPos;
 
@@ -148,8 +144,8 @@ namespace Ignition {
         continue;
       }
       rootState.pos[0] = {x, y};
-      auto [gold, _, __] = Heuristic::HighestHeat(rootState, min(max(Store::M, Store::N) / 4, 4), 0);
-      cand.emplace_back(gold, x, y);
+      auto heat = Heuristic::GetHighestHeat(rootState, 0);
+      cand.emplace_back(heat, x, y);
     }
 
     // Restore positions

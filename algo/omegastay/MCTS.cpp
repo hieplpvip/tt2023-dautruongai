@@ -21,10 +21,6 @@ Node* newNode(const State& gameState) {
   node.gameState = gameState;
   node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
   node.isTerminal = node.gameState.isTerminal();
-
-  int lastPlayer = node.gameState.playerToMove ^ 1;
-  node.heuristicValue = Heuristic::evaluate(node.gameState, node.gameState.hasShield[lastPlayer], node.gameState.pos[lastPlayer].x, node.gameState.pos[lastPlayer].y);
-
   return &nodes[numNodes++];
 }
 
@@ -40,10 +36,6 @@ Node* newNode(const State& gameState, Node* parent, MoveEnum move) {
   node.gameState.performMove(move);
   node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
   node.isTerminal = node.gameState.isTerminal();
-
-  int lastPlayer = node.gameState.playerToMove ^ 1;
-  node.heuristicValue = Heuristic::evaluate(node.gameState, node.gameState.hasShield[lastPlayer], node.gameState.pos[lastPlayer].x, node.gameState.pos[lastPlayer].y);
-
   return &nodes[numNodes++];
 }
 
@@ -54,9 +46,8 @@ inline bool Node::isFullyExpanded() const {
 inline double Node::getUCT() const {
   assert(numVisits > 0);
   // We never call this function on root, so parent is always non-null
-  // UCT = (numVisits - sumScore) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits) + progressive bias
-  // progressive bias = heuristicValue / (numVisits + 1)
-  return 1 - winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits + heuristicValue / (numVisits + 1);
+  // UCT = (numVisits - sumScore) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
+  return 1 - winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
 }
 
 Node* Node::getBestChild() const {
@@ -172,15 +163,37 @@ void MonteCarloTreeSearch::search() {
   } while (cur != nullptr);
 }
 
-MoveEnum MonteCarloTreeSearch::getRandomMove(const State& state, int lastMove) const {
+MoveEnum MonteCarloTreeSearch::getRandomMove(State& state, int lastMove) const {
   static int prob[NUM_MOVES];
   static int numLegalMoves;
   static bool isLegalMove[NUM_MOVES];
   state.getLegalMoves(isLegalMove, numLegalMoves);
 
+  auto [x, y] = state.pos[state.playerToMove];
+  auto [hx, hy] = Heuristic::GetHighestHeatPosition(state, state.playerToMove);
+
+  memset(prob, 0, sizeof(prob));
+#define BIAS 10
+  if (hx < x) {
+    prob[UP] += BIAS;
+  }
+  if (hx > x) {
+    prob[DOWN] += BIAS;
+  }
+  if (hy < y) {
+    prob[LEFT] += BIAS;
+  }
+  if (hy > y) {
+    prob[RIGHT] += BIAS;
+  }
+
   for (int k = 0; k < NUM_MOVES; ++k) {
     // Avoid going back unless there is no other choice
-    prob[k] = (isLegalMove[k] && ((k ^ 1) != lastMove || numLegalMoves == 1));
+    if (isLegalMove[k] && ((k ^ 1) != lastMove || numLegalMoves == 1)) {
+      prob[k] += 1;
+    } else {
+      prob[k] = 0;
+    }
   }
   for (int k = 1; k < NUM_MOVES; ++k) {
     prob[k] += prob[k - 1];

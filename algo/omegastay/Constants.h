@@ -13,13 +13,13 @@
 
 // Comment out to run until timed out
 #define LIMIT_NUMBER_OF_ITERATIONS
-#define MAX_ITERATIONS 200
+#define MAX_ITERATIONS 10
 
 // Least margin to be considered as win
 #define WIN_MARGIN 5
 
 // Number of nodes to be preallocated to avoid overhead of new
-#define NUMBER_OF_PREALLOCATED_NODES 1000000
+#define NUMBER_OF_PREALLOCATED_NODES 500000
 
 #include <cmath>
 
@@ -33,10 +33,10 @@ constexpr int SHIELD_CELL = 102;
 constexpr int MTCS_ITERATIONS = 1000;
 
 // Number of visits until a node can be selected using UCT instead of randomly
-constexpr int MTCS_MIN_VISITS = 50;
+constexpr int MTCS_MIN_VISITS = 10;
 
 // C in the UCT formula
-const double MCTS_C = 10;
+const double MCTS_C = sqrt(2);
 
 /*
  * All possible moves.
