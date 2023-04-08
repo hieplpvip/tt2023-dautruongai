@@ -68,7 +68,7 @@ bool input() {
 void makeFirstMove() {
   MiniMaxAlgorithm minimax;
 
-  auto [score, move] = minimax.MaxStartNode(2 * -INF, 2 * INF, 2, rootState);
+  auto [score, move] = minimax.MaxStartNode(2 * -INF, 2 * INF, 0);
 
   // Write result to file
   std::ofstream fout("MOVE.OUT");
@@ -91,7 +91,6 @@ int main() {
   bool firstTurn = input();
   if (firstTurn) {
     Store::init();
-    Store::update();
     Store::save();
     makeFirstMove();
   } else {

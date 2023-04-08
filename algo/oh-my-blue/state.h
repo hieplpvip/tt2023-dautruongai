@@ -23,7 +23,7 @@ struct Position {
   }
 
   inline bool operator<(const Position &other) const {
-    return x < other.x && (x == other.x && y < other.y);
+    return x < other.x || (x == other.x && y < other.y);
   }
 };
 
