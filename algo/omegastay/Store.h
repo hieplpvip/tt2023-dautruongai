@@ -25,42 +25,26 @@ namespace Store {
   extern int currentTurn;
 
   /*
-   * All-pairs shortest path between cells when we **DO NOT** have shield
-   * (i.e. can not go through danger cell)
+   * dist[shield] is all-pairs shortest path between cells.
+   * shield = 0 means we **DO NOT** have shield
+   * shield = 1 means we DO** have shield
    * INF means no path
    */
-  extern int distNoShield[15][15][15][15];
+  extern int dist[2][15][15][15][15];
 
   /*
-   * All-pairs shortest path between cells when we **DO** have shield
-   * (i.e. can go through danger cell)
-   * INF means no path
+   * numLegalMovesNoShield[shield][i][j] is number of legal moves from cell (i, j)
+   * shield = 0 means we **DO NOT** have shield
+   * shield = 1 means we DO** have shield
    */
-  extern int distWithShield[15][15][15][15];
+  extern int numLegalMoves[2][15][15];
 
   /*
-   * numLegalMovesNoShield[i][j] is number of legal moves from cell (i, j)
-   * when we **DO NOT** have shield
+   * isLegalMoveNoShield[shield][i][j][k] is true if we can move from cell (i, j) to cell (i + dx[k], j + dy[k])
+   * shield = 0 means we **DO NOT** have shield
+   * shield = 1 means we DO** have shield
    */
-  extern int numLegalMovesNoShield[15][15];
-
-  /*
-   * numLegalMovesWithShield[i][j] is number of legal moves from cell (i, j)
-   * when we DO** have shield
-   */
-  extern int numLegalMovesWithShield[15][15];
-
-  /*
-   * isLegalMoveNoShield[i][j][k] is true if we can move from cell (i, j) to cell (i + dx[k], j + dy[k])
-   * when we **DO NOT** have shield
-   */
-  extern bool isLegalMoveNoShield[15][15][NUM_MOVES];
-
-  /*
-   * isLegalMoveWithShield[i][j][k] is true if we can move from cell (i, j) to cell (i + dx[k], j + dy[k])
-   * when we **DO** have shield
-   */
-  extern bool isLegalMoveWithShield[15][15][NUM_MOVES];
+  extern bool isLegalMove[2][15][15][NUM_MOVES];
 
   // Past game states
   extern std::vector<State> pastStates;

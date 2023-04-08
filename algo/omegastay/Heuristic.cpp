@@ -29,8 +29,8 @@ namespace Heuristic {
     int opponent = player ^ 1;
     bool hasShield = state.hasShield[player];
     bool opponentHasShield = state.hasShield[opponent];
-    auto ourDist = (hasShield ? Store::distWithShield : Store::distNoShield)[state.pos[player].x][state.pos[player].y];
-    auto opponentDist = (opponentHasShield ? Store::distWithShield : Store::distNoShield)[state.pos[opponent].x][state.pos[opponent].y];
+    auto ourDist = Store::dist[hasShield][state.pos[player].x][state.pos[player].y];
+    auto opponentDist = Store::dist[opponentHasShield][state.pos[opponent].x][state.pos[opponent].y];
 
     for (int x = 0; x < Store::M; ++x) {
       for (int y = 0; y < Store::N; ++y) {
@@ -100,7 +100,7 @@ namespace Heuristic {
   }
 
   double evaluate(const State& state, int shield, int x, int y) {
-    auto dist = (shield ? Store::distWithShield : Store::distNoShield)[x][y];
+    auto dist = Store::dist[shield][x][y];
     double value = 0;
     for (int i = 0; i < Store::M; ++i) {
       for (int j = 0; j <= Store::N; ++j) {

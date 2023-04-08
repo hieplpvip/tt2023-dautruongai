@@ -17,15 +17,16 @@ vector<Position> shieldPos;
 
 namespace Ignition {
   void initializeStore() {
-    // Calculate distNoShield/distWithShield using BFS
+    // Calculate dist using BFS
     {
       REPL_ALL_CELL(x1, y1) {
         REPL_ALL_CELL(x2, y2) {
-          Store::distNoShield[x1][y1][x2][y2] = Store::distWithShield[x1][y1][x2][y2] = INF;
+          Store::dist[0][x1][y1][x2][y2] = Store::dist[1][x1][y1][x2][y2] = INF;
         }
       }
 
-#define dist(x, y) Store::distNoShield[sx][sy][x][y]
+#define dist(x, y) Store::dist[0][sx][sy][x][y]
+      // No shield
       queue<Position> q;
       REPL_ALL_CELL(sx, sy) {
         if (rootState.at[sx][sy] == DANGER_CELL) {
@@ -49,7 +50,8 @@ namespace Ignition {
       }
 #undef dist
 
-#define dist(x, y) Store::distWithShield[sx][sy][x][y]
+#define dist(x, y) Store::dist[1][sx][sy][x][y]
+      // With shield
       REPL_ALL_CELL(sx, sy) {
         dist(sx, sy) = 0;
         q.emplace(sx, sy);
@@ -69,13 +71,10 @@ namespace Ignition {
 #undef dist
     }
 
-    // Calculate numLegalMovesNoShield/numLegalMovesWithShield/isLegalMoveNoShield/isLegalMoveWithShield
+    // Calculate numLegalMoves and isLegalMove
     {
-      memset(Store::numLegalMovesNoShield, 0, sizeof(Store::numLegalMovesNoShield));
-      memset(Store::numLegalMovesWithShield, 0, sizeof(Store::numLegalMovesWithShield));
-
-      memset(Store::isLegalMoveNoShield, 0, sizeof(Store::isLegalMoveNoShield));
-      memset(Store::isLegalMoveWithShield, 0, sizeof(Store::isLegalMoveWithShield));
+      memset(Store::numLegalMoves, 0, sizeof(Store::numLegalMoves));
+      memset(Store::isLegalMove, 0, sizeof(Store::isLegalMove));
 
       REPL_ALL_CELL(x, y) {
         for (int k = 0; k < NUM_MOVES; ++k) {
@@ -83,12 +82,12 @@ namespace Ignition {
           int ny = y + dy[k];
 
           if (isValidPos(nx, ny)) {
-            ++Store::numLegalMovesWithShield[x][y];
-            Store::isLegalMoveWithShield[x][y][k] = true;
+            ++Store::numLegalMoves[1][x][y];
+            Store::isLegalMove[1][x][y][k] = true;
 
             if (rootState.at[nx][ny] != DANGER_CELL) {
-              ++Store::numLegalMovesNoShield[x][y];
-              Store::isLegalMoveNoShield[x][y][k] = true;
+              ++Store::numLegalMoves[0][x][y];
+              Store::isLegalMove[0][x][y][k] = true;
             }
           }
         }
@@ -112,7 +111,7 @@ namespace Ignition {
     REPL_ALL_CELL(x, y) {
       if (rootState.at[x][y] == EMPTY_CELL) {
         for (auto [shieldX, shieldY] : shieldPos) {
-          int dist = Store::distNoShield[x][y][shieldX][shieldY];
+          int dist = Store::dist[0][x][y][shieldX][shieldY];
           if (dist < minDistToShield) {
             minDistToShield = dist;
             candidates.clear();

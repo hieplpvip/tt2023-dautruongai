@@ -40,13 +40,9 @@ void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
 
   int x = pos[playerToMove].x;
   int y = pos[playerToMove].y;
-  if (hasShield[playerToMove]) {
-    numLegalMoves = Store::numLegalMovesWithShield[x][y];
-    memcpy(isLegalMove, Store::isLegalMoveWithShield[x][y], NUM_MOVES * sizeof(bool));
-  } else {
-    numLegalMoves = Store::numLegalMovesNoShield[x][y];
-    memcpy(isLegalMove, Store::isLegalMoveNoShield[x][y], NUM_MOVES * sizeof(bool));
-  }
+  int shield = hasShield[playerToMove];
+  numLegalMoves = Store::numLegalMoves[shield][x][y];
+  memcpy(isLegalMove, Store::isLegalMove[shield][x][y], NUM_MOVES * sizeof(bool));
 }
 
 void State::performMove(MoveEnum move) {
