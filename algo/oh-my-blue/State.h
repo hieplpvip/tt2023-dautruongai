@@ -7,16 +7,12 @@
   for (int x = a - MAGNET_RADIUS; x <= a + MAGNET_RADIUS; ++x) \
     for (int y = b - MAGNET_RADIUS; y <= b + MAGNET_RADIUS; ++y)
 
-#define isValidPos(x, y) (0 <= x && x < Store::M && 0 <= y && y < Store::N)
-
-typedef double score_t;
-
 struct Position {
   int x;
   int y;
 
   Position() {}
-  Position(int x, int y) : x(x), y(y) {}
+  Position(int _x, int _y) : x(_x), y(_y) {}
 
   inline bool operator==(const Position &other) const {
     return x == other.x && y == other.y;
@@ -61,14 +57,10 @@ struct State {
   // Whether players are eliminated
   bool eliminated[2];
 
-  // Current phase of the game
-  GamePhaseEnum phase;
-
   /*
    * Check if the state is terminal
    */
-  bool
-  isTerminal() const;
+  bool isTerminal() const;
 
   /*
    * Get the result of the game from perspective of first player.
@@ -91,12 +83,11 @@ struct State {
    * Perform a move.
    *
    * This function must be called for EACH PLAYER.
+   * turnLeft is decremented only after the second player has moved.
    * This is slightly different from the rule, which specify that both players move at the same time.
    * We split into two moves for MCTS/Minimax to work.
    */
   void performMove(PlayerEnum player, MoveEnum move);
 };
-
-extern State rootState;
 
 #endif  // STATE_H

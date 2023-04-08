@@ -1,9 +1,11 @@
 #include "Minimax.h"
-#include "State.h"
+#include "Random.h"
 #include "Store.h"
+#include "Utility.h"
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 /*
  * Read input from MAP.INP
@@ -70,28 +72,19 @@ bool readInput() {
 }
 
 void makeFirstMove() {
-  MiniMaxAlgorithm minimax;
-
-  auto [score, move] = minimax.MaxStartNode(2 * -INF, 2 * INF, 0);
-
-  // Write result to file
-  std::ofstream fout("MOVE.OUT");
-  fout << move.x + 1 << " " << move.y + 1;
-  fout.close();
+  auto [score, move] = MiniMax::MaxStartNode(2 * -INF, 2 * INF, 0);
+  printFinalMove(move.x, move.y);
 }
 
 void makeMove() {
-  MiniMaxAlgorithm minimax;
-
-  auto [score, move] = minimax.MaxNode(2 * -INF, 2 * INF, 0, rootState);
-
-  // Write result to file
-  std::ofstream fout("MOVE.OUT");
-  fout << move.x + 1 << " " << move.y + 1 << '\n';
-  fout.close();
+  auto [score, move] = MiniMax::MaxNode(2 * -INF, 2 * INF, 0, rootState);
+  printFinalMove(move.x, move.y);
 }
 
 int main() {
+  // Seed our random number generator
+  Random::seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
   bool firstTurn = readInput();
   if (firstTurn) {
     Store::init();

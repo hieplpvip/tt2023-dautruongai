@@ -81,8 +81,8 @@ Node* Node::getBestChild() const {
   return bestChild;
 }
 
-MonteCarloTreeSearch::MonteCarloTreeSearch(const State& rootState) {
-  root = newNode(rootState);
+MonteCarloTreeSearch::MonteCarloTreeSearch(const State& startState) {
+  root = newNode(startState);
 }
 
 MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {

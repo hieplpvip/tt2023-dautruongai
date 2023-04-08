@@ -52,7 +52,7 @@ struct MonteCarloTreeSearch {
   // The root of the tree
   Node* root;
 
-  MonteCarloTreeSearch(const State& rootState);
+  MonteCarloTreeSearch(const State& startState);
 
   // Return the best move after performing numIterations iterations of MCTS
   MoveEnum findBestMove(int numIterations);

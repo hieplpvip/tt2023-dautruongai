@@ -5,13 +5,9 @@
 #include "Utility.h"
 #include <vector>
 
-extern State rootState;
 extern std::vector<Position> shieldPos;
 
 namespace Ignition {
-  // Initialize store (distNoShield, distWithShield, etc.)
-  void initializeStore();
-
   // Find starting position (turn 1)
   void findStartingPosition();
 }

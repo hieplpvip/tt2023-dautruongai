@@ -32,6 +32,6 @@ namespace Heuristic {
    * Get the position with highest heat value corresponding to player.
    */
   Position GetHighestHeatPosition(State& state, int player);
-};
+}
 
 #endif

@@ -76,9 +76,13 @@ int main() {
 
   bool firstTurn = readInput();
   if (firstTurn) {
-    Ignition::initializeStore();
+    Store::init();
+    Store::save();
     Ignition::findStartingPosition();
   } else {
+    Store::load();
+    Store::update();
+    Store::save();
     TurboFan::findNextMove();
   }
   return 0;

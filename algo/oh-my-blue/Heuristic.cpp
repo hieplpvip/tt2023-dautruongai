@@ -25,7 +25,7 @@ namespace Heuristic {
         val = 0;
       } else if (state.at[x][y] == SHIELD_CELL) {
         // In late game, don't pick up shield
-        if (state.hasShield[player] || state.phase == GamePhaseEnum::LATE_GAME) {
+        if (state.hasShield[player] || Store::gamePhase == GamePhaseEnum::LATE_GAME) {
           val = 0;
         } else {
           val = SHIELD_VALUE;
@@ -127,7 +127,7 @@ namespace Heuristic {
   score_t Evaluate(double gold, int distance) {
     score_t val = 0;
 
-    if (rootState.phase == GamePhaseEnum::EARLY_GAME || rootState.phase == GamePhaseEnum::MID_GAME) {
+    if (Store::gamePhase == GamePhaseEnum::EARLY_GAME || Store::gamePhase == GamePhaseEnum::MID_GAME) {
       // Heuristic: reduce the value of the cell if it is far from the player
       val = gold * (BONUS - sqrt(distance));
     } else {

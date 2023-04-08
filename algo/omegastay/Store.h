@@ -11,7 +11,10 @@
   for (int x = 0; x < Store::M; ++x) \
     for (int y = 0; y < Store::N; ++y)
 
-/**
+// Game state input from MAP.INP
+extern State rootState;
+
+/*
  * Persistent store for program state.
  */
 namespace Store {
@@ -52,14 +55,20 @@ namespace Store {
    */
   extern bool isLegalMove[2][15][15][NUM_MOVES];
 
-  // Past game states
-  extern std::vector<State> pastStates;
+  // Game state of previous turn
+  extern State pastState;
+
+  // Initialize store (called once at the beginning of a match)
+  void init();
+
+  // Update store data (called at the beginning of each turn, starting from turn 2)
+  void update();
 
   // Load store from STATE.OUT
   void load();
 
   // Save store to STATE.OUT
   void save();
-};
+}
 
 #endif

@@ -1,15 +1,12 @@
 #include "State.h"
 #include "Store.h"
 #include "Heuristic.h"
-
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <iostream>
 
 #define dist(player, x, y) (Store::dist[hasShield[player]][pos[player].x][pos[player].y][x][y])
-
-State rootState;
 
 bool State::isTerminal() const {
   if (turnLeft == 0 || (eliminated[0] && eliminated[1])) {
@@ -61,7 +58,7 @@ void State::performMove(PlayerEnum player, MoveEnum move) {
       for (int i = 0; i < 2; ++i) {
         auto [x, y] = pos[i];
         if (at[x][y] == SHIELD_CELL) {
-          if (!hasShield[i] && phase != GamePhaseEnum::LATE_GAME) {
+          if (!hasShield[i] && Store::gamePhase != GamePhaseEnum::LATE_GAME) {
             score[i] += Heuristic::Evaluate(SHIELD_CELL, Store::K - turnLeft - Store::currentTurn + 3);
           }
           hasShield[i] = true;

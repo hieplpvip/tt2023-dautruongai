@@ -8,97 +8,9 @@
 #include "Utility.h"
 using namespace std;
 
-State rootState;
 vector<Position> shieldPos;
 
 namespace Ignition {
-  void initializeStore() {
-    // Calculate dist using BFS
-    {
-      REPL_ALL_CELL(x1, y1) {
-        REPL_ALL_CELL(x2, y2) {
-          Store::dist[0][x1][y1][x2][y2] = Store::dist[1][x1][y1][x2][y2] = INF;
-        }
-      }
-
-#define dist(x, y) Store::dist[0][sx][sy][x][y]
-      // No shield
-      queue<Position> q;
-      REPL_ALL_CELL(sx, sy) {
-        if (rootState.at[sx][sy] == DANGER_CELL) {
-          continue;
-        }
-
-        dist(sx, sy) = 0;
-        q.emplace(sx, sy);
-        while (!q.empty()) {
-          auto [x, y] = q.front();
-          q.pop();
-          for (int k = 0; k < NUM_MOVES; ++k) {
-            int nx = x + dx[k];
-            int ny = y + dy[k];
-            if (isValidPos(nx, ny) && rootState.at[nx][ny] != DANGER_CELL && dist(nx, ny) == INF) {
-              dist(nx, ny) = dist(x, y) + 1;
-              q.emplace(nx, ny);
-            }
-          }
-        }
-      }
-#undef dist
-
-#define dist(x, y) Store::dist[1][sx][sy][x][y]
-      // With shield
-      REPL_ALL_CELL(sx, sy) {
-        dist(sx, sy) = 0;
-        q.emplace(sx, sy);
-        while (!q.empty()) {
-          auto [x, y] = q.front();
-          q.pop();
-          for (int k = 0; k < NUM_MOVES; ++k) {
-            int nx = x + dx[k];
-            int ny = y + dy[k];
-            if (isValidPos(nx, ny) && dist(nx, ny) == INF) {
-              dist(nx, ny) = dist(x, y) + 1;
-              q.emplace(nx, ny);
-            }
-          }
-        }
-      }
-#undef dist
-    }
-
-    // Calculate numLegalMoves and isLegalMove
-    {
-      memset(Store::numLegalMoves, 0, sizeof(Store::numLegalMoves));
-      memset(Store::isLegalMove, 0, sizeof(Store::isLegalMove));
-
-      REPL_ALL_CELL(x, y) {
-        for (int k = 0; k < NUM_MOVES; ++k) {
-          int nx = x + dx[k];
-          int ny = y + dy[k];
-
-          if (isValidPos(nx, ny)) {
-            ++Store::numLegalMoves[1][x][y];
-            Store::isLegalMove[1][x][y][k] = true;
-
-            if (rootState.at[nx][ny] != DANGER_CELL) {
-              ++Store::numLegalMoves[0][x][y];
-              Store::isLegalMove[0][x][y][k] = true;
-            }
-          }
-        }
-      }
-    }
-
-    // Initialize other fields of store
-    // M, N, K, HALF_K is already set in main::readInput()
-    Store::currentTurn = 1;
-    Store::pastStates.push_back(rootState);
-
-    // Save store
-    Store::save();
-  }
-
   void findStartingPositionOld() {
     // Find starting position
     // For now, we just find the nearest-to-shield empty cell
@@ -162,36 +74,6 @@ namespace Ignition {
 
 namespace TurboFan {
   void findNextMove() {
-    // Load store
-    Store::load();
-
-    // Update opponent's shield/gold
-    {
-      rootState.eliminated[0] = Store::pastStates.back().eliminated[0];
-      rootState.eliminated[1] = Store::pastStates.back().eliminated[1];
-      rootState.gold[1] = Store::pastStates.back().gold[1];
-      rootState.hasShield[1] = Store::pastStates.back().hasShield[1];
-
-      auto [x, y] = rootState.pos[1];
-      int prevCell = Store::pastStates.back().at[x][y];
-      if (prevCell == SHIELD_CELL) {
-        rootState.hasShield[1] = true;
-      } else if (prevCell == DANGER_CELL) {
-        if (!rootState.hasShield[1]) {
-          rootState.eliminated[1] = true;
-        }
-      } else if (prevCell != EMPTY_CELL) {
-        rootState.gold[1] += prevCell;
-      }
-    }
-
-    // Update store with new data
-    Store::currentTurn += 1;
-    Store::pastStates.push_back(rootState);
-
-    // Save store
-    Store::save();
-
 #ifdef TAKE_SHIELD_IMMEDIATELY
     if (!rootState.hasShield[0]) {
       // Take shield if not taken yet and standing next to one

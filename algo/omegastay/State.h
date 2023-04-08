@@ -9,14 +9,14 @@ struct Position {
   int y;
 
   Position() {}
-  Position(int x, int y) : x(x), y(y) {}
+  Position(int _x, int _y) : x(_x), y(_y) {}
 
   inline bool operator==(const Position &other) const {
     return x == other.x && y == other.y;
   }
 
   inline bool operator<(const Position &other) const {
-    return x < other.x && (x == other.x && y < other.y);
+    return x < other.x || (x == other.x && y < other.y);
   }
 };
 

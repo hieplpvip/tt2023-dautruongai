@@ -6,189 +6,191 @@
 
 #define isLegalMove(player, move) (Store::isLegalMove[state.hasShield[player]][state.pos[player].x][state.pos[player].y][move])
 
-std::pair<score_t, Position> MiniMaxAlgorithm::MaxStartNode(score_t alpha, score_t beta, int depth) {
-  score_t bestScore = 2 * -INF, secondBestScore = 2 * -INF;
-  Position bestMove = Position(0, 0);
-  Position secondBestMove = bestMove;
+namespace MiniMax {
+  std::pair<score_t, Position> MaxStartNode(score_t alpha, score_t beta, int depth) {
+    score_t bestScore = 2 * -INF, secondBestScore = 2 * -INF;
+    Position bestMove = Position(0, 0);
+    Position secondBestMove = bestMove;
 
-  auto candidates = Heuristic::GetCandidates(rootState);
+    auto candidates = Heuristic::GetCandidates(rootState);
 
-  for (auto &[_score, pos] : candidates) {
-    rootState.pos[0] = rootState.lastPos[0] = pos;
+    for (auto &[_score, pos] : candidates) {
+      rootState.pos[0] = rootState.lastPos[0] = pos;
 
-    auto [score, _] = MinStartNode(alpha, beta, depth + 1);
+      auto [score, _] = MinStartNode(alpha, beta, depth + 1);
 
-    // Update the best score
-    if (score > bestScore) {
-      bestScore = score;
-      bestMove = pos;
-    } else if (score > secondBestScore) {
-      secondBestScore = score;
-      secondBestMove = pos;
+      // Update the best score
+      if (score > bestScore) {
+        bestScore = score;
+        bestMove = pos;
+      } else if (score > secondBestScore) {
+        secondBestScore = score;
+        secondBestMove = pos;
+      }
+
+      // Alpha-beta pruning
+      if (bestScore >= beta) {
+        break;
+      }
+      if (bestScore > alpha) {
+        alpha = bestScore;
+      }
     }
 
-    // Alpha-beta pruning
-    if (bestScore >= beta) {
-      break;
-    }
-    if (bestScore > alpha) {
-      alpha = bestScore;
-    }
+    // FIXME: Use random(2) if needed
+
+    return std::make_pair(bestScore, bestMove);
   }
 
-  // FIXME: Use random(2) if needed
+  std::pair<score_t, Position> MinStartNode(score_t alpha, score_t beta, int depth) {
+    score_t bestScore = 2 * INF;
+    Position bestMove = Position(0, 0);
 
-  return std::make_pair(bestScore, bestMove);
-}
+    auto candidates = Heuristic::GetCandidates(rootState);
 
-std::pair<score_t, Position> MiniMaxAlgorithm::MinStartNode(score_t alpha, score_t beta, int depth) {
-  score_t bestScore = 2 * INF;
-  Position bestMove = Position(0, 0);
+    for (auto &[_score, pos] : candidates) {
+      rootState.pos[1] = rootState.lastPos[1] = pos;
+      if (rootState.pos[0] == rootState.pos[1]) {
+        continue;
+      }
 
-  auto candidates = Heuristic::GetCandidates(rootState);
+      auto [score, _] = MaxNode(alpha, beta, depth + 1, rootState);
 
-  for (auto &[_score, pos] : candidates) {
-    rootState.pos[1] = rootState.lastPos[1] = pos;
-    if (rootState.pos[0] == rootState.pos[1]) {
-      continue;
+      // Update the best score
+      if (score < bestScore) {
+        bestScore = score;
+        bestMove = pos;
+      }
+
+      // Alpha-beta pruning
+      if (bestScore <= alpha) {
+        break;
+      }
+      if (bestScore < beta) {
+        beta = bestScore;
+      }
     }
 
-    auto [score, _] = MaxNode(alpha, beta, depth + 1, rootState);
-
-    // Update the best score
-    if (score < bestScore) {
-      bestScore = score;
-      bestMove = pos;
-    }
-
-    // Alpha-beta pruning
-    if (bestScore <= alpha) {
-      break;
-    }
-    if (bestScore < beta) {
-      beta = bestScore;
-    }
+    return std::make_pair(bestScore, bestMove);
   }
 
-  return std::make_pair(bestScore, bestMove);
-}
-
-std::pair<score_t, Position> MiniMaxAlgorithm::MaxNode(score_t alpha, score_t beta, int depth, State &state) {
-  // Check terminal state
-  if (state.isTerminal()) {
-    return std::make_pair(state.getResult(), state.pos[0]);
-  }
-
-  // Check max depth
-  if (depth >= MAX_DEPTH) {
-    return std::make_pair(state.getScore(), state.pos[0]);
-  }
-
-  std::vector<MoveEnum> moves(4);
-  for (int i = 0; i < NUM_MOVES; ++i) {
-    moves[i] = static_cast<MoveEnum>(i);
-  }
-
-  // Remove invalid moves
-  for (int i = 0; i < (int)moves.size(); ++i) {
-    if (!isLegalMove(PlayerEnum::ME, moves[i])) {
-      std::swap(moves[i], moves.back());
-      moves.pop_back();
-      --i;
-    }
-  }
-
-  // Avoid going back
-  for (int i = 0; i < (int)moves.size(); ++i) {
-    int x = state.pos[PlayerEnum::ME].x + dx[moves[i]];
-    int y = state.pos[PlayerEnum::ME].y + dy[moves[i]];
-    if (Position{x, y} == state.lastPos[PlayerEnum::ME]) {
-      std::swap(moves[i], moves.back());
-      moves.pop_back();
-      --i;
-    }
-  }
-
-  // Try each move
-  score_t bestScore = 2 * -INF;
-  Position bestPos = state.pos[PlayerEnum::ME];
-  for (auto move : moves) {
-    // Perform the move
-    State nextState = state;
-    nextState.performMove(PlayerEnum::ME, move);
-
-    // Get the score of the move
-    auto [score, pos] = MinNode(alpha, beta, depth + 1, nextState);
-
-    // Update the best score
-    if (score > bestScore) {
-      bestScore = score;
-      bestPos = nextState.pos[PlayerEnum::ME];
+  std::pair<score_t, Position> MaxNode(score_t alpha, score_t beta, int depth, State &state) {
+    // Check terminal state
+    if (state.isTerminal()) {
+      return std::make_pair(state.getResult(), state.pos[0]);
     }
 
-    // Alpha-beta pruning
-    if (bestScore >= beta) {
-      break;
+    // Check max depth
+    if (depth >= MAX_DEPTH) {
+      return std::make_pair(state.getScore(), state.pos[0]);
     }
-    if (bestScore > alpha) {
-      alpha = bestScore;
+
+    std::vector<MoveEnum> moves(4);
+    for (int i = 0; i < NUM_MOVES; ++i) {
+      moves[i] = static_cast<MoveEnum>(i);
     }
+
+    // Remove invalid moves
+    for (int i = 0; i < (int)moves.size(); ++i) {
+      if (!isLegalMove(PlayerEnum::ME, moves[i])) {
+        std::swap(moves[i], moves.back());
+        moves.pop_back();
+        --i;
+      }
+    }
+
+    // Avoid going back
+    for (int i = 0; i < (int)moves.size(); ++i) {
+      int x = state.pos[PlayerEnum::ME].x + dx[moves[i]];
+      int y = state.pos[PlayerEnum::ME].y + dy[moves[i]];
+      if (Position{x, y} == state.lastPos[PlayerEnum::ME]) {
+        std::swap(moves[i], moves.back());
+        moves.pop_back();
+        --i;
+      }
+    }
+
+    // Try each move
+    score_t bestScore = 2 * -INF;
+    Position bestPos = state.pos[PlayerEnum::ME];
+    for (auto move : moves) {
+      // Perform the move
+      State nextState = state;
+      nextState.performMove(PlayerEnum::ME, move);
+
+      // Get the score of the move
+      auto [score, pos] = MinNode(alpha, beta, depth + 1, nextState);
+
+      // Update the best score
+      if (score > bestScore) {
+        bestScore = score;
+        bestPos = nextState.pos[PlayerEnum::ME];
+      }
+
+      // Alpha-beta pruning
+      if (bestScore >= beta) {
+        break;
+      }
+      if (bestScore > alpha) {
+        alpha = bestScore;
+      }
+    }
+
+    return std::make_pair(bestScore, bestPos);
   }
 
-  return std::make_pair(bestScore, bestPos);
-}
+  std::pair<score_t, Position> MinNode(score_t alpha, score_t beta, int depth, State &state) {
+    std::vector<MoveEnum> moves(4);
+    for (int i = 0; i < NUM_MOVES; ++i) {
+      moves[i] = static_cast<MoveEnum>(i);
+    }
 
-std::pair<score_t, Position> MiniMaxAlgorithm::MinNode(score_t alpha, score_t beta, int depth, State &state) {
-  std::vector<MoveEnum> moves(4);
-  for (int i = 0; i < NUM_MOVES; ++i) {
-    moves[i] = static_cast<MoveEnum>(i);
+    // Remove invalid moves
+    for (int i = 0; i < (int)moves.size(); ++i) {
+      if (!isLegalMove(PlayerEnum::ENEMY, moves[i])) {
+        std::swap(moves[i], moves.back());
+        moves.pop_back();
+        --i;
+      }
+    }
+
+    // Avoid going back
+    for (int i = 0; i < (int)moves.size(); ++i) {
+      int x = state.pos[PlayerEnum::ENEMY].x + dx[moves[i]];
+      int y = state.pos[PlayerEnum::ENEMY].y + dy[moves[i]];
+      if (Position{x, y} == state.lastPos[PlayerEnum::ENEMY]) {
+        std::swap(moves[i], moves.back());
+        moves.pop_back();
+        --i;
+      }
+    }
+
+    // Try each move
+    score_t bestScore = 2 * INF;
+    Position bestPos = state.pos[PlayerEnum::ENEMY];
+    for (auto move : moves) {
+      // Perform the move
+      State nextState = state;
+      nextState.performMove(PlayerEnum::ENEMY, move);
+
+      // Get the score of the move
+      auto [score, pos] = MaxNode(alpha, beta, depth + 1, nextState);
+
+      // Update the best score
+      if (score < bestScore) {
+        bestScore = score;
+        bestPos = nextState.pos[PlayerEnum::ENEMY];
+      }
+
+      // Alpha-beta pruning
+      if (bestScore <= alpha) {
+        break;
+      }
+      if (bestScore < beta) {
+        beta = bestScore;
+      }
+    }
+
+    return std::make_pair(bestScore, bestPos);
   }
-
-  // Remove invalid moves
-  for (int i = 0; i < (int)moves.size(); ++i) {
-    if (!isLegalMove(PlayerEnum::ENEMY, moves[i])) {
-      std::swap(moves[i], moves.back());
-      moves.pop_back();
-      --i;
-    }
-  }
-
-  // Avoid going back
-  for (int i = 0; i < (int)moves.size(); ++i) {
-    int x = state.pos[PlayerEnum::ENEMY].x + dx[moves[i]];
-    int y = state.pos[PlayerEnum::ENEMY].y + dy[moves[i]];
-    if (Position{x, y} == state.lastPos[PlayerEnum::ENEMY]) {
-      std::swap(moves[i], moves.back());
-      moves.pop_back();
-      --i;
-    }
-  }
-
-  // Try each move
-  score_t bestScore = 2 * INF;
-  Position bestPos = state.pos[PlayerEnum::ENEMY];
-  for (auto move : moves) {
-    // Perform the move
-    State nextState = state;
-    nextState.performMove(PlayerEnum::ENEMY, move);
-
-    // Get the score of the move
-    auto [score, pos] = MaxNode(alpha, beta, depth + 1, nextState);
-
-    // Update the best score
-    if (score < bestScore) {
-      bestScore = score;
-      bestPos = nextState.pos[PlayerEnum::ENEMY];
-    }
-
-    // Alpha-beta pruning
-    if (bestScore <= alpha) {
-      break;
-    }
-    if (bestScore < beta) {
-      beta = bestScore;
-    }
-  }
-
-  return std::make_pair(bestScore, bestPos);
 }

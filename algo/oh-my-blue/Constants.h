@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+using score_t = double;
+
 constexpr int INF = 1e9;
 
 constexpr int EMPTY_CELL = 0;
@@ -21,6 +23,10 @@ enum PlayerEnum {
   ENEMY = 1,
 };
 
+/*
+ * All possible moves.
+ * Guaranteed that UP ^ DOWN = 1, LEFT ^ RIGHT = 1
+ */
 enum MoveEnum {
   UP = 0,
   DOWN = 1,
