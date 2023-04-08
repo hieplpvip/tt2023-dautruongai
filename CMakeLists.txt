@@ -37,6 +37,7 @@ endfunction()
 
 add_agent(babyblue)
 add_agent(heisenberg)
+add_agent(oh-my-blue)
 add_agent(omegastay)
 add_agent(pinkman)
 add_agent(random)
