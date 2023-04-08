@@ -73,7 +73,7 @@ struct State {
    *
    * @return the score (with heuristic) difference between two players.
    */
-  score_t getScore() const;
+  score_t getScore();
 
   /*
    * Perform a move.

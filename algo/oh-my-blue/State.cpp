@@ -34,7 +34,7 @@ score_t State::getResult() const {
   return score[0] - score[1];
 }
 
-score_t State::getScore() const {
+score_t State::getScore() {
   return (score[0] + Heuristic::GetHighestHeat(*this, PlayerEnum::ME)) - (score[1] + Heuristic::GetHighestHeat(*this, PlayerEnum::ENEMY));
 }
 

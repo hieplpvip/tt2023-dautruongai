@@ -2,7 +2,7 @@
 #include "Store.h"
 #include <algorithm>
 #include <cmath>
-#include <iostream>
+#include <cstring>
 
 #define sqr(a) ((a) * (a))
 #define dist(player, u, v) Store::dist[state.hasShield[player]][state.pos[player].x][state.pos[player].y][u][v]
@@ -14,11 +14,21 @@ constexpr int SHIELD_VALUE = 7;
 constexpr int BONUS = 10;
 
 namespace Heuristic {
-  std::vector<std::vector<score_t>> GetHeatMap(State state, PlayerEnum player) {
-    // Note that table is 1-indexed
-    std::vector<std::vector<score_t>> table(Store::M + 2, std::vector<score_t>(Store::N + 2, 0));
+  // Preallocated heat map for faster computation
+  // Note that it is 1-indexed
+  static double table[20][20];
+
+  /*
+   * Generate heat map for a state according to player.
+   * For each cell(x, y) it will compute the heat in the range of HEAT_RADIUS.
+   */
+  void GetHeatMap(State& state, PlayerEnum player) {
+    // Reset table to zero
+    memset(table, 0, sizeof(table));
 
     if (state.turnLeft > Store::HALF_K && state.turnLeft - Store::HALF_K <= dist(player, Store::M / 2, Store::N / 2)) {
+      // Still in the first half of the game
+      // Approximate treasure value
       state.at[Store::M / 2][Store::N / 2] = std::max(1, abs(state.gold[0] - state.gold[1]) * 3 / 4);
     }
 
@@ -51,7 +61,8 @@ namespace Heuristic {
 
       val = Evaluate(val, dist(player, x, y));
 
-      // accumulate table
+      // Note that x and y are 0-indexed, but table is 1-indexed
+      // Add val to all cells between (i1, j1) and (i2, j2)
       int i1 = std::max(1, x + 1 - HEAT_RADIUS), j1 = std::max(1, y + 1 - HEAT_RADIUS);
       int i2 = std::min(Store::M, x + 1 + HEAT_RADIUS), j2 = std::min(Store::N, y + 1 + HEAT_RADIUS);
       table[i1][j1] += val;
@@ -60,16 +71,24 @@ namespace Heuristic {
       table[i2 + 1][j2 + 1] += val;
     }
 
+    // Accumulate table
     REPL_ALL_CELL(x, y) {
       table[x + 1][y + 1] += table[x + 1][y] + table[x][y + 1] - table[x][y];
     }
 
-    return table;
+    if (state.turnLeft > Store::HALF_K) {
+      // Reset center to empty
+      state.at[Store::M / 2][Store::N / 2] = EMPTY_CELL;
+    }
   }
 
-  std::vector<std::vector<score_t>> GetHeatMap(State state) {
-    // Note that the table is indexed from 1
-    std::vector<std::vector<score_t>> table(Store::M + 2, std::vector<score_t>(Store::N + 2, 0));
+  /*
+   * Generate heat map for a state without player.
+   * Use for initial state.
+   */
+  void GetHeatMap(State& state) {
+    // Reset table to zero
+    memset(table, 0, sizeof(table));
 
     REPL_ALL_CELL(x, y) {
       score_t val;
@@ -83,7 +102,8 @@ namespace Heuristic {
         val = state.at[x][y];
       }
 
-      // accumulate table
+      // Note that x and y are 0-indexed, but table is 1-indexed
+      // Add val to all cells between (i1, j1) and (i2, j2)
       int i1 = std::max(1, x + 1 - HEAT_RADIUS), j1 = std::max(1, y + 1 - HEAT_RADIUS);
       int i2 = std::min(Store::M, x + 1 + HEAT_RADIUS), j2 = std::min(Store::N, y + 1 + HEAT_RADIUS);
       table[i1][j1] += val;
@@ -92,19 +112,16 @@ namespace Heuristic {
       table[i2 + 1][j2 + 1] += val;
     }
 
+    // Accumulate table
     REPL_ALL_CELL(x, y) {
       table[x + 1][y + 1] += table[x + 1][y] + table[x][y + 1] - table[x][y];
     }
-
-    return table;
   }
 
-  std::vector<std::pair<score_t, Position>> GetCandidates(State state) {
-    // Note that table is 1-indexed
-    std::vector<std::vector<score_t>> table = GetHeatMap(state);
+  std::vector<std::pair<score_t, Position>> GetCandidates(State& state) {
+    GetHeatMap(state);
 
     std::vector<std::pair<score_t, Position>> candidates;
-
     REPL_ALL_CELL(x, y) {
       if (state.at[x][y] != EMPTY_CELL) {
         continue;
@@ -117,15 +134,13 @@ namespace Heuristic {
     return candidates;
   }
 
-  score_t GetHighestHeat(State state, PlayerEnum player) {
-    // Note that table is 1-indexed
-    std::vector<std::vector<score_t>> table = GetHeatMap(state, player);
+  score_t GetHighestHeat(State& state, PlayerEnum player) {
+    GetHeatMap(state, player);
 
     score_t bestScore = -INF;
     REPL_ALL_CELL(x, y) {
       bestScore = std::max(bestScore, table[x + 1][y + 1]);
     }
-
     return bestScore;
   }
 
