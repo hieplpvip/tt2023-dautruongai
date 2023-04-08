@@ -169,6 +169,7 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(State& state, int lastMove) const {
   static bool isLegalMove[NUM_MOVES];
   state.getLegalMoves(isLegalMove, numLegalMoves);
 
+#ifdef HEAVY_ROLLOUT
   auto [x, y] = state.pos[state.playerToMove];
   auto [heatScore, heatPos] = Heuristic::GetHighestHeatPosition(state, static_cast<PlayerEnum>(state.playerToMove));
   auto [hx, hy] = heatPos;
@@ -210,6 +211,13 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(State& state, int lastMove) const {
       prob[k] = 0;
     }
   }
+#else
+  for (int k = 0; k < NUM_MOVES; ++k) {
+    // Avoid going back unless there is no other choice
+    prob[k] = isLegalMove[k] && ((k ^ 1) != lastMove || numLegalMoves == 1);
+  }
+#endif
+
   for (int k = 1; k < NUM_MOVES; ++k) {
     prob[k] += prob[k - 1];
   }

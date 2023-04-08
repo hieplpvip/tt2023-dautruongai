@@ -10,6 +10,8 @@
 // Comment out to disable
 #define TAKE_GOLD_IMMEDIATELY
 
+#define HEAVY_ROLLOUT
+
 // Comment out to enable assert
 #define NDEBUG
 

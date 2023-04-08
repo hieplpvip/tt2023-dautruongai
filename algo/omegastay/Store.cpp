@@ -184,6 +184,12 @@ namespace Store {
         Store::winMargin = std::max(0, rootState.gold[0] - rootState.gold[1]) + 3;
         std::cerr << "LATE_GAME" << std::endl;
       }
+
+      if (rootState.turnLeft <= Store::K / 10) {
+        Store::winMargin = 0;
+      } else if (rootState.turnLeft <= Store::K / 5) {
+        Store::winMargin = 1;
+      }
     }
 
     // Update other fields
