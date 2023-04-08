@@ -5,7 +5,8 @@ project(tt2023-ai)
 set(CMAKE_CXX_STANDARD 17) # this does nothing for MSVC, use target_compile_options below
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -pipe")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wfloat-equal -Wduplicated-cond -Wcast-qual -Wcast-align -pedantic -pipe")
+set(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=undefined -fno-sanitize-recover -fsanitize=address -fstack-protector")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto -ffat-lto-objects -feliminate-unused-debug-types -fno-stack-protector -fno-trapping-math")
 
 if(WIN32)
