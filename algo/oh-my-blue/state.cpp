@@ -61,20 +61,14 @@ void State::performMove(PlayerEnum player, MoveEnum move) {
       for (int i = 0; i < 2; ++i) {
         auto [x, y] = pos[i];
         if (at[x][y] == SHIELD_CELL) {
-          if (!hasShield[i]) {
-            score[i] += SHIELD_CELL;  // make sure shield is always picked up
+          if (!hasShield[i] && phase != GamePhaseEnum::LATE_GAME) {
+            score[i] += Heuristic::Evaluate(SHIELD_CELL, Store::K - turnLeft - Store::currentTurn + 3);
           }
           hasShield[i] = true;
           at[x][y] = EMPTY_CELL;
         } else if (at[x][y] != DANGER_CELL && at[x][y] != EMPTY_CELL) {
           gold[i] += at[x][y];
-          if (phase == GamePhaseEnum::EARLY_GAME) {
-            score[i] += at[x][y] * BONUS - sqrt(Store::K - turnLeft - Store::currentTurn + 3);
-          } else if (phase == GamePhaseEnum::MID_GAME) {
-            score[i] += at[x][y] + BONUS - sqrt(Store::K - turnLeft - Store::currentTurn + 3);
-          } else {
-            score[i] += BONUS * sqr(at[x][y] + 1) / sqrt(Store::K - turnLeft - Store::currentTurn + 3);
-          }
+          score[i] += Heuristic::Evaluate(at[x][y], Store::K - turnLeft - Store::currentTurn + 3);
           at[x][y] = EMPTY_CELL;
         }
       }
