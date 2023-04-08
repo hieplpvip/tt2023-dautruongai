@@ -1,6 +1,6 @@
-#include "minimax.h"
-#include "heuristic.h"
-#include "store.h"
+#include "Minimax.h"
+#include "Heuristic.h"
+#include "Store.h"
 
 #include <iostream>
 

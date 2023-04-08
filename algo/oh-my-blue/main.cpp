@@ -1,12 +1,16 @@
+#include "Minimax.h"
+#include "State.h"
+#include "Store.h"
+#include <cassert>
 #include <iostream>
 #include <fstream>
-#include <assert.h>
 
-#include "state.h"
-#include "store.h"
-#include "minimax.h"
-
-bool input() {
+/*
+ * Read input from MAP.INP
+ *
+ * @return true if first turn
+ */
+bool readInput() {
   // Open file for reading
   std::ifstream fin("MAP.INP");
 
@@ -88,7 +92,7 @@ void makeMove() {
 }
 
 int main() {
-  bool firstTurn = input();
+  bool firstTurn = readInput();
   if (firstTurn) {
     Store::init();
     Store::save();

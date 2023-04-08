@@ -1,11 +1,11 @@
-#include "state.h"
-#include "store.h"
-#include "heuristic.h"
+#include "State.h"
+#include "Store.h"
+#include "Heuristic.h"
 
-#include <assert.h>
 #include <algorithm>
-#include <iostream>
+#include <cassert>
 #include <cmath>
+#include <iostream>
 
 #define dist(player, x, y) (Store::dist[hasShield[player]][pos[player].x][pos[player].y][x][y])
 

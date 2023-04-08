@@ -1,10 +1,11 @@
-#include "heuristic.h"
-#include "store.h"
+#include "Heuristic.h"
+#include "Store.h"
 
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 
+#define sqr(a) ((a) * (a))
 #define dist(player, u, v) Store::dist[state.hasShield[player]][state.pos[player].x][state.pos[player].y][u][v]
 
 namespace Heuristic {

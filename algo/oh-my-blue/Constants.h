@@ -1,5 +1,5 @@
-#ifndef CONSTANT_H
-#define CONSTANT_H
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 constexpr int INF = 1e9;
 
@@ -38,4 +38,4 @@ constexpr int NUM_MOVES = 4;
 constexpr int dx[] = {-1, +1, 0, 0};
 constexpr int dy[] = {0, 0, -1, +1};
 
-#endif  // CONSTANT_H
+#endif

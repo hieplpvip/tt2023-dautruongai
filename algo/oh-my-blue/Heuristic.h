@@ -1,10 +1,8 @@
 #ifndef HEURISTIC_H
 #define HEURISTIC_H
 
+#include "State.h"
 #include <vector>
-#include "state.h"
-
-#define sqr(a) ((a) * (a))
 
 namespace Heuristic {
   /*
@@ -33,6 +31,6 @@ namespace Heuristic {
    * Evaluate the score of a cell.
    */
   score_t Evaluate(double gold, int distance);
-};
+}
 
-#endif  // HEURISTIC_H
+#endif
