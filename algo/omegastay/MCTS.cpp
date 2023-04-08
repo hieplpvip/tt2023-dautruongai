@@ -172,25 +172,33 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(State& state, int lastMove) const {
   auto [x, y] = state.pos[state.playerToMove];
   auto [hx, hy] = Heuristic::GetHighestHeatPosition(state, state.playerToMove);
 
+#define BIAS_HEAT 10
+#define BIAS_SHIELD 10
+
   memset(prob, 0, sizeof(prob));
-#define BIAS 10
   if (hx < x) {
-    prob[UP] += BIAS;
+    prob[UP] += BIAS_HEAT;
   }
   if (hx > x) {
-    prob[DOWN] += BIAS;
+    prob[DOWN] += BIAS_HEAT;
   }
   if (hy < y) {
-    prob[LEFT] += BIAS;
+    prob[LEFT] += BIAS_HEAT;
   }
   if (hy > y) {
-    prob[RIGHT] += BIAS;
+    prob[RIGHT] += BIAS_HEAT;
   }
 
   for (int k = 0; k < NUM_MOVES; ++k) {
     // Avoid going back unless there is no other choice
     if (isLegalMove[k] && ((k ^ 1) != lastMove || numLegalMoves == 1)) {
       prob[k] += 1;
+
+      int nx = x + dx[k];
+      int ny = y + dy[k];
+      if (state.at[nx][ny] == SHIELD_CELL) {
+        prob[k] += BIAS_SHIELD;
+      }
     } else {
       prob[k] = 0;
     }
