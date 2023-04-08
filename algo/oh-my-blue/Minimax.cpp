@@ -1,7 +1,6 @@
 #include "Minimax.h"
 #include "Heuristic.h"
 #include "Store.h"
-
 #include <iostream>
 
 #define isLegalMove(player, move) (Store::isLegalMove[state.hasShield[player]][state.pos[player].x][state.pos[player].y][move])

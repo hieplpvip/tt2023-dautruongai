@@ -3,10 +3,6 @@
 
 #include "Constants.h"
 
-#define REPL_MAGNET_CELL(x, y, a, b)                           \
-  for (int x = a - MAGNET_RADIUS; x <= a + MAGNET_RADIUS; ++x) \
-    for (int y = b - MAGNET_RADIUS; y <= b + MAGNET_RADIUS; ++y)
-
 struct Position {
   int x;
   int y;
