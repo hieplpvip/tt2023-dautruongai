@@ -170,23 +170,26 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(State& state, int lastMove) const {
   state.getLegalMoves(isLegalMove, numLegalMoves);
 
   auto [x, y] = state.pos[state.playerToMove];
-  auto [hx, hy] = Heuristic::GetHighestHeatPosition(state, state.playerToMove);
+  auto [heatScore, heatPos] = Heuristic::GetHighestHeatPosition(state, static_cast<PlayerEnum>(state.playerToMove));
+  auto [hx, hy] = heatPos;
 
-#define BIAS_HEAT 10
-#define BIAS_SHIELD 10
+  bool shield = state.hasShield[state.playerToMove];
+  int heatBias = Store::dist[shield][x][y][hx][hy];
 
   memset(prob, 0, sizeof(prob));
-  if (hx < x) {
-    prob[UP] += BIAS_HEAT;
-  }
-  if (hx > x) {
-    prob[DOWN] += BIAS_HEAT;
-  }
-  if (hy < y) {
-    prob[LEFT] += BIAS_HEAT;
-  }
-  if (hy > y) {
-    prob[RIGHT] += BIAS_HEAT;
+  if (heatScore > 100) {
+    if (hx <= x) {
+      prob[UP] += heatBias;
+    }
+    if (hx >= x) {
+      prob[DOWN] += heatBias;
+    }
+    if (hy <= y) {
+      prob[LEFT] += heatBias;
+    }
+    if (hy >= y) {
+      prob[RIGHT] += heatBias;
+    }
   }
 
   for (int k = 0; k < NUM_MOVES; ++k) {
@@ -197,7 +200,11 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(State& state, int lastMove) const {
       int nx = x + dx[k];
       int ny = y + dy[k];
       if (state.at[nx][ny] == SHIELD_CELL) {
-        prob[k] += BIAS_SHIELD;
+        if (!shield) {
+          prob[k] += 25;
+        }
+      } else if (state.at[nx][ny] != DANGER_CELL) {
+        prob[k] += (state.at[nx][ny] << 3);
       }
     } else {
       prob[k] = 0;

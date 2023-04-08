@@ -1,9 +1,14 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-// Take shield immediately if it standing next to one and not having shield yet.
+// Take shield immediately if it standing next to one and not having shield yet,
+// but only when we are having more gold
 // Comment out to disable
-// #define TAKE_SHIELD_IMMEDIATELY
+#define TAKE_SHIELD_IMMEDIATELY
+
+// Take gold immediately if in late game
+// Comment out to disable
+#define TAKE_GOLD_IMMEDIATELY
 
 // Comment out to enable assert
 #define NDEBUG
@@ -15,19 +20,21 @@
 #define LIMIT_NUMBER_OF_ITERATIONS
 #define MAX_ITERATIONS 10
 
-// Least margin to be considered as win
-#define WIN_MARGIN 5
-
 // Number of nodes to be preallocated to avoid overhead of new
 #define NUMBER_OF_PREALLOCATED_NODES 500000
 
 #include <cmath>
+
+using score_t = double;
 
 constexpr int INF = 1e9;
 
 constexpr int EMPTY_CELL = 0;
 constexpr int DANGER_CELL = 101;
 constexpr int SHIELD_CELL = 102;
+
+constexpr int THRESHOLD_MID_GAME = 50;    // Determine when to switch to late game
+constexpr int THRESHOLD_EARLY_GAME = 15;  // Determine when to switch to mid game
 
 // Number of iterations of MCTS in one run
 constexpr int MTCS_ITERATIONS = 1000;
@@ -38,6 +45,11 @@ constexpr int MTCS_MIN_VISITS = 10;
 // C in the UCT formula
 const double MCTS_C = sqrt(2);
 
+enum PlayerEnum {
+  ME = 0,
+  ENEMY = 1,
+};
+
 /*
  * All possible moves.
  * Guaranteed that UP ^ DOWN = 1, LEFT ^ RIGHT = 1
@@ -47,6 +59,12 @@ enum MoveEnum {
   DOWN = 1,
   LEFT = 2,
   RIGHT = 3,
+};
+
+enum GamePhaseEnum {
+  EARLY_GAME = 0,
+  MID_GAME = 1,
+  LATE_GAME = 2,
 };
 
 constexpr int NUM_MOVES = 4;

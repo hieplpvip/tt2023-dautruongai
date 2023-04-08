@@ -26,7 +26,7 @@ bool State::isTerminal() const {
 }
 
 int State::getResult() const {
-  return (gold[0] > gold[1] + WIN_MARGIN) ? 1 : 0;
+  return (gold[0] > gold[1] + Store::winMargin) ? 1 : 0;
 }
 
 const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};

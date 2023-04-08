@@ -33,6 +33,9 @@ namespace Store {
   // Current turn
   extern int currentTurn;
 
+  // Current game phase
+  extern GamePhaseEnum gamePhase;
+
   /*
    * dist[shield] is all-pairs shortest path between cells.
    * shield = 0 means we **DO NOT** have shield
@@ -57,6 +60,9 @@ namespace Store {
 
   // Game state of previous turn
   extern State pastState;
+
+  // Least gold margin to be considered as winning
+  extern int winMargin;
 
   // Initialize store (called once at the beginning of a match)
   void init();

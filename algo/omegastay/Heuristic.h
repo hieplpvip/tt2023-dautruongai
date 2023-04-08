@@ -7,31 +7,24 @@
 
 namespace Heuristic {
   /*
-   * Generate heat map for a state according to player.
-   * For each cell(x, y) it will compute the heat in the range of HEAT_RADIUS (currently 2).
-   */
-  std::vector<std::vector<double>> GetHeatMap(State& state, int player);
-
-  /*
-   * Generate heat map for a state without player.
-   * Use for initial state.
-   */
-  std::vector<std::vector<double>> GetHeatMap(State& state);
-
-  /*
    * Get candidates for optimal first place.
    */
-  std::vector<std::pair<double, Position>> GetCandidates(State& state);
+  std::vector<std::pair<score_t, Position>> GetCandidates(State& state);
 
   /*
    * Get the highest heat value corresponding to player.
    */
-  double GetHighestHeat(State& state, int player);
+  score_t GetHighestHeat(State& state, PlayerEnum player);
 
   /*
    * Get the position with highest heat value corresponding to player.
    */
-  Position GetHighestHeatPosition(State& state, int player);
+  std::pair<score_t, Position> GetHighestHeatPosition(State& state, PlayerEnum player);
+
+  /*
+   * Evaluate the score of a cell.
+   */
+  score_t Evaluate(double gold, int distance);
 }
 
 #endif
