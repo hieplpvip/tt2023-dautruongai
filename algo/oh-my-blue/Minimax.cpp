@@ -1,21 +1,22 @@
-#include "minimax.h"
-#include "heuristic.h"
-#include "store.h"
+#include "Minimax.h"
+#include "Heuristic.h"
+#include "Store.h"
 
 #include <iostream>
 
 #define isLegalMove(player, move) (Store::isLegalMove[state.hasShield[player]][state.pos[player].x][state.pos[player].y][move])
 
-std::pair<score_t, Position> MiniMaxAlgorithm::MaxStartNode(score_t alpha, score_t beta, int depth, State &state) {
+std::pair<score_t, Position> MiniMaxAlgorithm::MaxStartNode(score_t alpha, score_t beta, int depth) {
   score_t bestScore = 2 * -INF, secondBestScore = 2 * -INF;
-  Position bestMove, secondBestMove;
+  Position bestMove = Position(0, 0);
+  Position secondBestMove = bestMove;
 
   auto candidates = Heuristic::GetCandidates(rootState);
 
   for (auto &[_score, pos] : candidates) {
     rootState.pos[0] = rootState.lastPos[0] = pos;
 
-    auto [score, _] = MinStartNode(alpha, beta, depth + 1, rootState);
+    auto [score, _] = MinStartNode(alpha, beta, depth + 1);
 
     // Update the best score
     if (score > bestScore) {
@@ -40,9 +41,9 @@ std::pair<score_t, Position> MiniMaxAlgorithm::MaxStartNode(score_t alpha, score
   return std::make_pair(bestScore, bestMove);
 }
 
-std::pair<score_t, Position> MiniMaxAlgorithm::MinStartNode(score_t alpha, score_t beta, int depth, State &state) {
+std::pair<score_t, Position> MiniMaxAlgorithm::MinStartNode(score_t alpha, score_t beta, int depth) {
   score_t bestScore = 2 * INF;
-  Position bestMove;
+  Position bestMove = Position(0, 0);
 
   auto candidates = Heuristic::GetCandidates(rootState);
 
@@ -89,7 +90,7 @@ std::pair<score_t, Position> MiniMaxAlgorithm::MaxNode(score_t alpha, score_t be
   }
 
   // Remove invalid moves
-  for (int i = 0; i < moves.size(); ++i) {
+  for (int i = 0; i < (int)moves.size(); ++i) {
     if (!isLegalMove(PlayerEnum::ME, moves[i])) {
       std::swap(moves[i], moves.back());
       moves.pop_back();
@@ -98,7 +99,7 @@ std::pair<score_t, Position> MiniMaxAlgorithm::MaxNode(score_t alpha, score_t be
   }
 
   // Avoid going back
-  for (int i = 0; i < moves.size(); ++i) {
+  for (int i = 0; i < (int)moves.size(); ++i) {
     int x = state.pos[PlayerEnum::ME].x + dx[moves[i]];
     int y = state.pos[PlayerEnum::ME].y + dy[moves[i]];
     if (Position{x, y} == state.lastPos[PlayerEnum::ME]) {
@@ -144,7 +145,7 @@ std::pair<score_t, Position> MiniMaxAlgorithm::MinNode(score_t alpha, score_t be
   }
 
   // Remove invalid moves
-  for (int i = 0; i < moves.size(); ++i) {
+  for (int i = 0; i < (int)moves.size(); ++i) {
     if (!isLegalMove(PlayerEnum::ENEMY, moves[i])) {
       std::swap(moves[i], moves.back());
       moves.pop_back();
@@ -153,7 +154,7 @@ std::pair<score_t, Position> MiniMaxAlgorithm::MinNode(score_t alpha, score_t be
   }
 
   // Avoid going back
-  for (int i = 0; i < moves.size(); ++i) {
+  for (int i = 0; i < (int)moves.size(); ++i) {
     int x = state.pos[PlayerEnum::ENEMY].x + dx[moves[i]];
     int y = state.pos[PlayerEnum::ENEMY].y + dy[moves[i]];
     if (Position{x, y} == state.lastPos[PlayerEnum::ENEMY]) {

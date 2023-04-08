@@ -1,10 +1,8 @@
 #ifndef HEURISTIC_H
 #define HEURISTIC_H
 
+#include "State.h"
 #include <vector>
-#include "state.h"
-
-#define sqr(a) ((a) * (a))
 
 namespace Heuristic {
   /*
@@ -28,6 +26,11 @@ namespace Heuristic {
    * Get the highest heat value corresponding to player.
    */
   score_t GetHighestHeat(State state, PlayerEnum player);
-};
 
-#endif  // HEURISTIC_H
+  /*
+   * Evaluate the score of a cell.
+   */
+  score_t Evaluate(double gold, int distance);
+}
+
+#endif

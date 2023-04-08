@@ -1,12 +1,16 @@
+#include "Minimax.h"
+#include "State.h"
+#include "Store.h"
+#include <cassert>
 #include <iostream>
 #include <fstream>
-#include <assert.h>
 
-#include "state.h"
-#include "store.h"
-#include "minimax.h"
-
-bool input() {
+/*
+ * Read input from MAP.INP
+ *
+ * @return true if first turn
+ */
+bool readInput() {
   // Open file for reading
   std::ifstream fin("MAP.INP");
 
@@ -68,7 +72,7 @@ bool input() {
 void makeFirstMove() {
   MiniMaxAlgorithm minimax;
 
-  auto [score, move] = minimax.MaxStartNode(2 * -INF, 2 * INF, 2, rootState);
+  auto [score, move] = minimax.MaxStartNode(2 * -INF, 2 * INF, 0);
 
   // Write result to file
   std::ofstream fout("MOVE.OUT");
@@ -88,10 +92,9 @@ void makeMove() {
 }
 
 int main() {
-  bool firstTurn = input();
+  bool firstTurn = readInput();
   if (firstTurn) {
     Store::init();
-    Store::update();
     Store::save();
     makeFirstMove();
   } else {

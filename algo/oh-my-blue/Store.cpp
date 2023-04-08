@@ -1,10 +1,7 @@
-#include <vector>
+#include "Store.h"
+#include <cstring>
 #include <fstream>
-#include <iostream>
 #include <queue>
-#include <string.h>
-
-#include "store.h"
 
 namespace Store {
   int M, N, K, HALF_K;

@@ -1,8 +1,8 @@
 #ifndef STORE_H
 #define STORE_H
 
-#include "constant.h"
-#include "state.h"
+#include "Constants.h"
+#include "State.h"
 
 #define REPL_ALL_CELL(x, y)          \
   for (int x = 0; x < Store::M; ++x) \
@@ -51,6 +51,6 @@ namespace Store {
 
   // Save store to STATE.OUT
   void save();
-};
+}
 
 #endif

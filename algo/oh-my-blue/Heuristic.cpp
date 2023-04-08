@@ -1,9 +1,11 @@
-#include "heuristic.h"
-#include "store.h"
+#include "Heuristic.h"
+#include "Store.h"
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
+#define sqr(a) ((a) * (a))
 #define dist(player, u, v) Store::dist[state.hasShield[player]][state.pos[player].x][state.pos[player].y][u][v]
 
 namespace Heuristic {
@@ -22,25 +24,27 @@ namespace Heuristic {
       if (state.at[x][y] == DANGER_CELL) {
         val = 0;
       } else if (state.at[x][y] == SHIELD_CELL) {
-        val = state.hasShield[player] ? 0 : SHIELD_CELL;
+        // In late game, don't pick up shield
+        if (state.hasShield[player] || state.phase == GamePhaseEnum::LATE_GAME) {
+          val = 0;
+        } else {
+          val = SHIELD_VALUE;
+        }
       } else {
         val = state.at[x][y];
       }
 
       // Reduce gold value if enemy is too close
       if (dist(1 - player, x, y) <= std::min(ENEMY_RADIUS, dist(player, x, y))) {
-        val = 1.f / 3 * val;
+        val = 2.f / 3 * val;
       }
 
-      if (state.phase == GamePhaseEnum::EARLY_GAME) {
-        val = val * BONUS - sqrt(dist(player, x, y));
-      } else if (state.phase == GamePhaseEnum::MID_GAME) {
-        // Heuristic: reduce the value of the cell if it is far from the player
-        val = val + BONUS - sqrt(dist(player, x, y));
-      } else {
-        // Heuristic: incease the gold value by squaring
-        val = BONUS * sqr(val + 1) / sqrt(dist(player, x, y) + 1);
+      // If cannot reach the cell in turn left, ignore
+      if (dist(player, x, y) >= state.turnLeft) {
+        val = 0;
       }
+
+      val = Evaluate(val, dist(player, x, y));
 
       // accumulate table
       int i1 = std::max(1, x + 1 - HEAT_RADIUS), j1 = std::max(1, y + 1 - HEAT_RADIUS);
@@ -69,7 +73,7 @@ namespace Heuristic {
       if (state.at[x][y] == DANGER_CELL) {
         val = 0;
       } else if (state.at[x][y] == SHIELD_CELL) {
-        val = SHIELD_CELL;
+        val = SHIELD_VALUE;
       } else {
         val = state.at[x][y];
       }
@@ -118,5 +122,19 @@ namespace Heuristic {
     }
 
     return bestScore;
+  }
+
+  score_t Evaluate(double gold, int distance) {
+    score_t val = 0;
+
+    if (rootState.phase == GamePhaseEnum::EARLY_GAME || rootState.phase == GamePhaseEnum::MID_GAME) {
+      // Heuristic: reduce the value of the cell if it is far from the player
+      val = gold * (BONUS - sqrt(distance));
+    } else {
+      // Heuristic: increase the gold value by squaring
+      val = BONUS * sqr(gold + 1) / sqrt(distance + 1);
+    }
+
+    return std::max(val, (double)0);
   }
 }

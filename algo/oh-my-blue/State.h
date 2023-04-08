@@ -1,7 +1,7 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include "constant.h"
+#include "Constants.h"
 
 #define REPL_MAGNET_CELL(x, y, a, b)                           \
   for (int x = a - MAGNET_RADIUS; x <= a + MAGNET_RADIUS; ++x) \
@@ -23,7 +23,7 @@ struct Position {
   }
 
   inline bool operator<(const Position &other) const {
-    return x < other.x && (x == other.x && y < other.y);
+    return x < other.x || (x == other.x && y < other.y);
   }
 };
 
