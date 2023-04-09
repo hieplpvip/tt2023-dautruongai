@@ -10,7 +10,7 @@ using namespace std;
 
 vector<Position> shieldPos;
 
-namespace Ignition {
+namespace MCTSEngine {
   void findStartingPositionOld() {
     // Find starting position
     // For now, we just find the nearest-to-shield empty cell
@@ -39,42 +39,13 @@ namespace Ignition {
   }
 
   void findStartingPosition() {
-    // vector<tuple<double, int, int>> cand;
-
-    // // Place opponent ship at some danger cell to ignore opponent in heuristic
-    // rootState.pos[1] = {0, 0};
-    // REPL_ALL_CELL(x, y) {
-    //   if (rootState.at[x][y] == DANGER_CELL) {
-    //     rootState.pos[1] = {x, y};
-    //     break;
-    //   }
-    // }
-
-    // // Evaluate all empty cells
-    // REPL_ALL_CELL(x, y) {
-    //   if (rootState.at[x][y] != EMPTY_CELL) {
-    //     continue;
-    //   }
-    //   rootState.pos[0] = {x, y};
-    //   auto heat = Heuristic::GetHighestHeat(rootState, 0);
-    //   cand.emplace_back(heat, x, y);
-    // }
-
-    // // Restore positions
-    // rootState.pos[0] = rootState.pos[1] = {-1, -1};
-
-    // // Sort decreasingly by gold, and choose randomly among top 3
-    // int k = 3;
-    // sort(cand.rbegin(), cand.rend());
-    // while (k && get<0>(cand[k - 1]) <= -INF + 5) --k;
-    // auto [_, x, y] = cand[Random::rand(k)];
-    // printFinalMove(x, y);
-
-    findStartingPositionOld();
+    // Choose randomly among top 3 candidates
+    auto candidates = Heuristic::GetCandidates(rootState);
+    int k = min(3, (int)candidates.size());
+    auto [x, y] = candidates[Random::rand(k)].second;
+    printFinalMove(x, y);
   }
-}
 
-namespace TurboFan {
   void findNextMove() {
 #ifdef TAKE_SHIELD_IMMEDIATELY
     if (!rootState.hasShield[0] && rootState.gold[0] > rootState.gold[1]) {

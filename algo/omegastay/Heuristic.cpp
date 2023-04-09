@@ -144,21 +144,6 @@ namespace Heuristic {
     return bestScore;
   }
 
-  std::pair<score_t, Position> GetHighestHeatPosition(State& state, PlayerEnum player) {
-    GetHeatMap(state, player);
-
-    double bestScore = -INF;
-    int bestX = -1, bestY = -1;
-    REPL_ALL_CELL(x, y) {
-      if (table[x + 1][y + 1] > bestScore) {
-        bestScore = table[x + 1][y + 1];
-        bestX = x;
-        bestY = y;
-      }
-    }
-    return {bestScore, {bestX, bestY}};
-  }
-
   score_t Evaluate(double gold, int distance) {
     score_t val = 0;
 

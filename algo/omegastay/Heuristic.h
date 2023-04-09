@@ -17,11 +17,6 @@ namespace Heuristic {
   score_t GetHighestHeat(State& state, PlayerEnum player);
 
   /*
-   * Get the position with highest heat value corresponding to player.
-   */
-  std::pair<score_t, Position> GetHighestHeatPosition(State& state, PlayerEnum player);
-
-  /*
    * Evaluate the score of a cell.
    */
   score_t Evaluate(double gold, int distance);

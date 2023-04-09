@@ -78,12 +78,12 @@ int main() {
   if (firstTurn) {
     Store::init();
     Store::save();
-    Ignition::findStartingPosition();
+    MCTSEngine::findStartingPosition();
   } else {
     Store::load();
     Store::update();
     Store::save();
-    TurboFan::findNextMove();
+    MCTSEngine::findNextMove();
   }
   return 0;
 }
