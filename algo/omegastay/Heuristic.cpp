@@ -7,7 +7,6 @@
 #define sqr(a) ((a) * (a))
 #define dist(player, u, v) Store::dist[state.hasShield[player]][state.pos[player].x][state.pos[player].y][u][v]
 
-constexpr int NUM_CANDIDATES = 10;
 constexpr int HEAT_RADIUS = 2;   // If the radius is too large, it will detect the gold in sparse areas
 constexpr int ENEMY_RADIUS = 2;  // If radius too large, it will miss a lot of gold, otherwise it may come close to enemy
 constexpr int SHIELD_VALUE = 7;
@@ -118,7 +117,7 @@ namespace Heuristic {
     }
   }
 
-  std::vector<std::pair<score_t, Position>> GetCandidates(State& state) {
+  std::vector<std::pair<score_t, Position>> GetCandidates(State& state, int numCandidates) {
     GetHeatMap(state);
 
     std::vector<std::pair<score_t, Position>> candidates;
@@ -130,7 +129,7 @@ namespace Heuristic {
     }
 
     sort(candidates.rbegin(), candidates.rend());
-    candidates.resize(std::min((int)candidates.size(), NUM_CANDIDATES));
+    candidates.resize(std::min((int)candidates.size(), numCandidates));
     return candidates;
   }
 

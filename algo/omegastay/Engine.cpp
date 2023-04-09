@@ -1,4 +1,3 @@
-#include <bits/stdc++.h>
 #include "Constants.h"
 #include "Engine.h"
 #include "Heuristic.h"
@@ -7,15 +6,15 @@
 #include "State.h"
 #include "Store.h"
 #include "Utility.h"
+#include <cassert>
+#include <iostream>
 #include <vector>
-using namespace std;
 
 namespace MCTSEngine {
   void findStartingPosition() {
-    // Find top 10 candidates using heuristics
-    auto candidates = Heuristic::GetCandidates(rootState);
-    int k = min(10, (int)candidates.size());
-    candidates.resize(k);
+    // Find top 15 candidates using heuristics
+    auto candidates = Heuristic::GetCandidates(rootState, 15);
+    int k = candidates.size();
 
     // Initialize MCTS tree
     // First two levels need to be handled specially
@@ -94,7 +93,7 @@ namespace MCTSEngine {
         printFinalMove(bestPos.x, bestPos.y);
 
 #ifdef ENABLE_LOGGING
-        cerr << "Found new best position " << bestPos.x + 1 << ' ' << bestPos.y + 1 << ' ' << countIterations << endl;
+        std::cerr << "Found new best position " << bestPos.x + 1 << ' ' << bestPos.y + 1 << ' ' << countIterations << std::endl;
 #endif
       }
     }
@@ -110,7 +109,7 @@ namespace MCTSEngine {
         int ny = y + dy[k];
         if (isValidPos(nx, ny) && rootState.at[nx][ny] == SHIELD_CELL) {
 #ifdef ENABLE_LOGGING
-          cerr << "Take shield " << nx + 1 << ' ' << ny + 1 << endl;
+          std::cerr << "Take shield " << nx + 1 << ' ' << ny + 1 << std::endl;
 #endif
           printFinalMove(nx, ny);
           return;
@@ -136,7 +135,7 @@ namespace MCTSEngine {
 
       if ((Store::gamePhase == LATE_GAME && gold >= 3) || (rootState.turnLeft <= 5 && gold > 0)) {
 #ifdef ENABLE_LOGGING
-        cerr << "Take " << gold << " gold " << best_x + 1 << ' ' << best_y + 1 << endl;
+        std::cerr << "Take " << gold << " gold " << best_x + 1 << ' ' << best_y + 1 << std::endl;
 #endif
         printFinalMove(best_x, best_y);
         return;
@@ -159,7 +158,7 @@ namespace MCTSEngine {
         printFinalMove(x, y);
 
 #ifdef ENABLE_LOGGING
-        cerr << "Found new best move " << x + 1 << ' ' << y + 1 << ' ' << countIterations << endl;
+        std::cerr << "Found new best move " << x + 1 << ' ' << y + 1 << ' ' << countIterations << std::endl;
         MCTS::printStats(root);
 #endif
       }
