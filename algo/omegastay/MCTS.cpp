@@ -10,7 +10,7 @@ namespace MCTS {
   static int numNodes = 0;
   static std::vector<Node> nodes(NUMBER_OF_PREALLOCATED_NODES);
 
-  inline void initializeNode(Node& node) {
+  void initializeNode(Node& node) {
     node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
     node.isTerminal = node.gameState.isTerminal();
 
@@ -54,11 +54,39 @@ namespace MCTS {
     return &nodes[numNodes++];
   }
 
-  inline bool Node::isFullyExpanded() const {
+  Node* newStartNode(const State& gameState) {
+    if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
+      std::cerr << "Out of preallocated nodes" << std::endl;
+      exit(1);
+    }
+
+    auto& node = nodes[numNodes];
+    node.gameState = gameState;
+    return &nodes[numNodes++];
+  }
+
+  Node* newStartNode(const State& gameState, Node* parent, Position startPos) {
+    if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
+      std::cerr << "Out of preallocated nodes" << std::endl;
+      exit(1);
+    }
+
+    auto& node = nodes[numNodes];
+    node.parent = parent;
+    node.gameState = gameState;
+    node.gameState.pos[node.gameState.playerToMove] = startPos;
+    node.gameState.playerToMove ^= 1;
+    if (node.gameState.playerToMove == 0) {
+      initializeNode(node);
+    }
+    return &nodes[numNodes++];
+  }
+
+  bool Node::isFullyExpanded() const {
     return numChildren == numLegalMoves;
   }
 
-  inline double Node::getUCT() const {
+  double Node::getUCT() const {
     assert(numVisits > 0);
     // We never call this function on root, so parent is always non-null
     // UCT = (numVisits - sumResult) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
@@ -67,7 +95,7 @@ namespace MCTS {
 
   Node* Node::getBestChild() const {
     Node* bestChild = nullptr;
-    double bestScore = -1e9;
+    double bestScore = -INF;
     for (int k = 0; k < NUM_MOVES; ++k) {
       if (!children[k]) {
         continue;

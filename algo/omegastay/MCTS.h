@@ -49,9 +49,20 @@ namespace MCTS {
     Node* getBestChild() const;
   };
 
+  // Create a new node from the given game state
   Node* newNode(const State& gameState);
 
+  // Create a new node from the given game state and parent node,
+  // after performing the given move
   Node* newNode(const State& gameState, Node* parent, MoveEnum move);
+
+  // Create a new node from the given game state
+  Node* newStartNode(const State& gameState);
+
+  // Create a new node from the given game state and parent node,
+  // and set the start position.
+  // For use in Engine::findStartingPosition()
+  Node* newStartNode(const State& gameState, Node* parent, Position startPos);
 
   // Print statistics of the tree
   void printStats(const Node* root);

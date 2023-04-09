@@ -15,6 +15,10 @@ struct Position {
     return x == other.x && y == other.y;
   }
 
+  inline bool operator!=(const Position &other) const {
+    return x != other.x || y != other.y;
+  }
+
   inline bool operator<(const Position &other) const {
     return x < other.x || (x == other.x && y < other.y);
   }
@@ -86,7 +90,7 @@ struct State {
 
   /*
    * Print state for debugging.
-   * This function will do nothing if macro ENABLE_DEBUG_MODE is not defined.
+   * This function will do nothing if macro ENABLE_LOGGING is not defined.
    */
   void printState() const;
 };
