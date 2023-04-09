@@ -56,8 +56,8 @@ namespace MCTSEngine {
       }
     }
 
-    // Find top 15 candidates using heuristics
-    auto candidates = Heuristic::GetCandidates(rootState, 15);
+    // Find top 10 candidates using heuristics
+    auto candidates = Heuristic::GetCandidates(rootState, 10);
     int k = candidates.size();
 
     // Initialize MCTS tree
