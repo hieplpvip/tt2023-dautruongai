@@ -14,7 +14,7 @@
 #define NDEBUG
 
 // Comment out to disable logging
-#define ENABLE_LOGGING
+// #define ENABLE_LOGGING
 
 // Number of MCTS iterations
 #define MAX_ITERATIONS 500
