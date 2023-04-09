@@ -130,6 +130,9 @@ namespace Store {
       }
     }
 
+    // Set rootState's lastPos
+    rootState.lastPos[0] = rootState.lastPos[1] = {-1, -1};
+
     // Initialize other fields of store
     // M, N, K, HALF_K is already set in main::readInput()
     Store::currentTurn = 1;
@@ -160,11 +163,9 @@ namespace Store {
       }
     }
 
-    // Update score, gold, lastPos
-    {
-      rootState.lastPos[0] = Store::pastState.pos[0];
-      rootState.lastPos[1] = Store::pastState.pos[1];
-    }
+    // Update rootState's lastPos
+    rootState.lastPos[0] = Store::pastState.pos[0];
+    rootState.lastPos[1] = Store::pastState.pos[1];
 
     // Set current game phase
     {

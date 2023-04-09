@@ -10,6 +10,24 @@ using Node = MonteCarloTreeSearch::Node;
 static int numNodes = 0;
 static vector<Node> nodes(NUMBER_OF_PREALLOCATED_NODES);
 
+inline void initializeNode(Node& node) {
+  node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
+  node.isTerminal = node.gameState.isTerminal();
+
+  // Avoid going back unless there is no other choice
+  if (node.numLegalMoves > 1) {
+    auto [x, y] = node.gameState.pos[node.gameState.playerToMove];
+    auto [lastX, lastY] = node.gameState.lastPos[node.gameState.playerToMove];
+    for (int k = 0; k < NUM_MOVES; ++k) {
+      if (node.isLegalMove[k] && x + dx[k] == lastX && y + dy[k] == lastY) {
+        node.isLegalMove[k] = false;
+        --node.numLegalMoves;
+        break;
+      }
+    }
+  }
+}
+
 Node* newNode(const State& gameState) {
   if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
     cerr << "Out of preallocated nodes" << endl;
@@ -18,8 +36,7 @@ Node* newNode(const State& gameState) {
 
   auto& node = nodes[numNodes];
   node.gameState = gameState;
-  node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
-  node.isTerminal = node.gameState.isTerminal();
+  initializeNode(node);
   return &nodes[numNodes++];
 }
 
@@ -33,8 +50,7 @@ Node* newNode(const State& gameState, Node* parent, MoveEnum move) {
   node.parent = parent;
   node.gameState = gameState;
   node.gameState.performMove(move);
-  node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
-  node.isTerminal = node.gameState.isTerminal();
+  initializeNode(node);
   return &nodes[numNodes++];
 }
 
@@ -140,6 +156,16 @@ void MonteCarloTreeSearch::search() {
   // Simulation phase
   // Play out the game randomly from the new node until the end
   int lastMove[2] = {-1, -1};
+  for (int i = 0; i < 2; ++i) {
+    auto [x, y] = cur->gameState.pos[i];
+    auto [lastX, lastY] = cur->gameState.lastPos[i];
+    for (int k = 0; k < 4; ++k) {
+      if (x + dx[k] == lastX && y + dy[k] == lastY) {
+        lastMove[i] = k;
+        break;
+      }
+    }
+  }
   State tmpState = cur->gameState;
   while (!tmpState.isTerminal()) {
     auto move = getRandomMove(tmpState, lastMove[tmpState.playerToMove]);
