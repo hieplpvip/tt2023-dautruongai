@@ -18,7 +18,6 @@ namespace Store {
   bool isLegalMove[2][15][15][NUM_MOVES];
 
   State pastState;
-  int winMargin;  // not saved to file
 
   void load() {
     std::ifstream fin("STATE.OUT", std::ios::binary);
@@ -136,7 +135,6 @@ namespace Store {
     Store::currentTurn = 1;
     Store::pastState = rootState;
     Store::gamePhase = EARLY_GAME;
-    Store::winMargin = 5;
   }
 
   void update() {
@@ -173,22 +171,10 @@ namespace Store {
       int sum = rootState.gold[0] + rootState.gold[1];
       if (sum <= THRESHOLD_EARLY_GAME) {
         Store::gamePhase = GamePhaseEnum::EARLY_GAME;
-        Store::winMargin = std::max(0, rootState.gold[0] - rootState.gold[1]) + 5;
-        std::cerr << "EARLY_GAME" << std::endl;
       } else if (sum <= THRESHOLD_MID_GAME) {
         Store::gamePhase = GamePhaseEnum::MID_GAME;
-        Store::winMargin = std::max(0, rootState.gold[0] - rootState.gold[1]) + 4;
-        std::cerr << "MID_GAME" << std::endl;
       } else {
         Store::gamePhase = GamePhaseEnum::LATE_GAME;
-        Store::winMargin = std::max(0, rootState.gold[0] - rootState.gold[1]) + 3;
-        std::cerr << "LATE_GAME" << std::endl;
-      }
-
-      if (rootState.turnLeft <= Store::K / 10) {
-        Store::winMargin = 0;
-      } else if (rootState.turnLeft <= Store::K / 5) {
-        Store::winMargin = 1;
       }
     }
 

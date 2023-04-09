@@ -77,7 +77,7 @@ namespace Ignition {
 namespace TurboFan {
   void findNextMove() {
 #ifdef TAKE_SHIELD_IMMEDIATELY
-    if (!rootState.hasShield[0] && rootState.gold[0] >= rootState.gold[1]) {
+    if (!rootState.hasShield[0] && rootState.gold[0] > rootState.gold[1]) {
       // Take shield if not taken yet, but only when we are having more gold
       auto [x, y] = rootState.pos[0];
       for (int k = 0; k < 4; ++k) {
@@ -120,7 +120,7 @@ namespace TurboFan {
 #endif
 
     // Find best move using Monte Carlo tree search
-    MonteCarloTreeSearch mtcs(rootState);
+    MonteCarloTreeSearch mcts(rootState);
     int lastMove = -1;
 #if defined(LIMIT_NUMBER_OF_ITERATIONS) || defined(ENABLE_DEBUG_MODE)
     int count = 0;
@@ -131,7 +131,7 @@ namespace TurboFan {
 #else
     while (true) {
 #endif
-      auto move = mtcs.findBestMove(MTCS_ITERATIONS);
+      auto move = mcts.findBestMove(MCTS_ITERATIONS);
       if (move != lastMove) {
         lastMove = move;
         int x = rootState.pos[0].x + dx[move];
@@ -140,6 +140,7 @@ namespace TurboFan {
 
 #ifdef ENABLE_DEBUG_MODE
         cerr << "Found new best move " << x + 1 << ' ' << y + 1 << ' ' << count << endl;
+        mcts.printStats();
 #endif
       }
     }

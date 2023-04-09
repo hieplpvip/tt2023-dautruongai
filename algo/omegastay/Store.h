@@ -61,9 +61,6 @@ namespace Store {
   // Game state of previous turn
   extern State pastState;
 
-  // Least gold margin to be considered as winning
-  extern int winMargin;
-
   // Initialize store (called once at the beginning of a match)
   void init();
 

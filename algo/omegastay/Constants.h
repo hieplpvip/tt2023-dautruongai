@@ -10,8 +10,6 @@
 // Comment out to disable
 #define TAKE_GOLD_IMMEDIATELY
 
-#define HEAVY_ROLLOUT
-
 // Comment out to enable assert
 #define NDEBUG
 
@@ -20,10 +18,10 @@
 
 // Comment out to run until timed out
 #define LIMIT_NUMBER_OF_ITERATIONS
-#define MAX_ITERATIONS 10
+#define MAX_ITERATIONS 500
 
 // Number of nodes to be preallocated to avoid overhead of new
-#define NUMBER_OF_PREALLOCATED_NODES 500000
+#define NUMBER_OF_PREALLOCATED_NODES 1000000
 
 #include <cmath>
 
@@ -39,10 +37,10 @@ constexpr int THRESHOLD_MID_GAME = 50;    // Determine when to switch to late ga
 constexpr int THRESHOLD_EARLY_GAME = 15;  // Determine when to switch to mid game
 
 // Number of iterations of MCTS in one run
-constexpr int MTCS_ITERATIONS = 1000;
+constexpr int MCTS_ITERATIONS = 1000;
 
 // Number of visits until a node can be selected using UCT instead of randomly
-constexpr int MTCS_MIN_VISITS = 10;
+constexpr int MCTS_MIN_VISITS = 10;
 
 // C in the UCT formula
 const double MCTS_C = sqrt(2);

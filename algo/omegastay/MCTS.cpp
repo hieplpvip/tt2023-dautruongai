@@ -1,5 +1,4 @@
 #include "MCTS.h"
-#include "Heuristic.h"
 #include "Random.h"
 #include "Store.h"
 #include "Utility.h"
@@ -46,31 +45,23 @@ inline bool Node::isFullyExpanded() const {
 inline double Node::getUCT() const {
   assert(numVisits > 0);
   // We never call this function on root, so parent is always non-null
-  // UCT = (numVisits - sumScore) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
-  return 1 - winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
+  // UCT = (numVisits - sumResult) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
+  return 1.0 - winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
 }
 
 Node* Node::getBestChild() const {
-  static vector<Node*> candidates(NUM_MOVES);
-
-  if (numVisits < MTCS_MIN_VISITS) {
-    // Select randomly if the Node has not been visited often enough
-    candidates.clear();
-    for (int k = 0; k < NUM_MOVES; ++k) {
-      if (children[k]) {
-        candidates.push_back(children[k]);
-      }
-    }
-
-    return candidates[Random::rand(candidates.size())];
-  }
-
   Node* bestChild = nullptr;
   double bestScore = -1e9;
   for (int k = 0; k < NUM_MOVES; ++k) {
     if (!children[k]) {
       continue;
     }
+
+    if (children[k]->numVisits < MCTS_MIN_VISITS) {
+      // If any child has not been visited often enough, return it
+      return children[k];
+    }
+
     double score = children[k]->getUCT();
     if (score > bestScore) {
       bestScore = score;
@@ -85,6 +76,16 @@ MonteCarloTreeSearch::MonteCarloTreeSearch(const State& startState) {
   root = newNode(startState);
 }
 
+void MonteCarloTreeSearch::printStats() const {
+  cerr << "Root: " << root->numVisits << " visits, win rate: " << root->winRate << endl;
+  for (int k = 0; k < NUM_MOVES; ++k) {
+    if (!root->children[k]) {
+      continue;
+    }
+    cerr << "Child " << k << ": " << root->children[k]->numVisits << " visits, win rate: " << root->children[k]->winRate << endl;
+  }
+}
+
 MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {
   // Perform numIterations iterations of MCTS
   while (numIterations--) {
@@ -93,13 +94,13 @@ MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {
 
   // Find the most visited child and return the corresponding move
   int bestMove = -1;
-  int mostVisited = 0;
+  int maxNumVisits = 0;
   for (int k = 0; k < NUM_MOVES; ++k) {
     if (!root->children[k]) {
       continue;
     }
-    if (root->children[k]->numVisits > mostVisited) {
-      mostVisited = root->children[k]->numVisits;
+    if (root->children[k]->numVisits > maxNumVisits) {
+      maxNumVisits = root->children[k]->numVisits;
       bestMove = k;
     }
   }
@@ -169,34 +170,13 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(State& state, int lastMove) const {
   static bool isLegalMove[NUM_MOVES];
   state.getLegalMoves(isLegalMove, numLegalMoves);
 
-#ifdef HEAVY_ROLLOUT
   auto [x, y] = state.pos[state.playerToMove];
-  auto [heatScore, heatPos] = Heuristic::GetHighestHeatPosition(state, static_cast<PlayerEnum>(state.playerToMove));
-  auto [hx, hy] = heatPos;
-
   bool shield = state.hasShield[state.playerToMove];
-  int heatBias = Store::dist[shield][x][y][hx][hy];
-
-  memset(prob, 0, sizeof(prob));
-  if (heatScore > 100) {
-    if (hx <= x) {
-      prob[UP] += heatBias;
-    }
-    if (hx >= x) {
-      prob[DOWN] += heatBias;
-    }
-    if (hy <= y) {
-      prob[LEFT] += heatBias;
-    }
-    if (hy >= y) {
-      prob[RIGHT] += heatBias;
-    }
-  }
 
   for (int k = 0; k < NUM_MOVES; ++k) {
     // Avoid going back unless there is no other choice
     if (isLegalMove[k] && ((k ^ 1) != lastMove || numLegalMoves == 1)) {
-      prob[k] += 1;
+      prob[k] = 1;
 
       int nx = x + dx[k];
       int ny = y + dy[k];
@@ -211,13 +191,6 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(State& state, int lastMove) const {
       prob[k] = 0;
     }
   }
-#else
-  for (int k = 0; k < NUM_MOVES; ++k) {
-    // Avoid going back unless there is no other choice
-    prob[k] = isLegalMove[k] && ((k ^ 1) != lastMove || numLegalMoves == 1);
-  }
-#endif
-
   for (int k = 1; k < NUM_MOVES; ++k) {
     prob[k] += prob[k - 1];
   }
