@@ -12,6 +12,7 @@ from utility import *
 
 def print_result(exe0, exe1, maps, result):
     table = BeautifulTable(maxwidth=9999)
+    maps += ['Total']
     for map_filename in maps:
         table.rows.append([
             result[map_filename]['first_win'],
@@ -43,6 +44,11 @@ def single_thread(args):
                 maps.append(line)
 
     result = {}
+    result['Total'] = {
+        'first_win': 0,
+        'second_win': 0,
+        'draw': 0,
+    }
 
     for map_filename in maps:
         map_abs_path = os.path.abspath(os.path.join(os.path.dirname(args.map_list), map_filename))
@@ -64,11 +70,14 @@ def single_thread(args):
             print_header('')
 
             if match.status == MatchStatus.FIRST_WIN:
-                result[map_filename]['first_win'] += 1
+                match_result = 'first_win'
             elif match.status == MatchStatus.SECOND_WIN:
-                result[map_filename]['second_win'] += 1
-            elif match.status == MatchStatus.DRAW:
-                result[map_filename]['draw'] += 1
+                match_result = 'second_win'
+            else:
+                match_result = 'draw'
+
+            result[map_filename][match_result] += 1
+            result['Total'][match_result] += 1
 
     print_result(args.exe0, args.exe1, maps, result)
 
@@ -85,7 +94,7 @@ def run_job(map_filename, exe0, exe1):
         return 'first_win'
     elif match.status == MatchStatus.SECOND_WIN:
         return 'second_win'
-    elif match.status == MatchStatus.DRAW:
+    else:
         return 'draw'
 
 
@@ -113,6 +122,12 @@ def multi_threads(args):
         job_results = p.starmap(run_job, jobs)
 
     result = {}
+    result['Total'] = {
+        'first_win': 0,
+        'second_win': 0,
+        'draw': 0,
+    }
+
     for map_filename in maps:
         result[map_filename] = {
             'first_win': 0,
@@ -121,6 +136,7 @@ def multi_threads(args):
         }
     for map_filename, job_result in zip(maps * times, job_results):
         result[map_filename][job_result] += 1
+        result['Total'][job_result] += 1
 
     print_result(args.exe0, args.exe1, maps, result)
 
