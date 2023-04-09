@@ -87,7 +87,7 @@ void State::performMove(MoveEnum move) {
 }
 
 void State::printState() const {
-#ifdef ENABLE_DEBUG_MODE
+#ifdef ENABLE_LOGGING
   using std::cout, std::endl;
 
   cout << turnLeft << " turns left" << endl;

@@ -5,7 +5,7 @@
 #include "Utility.h"
 #include <vector>
 
-struct MonteCarloTreeSearch {
+namespace MCTS {
   struct Node {
     // Game state corresponding to this node
     State gameState;
@@ -49,23 +49,32 @@ struct MonteCarloTreeSearch {
     Node* getBestChild() const;
   };
 
-  // The root of the tree
-  Node* root;
+  // Create a new node from the given game state
+  Node* newNode(const State& gameState);
 
-  MonteCarloTreeSearch(const State& startState);
+  // Create a new node from the given game state and parent node,
+  // after performing the given move
+  Node* newNode(const State& gameState, Node* parent, MoveEnum move);
+
+  // Create a new node from the given game state
+  Node* newStartNode(const State& gameState);
+
+  // Create a new node from the given game state and parent node,
+  // and set the start position.
+  // For use in Engine::findStartingPosition()
+  Node* newStartNode(const State& gameState, Node* parent, Position startPos);
 
   // Print statistics of the tree
-  void printStats() const;
+  void printStats(const Node* root);
 
   // Return the best move after performing numIterations iterations of MCTS
-  MoveEnum findBestMove(int numIterations);
+  MoveEnum findBestMove(Node* root, int numIterations);
 
-private:
   // Perform an iteration of Monte Carlo tree search
-  void search();
+  void search(Node* root);
 
   // Return a random move from the given state
-  MoveEnum getRandomMove(State& state, int lastMove) const;
-};
+  MoveEnum getRandomMove(State& state, int lastMove);
+}
 
 #endif

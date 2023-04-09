@@ -13,11 +13,10 @@
 // Comment out to enable assert
 #define NDEBUG
 
-// Comment out to disable debug mode
-// #define ENABLE_DEBUG_MODE
+// Comment out to disable logging
+// #define ENABLE_LOGGING
 
-// Comment out to run until timed out
-#define LIMIT_NUMBER_OF_ITERATIONS
+// Number of MCTS iterations
 #define MAX_ITERATIONS 500
 
 // Number of nodes to be preallocated to avoid overhead of new
@@ -37,7 +36,7 @@ constexpr int THRESHOLD_MID_GAME = 50;    // Determine when to switch to late ga
 constexpr int THRESHOLD_EARLY_GAME = 15;  // Determine when to switch to mid game
 
 // Number of iterations of MCTS in one run
-constexpr int MCTS_ITERATIONS = 1000;
+constexpr int MCTS_NUM_SIMULATIONS = 1000;
 
 // Number of visits until a node can be selected using UCT instead of randomly
 constexpr int MCTS_MIN_VISITS = 10;
