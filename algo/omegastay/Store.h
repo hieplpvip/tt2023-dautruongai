@@ -33,6 +33,9 @@ namespace Store {
   // Current turn
   extern int currentTurn;
 
+  // Current game phase
+  extern GamePhaseEnum gamePhase;
+
   /*
    * dist[shield] is all-pairs shortest path between cells.
    * shield = 0 means we **DO NOT** have shield

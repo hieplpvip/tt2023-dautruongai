@@ -31,7 +31,7 @@ struct MonteCarloTreeSearch {
     int sumScore = 0;
 
     // Values used for fast calculation of UCT
-    double winRate = 0, sqrtLogNumVisits = 0, CDivSqrtNumVisits = 0, heuristicValue = 0;
+    double winRate = 0, sqrtLogNumVisits = 0, CDivSqrtNumVisits = 0;
 
     // Cached value of gameState.isTerminal()
     bool isTerminal = false;
@@ -53,6 +53,9 @@ struct MonteCarloTreeSearch {
   Node* root;
 
   MonteCarloTreeSearch(const State& startState);
+
+  // Print statistics of the tree
+  void printStats() const;
 
   // Return the best move after performing numIterations iterations of MCTS
   MoveEnum findBestMove(int numIterations);

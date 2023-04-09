@@ -3,21 +3,28 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-using std::min, std::max;
 
 #define sqr(a) ((a) * (a))
 #define dist(player, u, v) Store::dist[state.hasShield[player]][state.pos[player].x][state.pos[player].y][u][v]
 
-constexpr int SHIELD_VALUE = 100;
-constexpr int NUM_CANDS = 100;
-constexpr int BONUS = 10;
+constexpr int NUM_CANDIDATES = 10;
 constexpr int HEAT_RADIUS = 2;   // If the radius is too large, it will detect the gold in sparse areas
 constexpr int ENEMY_RADIUS = 2;  // If radius too large, it will miss a lot of gold, otherwise it may come close to enemy
+constexpr int SHIELD_VALUE = 7;
+constexpr int BONUS = 10;
 
 namespace Heuristic {
-  std::vector<std::vector<double>> GetHeatMap(State& state, int player) {
-    // Note that table is 1-indexed
-    std::vector<std::vector<double>> table(Store::M + 2, std::vector<double>(Store::N + 2, 0));
+  // Preallocated heat map for faster computation
+  // Note that it is 1-indexed
+  static double table[20][20];
+
+  /*
+   * Generate heat map for a state according to player.
+   * For each cell(x, y) it will compute the heat in the range of HEAT_RADIUS.
+   */
+  void GetHeatMap(State& state, PlayerEnum player) {
+    // Reset table to zero
+    memset(table, 0, sizeof(table));
 
     if (state.turnLeft > Store::HALF_K && state.turnLeft - Store::HALF_K <= dist(player, Store::M / 2, Store::N / 2)) {
       // Still in the first half of the game
@@ -26,26 +33,35 @@ namespace Heuristic {
     }
 
     REPL_ALL_CELL(x, y) {
-      double val;
+      score_t val;
 
       // Get the raw value of the cell
       if (state.at[x][y] == DANGER_CELL) {
         val = 0;
       } else if (state.at[x][y] == SHIELD_CELL) {
-        val = state.hasShield[player] ? 0 : SHIELD_CELL;
+        // In late game, don't pick up shield
+        if (state.hasShield[player] || Store::gamePhase == GamePhaseEnum::LATE_GAME) {
+          val = 0;
+        } else {
+          val = SHIELD_VALUE;
+        }
       } else {
         val = state.at[x][y];
       }
 
       // Reduce gold value if enemy is too close
       if (dist(1 - player, x, y) <= std::min(ENEMY_RADIUS, dist(player, x, y))) {
-        val = 1.f / 3 * val;
+        val = 2.f / 3 * val;
       }
 
-      // Heuristic: increase the gold value by squaring
-      val = BONUS * sqr(val + 1) / sqrt(dist(player, x, y) + 1);
+      // If cannot reach the cell in turn left, ignore
+      if (dist(player, x, y) >= state.turnLeft) {
+        val = 0;
+      }
 
-      // Note that x and y are 0-indexed, but score is 1-indexed
+      val = Evaluate(val, dist(player, x, y));
+
+      // Note that x and y are 0-indexed, but table is 1-indexed
       // Add val to all cells between (i1, j1) and (i2, j2)
       int i1 = std::max(1, x + 1 - HEAT_RADIUS), j1 = std::max(1, y + 1 - HEAT_RADIUS);
       int i2 = std::min(Store::M, x + 1 + HEAT_RADIUS), j2 = std::min(Store::N, y + 1 + HEAT_RADIUS);
@@ -64,16 +80,18 @@ namespace Heuristic {
       // Reset center to empty
       state.at[Store::M / 2][Store::N / 2] = EMPTY_CELL;
     }
-
-    return table;
   }
 
-  std::vector<std::vector<double>> GetHeatMap(State& state) {
-    // Note that the table is indexed from 1
-    std::vector<std::vector<double>> table(Store::M + 2, std::vector<double>(Store::N + 2, 0));
+  /*
+   * Generate heat map for a state without player.
+   * Use for initial state.
+   */
+  void GetHeatMap(State& state) {
+    // Reset table to zero
+    memset(table, 0, sizeof(table));
 
     REPL_ALL_CELL(x, y) {
-      double val;
+      score_t val;
 
       // Get the raw value of the cell
       if (state.at[x][y] == DANGER_CELL) {
@@ -84,7 +102,7 @@ namespace Heuristic {
         val = state.at[x][y];
       }
 
-      // Note that x and y are 0-indexed, but score is 1-indexed
+      // Note that x and y are 0-indexed, but table is 1-indexed
       // Add val to all cells between (i1, j1) and (i2, j2)
       int i1 = std::max(1, x + 1 - HEAT_RADIUS), j1 = std::max(1, y + 1 - HEAT_RADIUS);
       int i2 = std::min(Store::M, x + 1 + HEAT_RADIUS), j2 = std::min(Store::N, y + 1 + HEAT_RADIUS);
@@ -98,16 +116,12 @@ namespace Heuristic {
     REPL_ALL_CELL(x, y) {
       table[x + 1][y + 1] += table[x + 1][y] + table[x][y + 1] - table[x][y];
     }
-
-    return table;
   }
 
-  std::vector<std::pair<double, Position>> GetCandidates(State& state) {
-    // Note that table is 1-indexed
-    std::vector<std::vector<double>> table = GetHeatMap(state);
+  std::vector<std::pair<score_t, Position>> GetCandidates(State& state) {
+    GetHeatMap(state);
 
-    std::vector<std::pair<double, Position>> candidates;
-
+    std::vector<std::pair<score_t, Position>> candidates;
     REPL_ALL_CELL(x, y) {
       if (state.at[x][y] != EMPTY_CELL) {
         continue;
@@ -116,36 +130,31 @@ namespace Heuristic {
     }
 
     sort(candidates.rbegin(), candidates.rend());
-    candidates.resize(std::min((int)candidates.size(), NUM_CANDS));
+    candidates.resize(std::min((int)candidates.size(), NUM_CANDIDATES));
     return candidates;
   }
 
-  double GetHighestHeat(State& state, int player) {
-    // Note that table is 1-indexed
-    std::vector<std::vector<double>> table = GetHeatMap(state, player);
+  score_t GetHighestHeat(State& state, PlayerEnum player) {
+    GetHeatMap(state, player);
 
-    double bestScore = -INF;
+    score_t bestScore = -INF;
     REPL_ALL_CELL(x, y) {
       bestScore = std::max(bestScore, table[x + 1][y + 1]);
     }
-
     return bestScore;
   }
 
-  Position GetHighestHeatPosition(State& state, int player) {
-    // Note that table is 1-indexed
-    std::vector<std::vector<double>> table = GetHeatMap(state, player);
+  score_t Evaluate(double gold, int distance) {
+    score_t val = 0;
 
-    double bestScore = -INF;
-    int bestX = -1, bestY = -1;
-    REPL_ALL_CELL(x, y) {
-      if (table[x + 1][y + 1] > bestScore) {
-        bestScore = table[x + 1][y + 1];
-        bestX = x;
-        bestY = y;
-      }
+    if (Store::gamePhase == GamePhaseEnum::EARLY_GAME || Store::gamePhase == GamePhaseEnum::MID_GAME) {
+      // Heuristic: reduce the value of the cell if it is far from the player
+      val = gold * (BONUS - sqrt(distance));
+    } else {
+      // Heuristic: increase the gold value by squaring
+      val = BONUS * sqr(gold + 1) / sqrt(distance + 1);
     }
 
-    return {bestX, bestY};
+    return std::max(val, (double)0);
   }
 }

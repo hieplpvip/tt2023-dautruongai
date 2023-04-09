@@ -1,5 +1,4 @@
 #include "MCTS.h"
-#include "Heuristic.h"
 #include "Random.h"
 #include "Store.h"
 #include "Utility.h"
@@ -11,6 +10,24 @@ using Node = MonteCarloTreeSearch::Node;
 static int numNodes = 0;
 static vector<Node> nodes(NUMBER_OF_PREALLOCATED_NODES);
 
+inline void initializeNode(Node& node) {
+  node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
+  node.isTerminal = node.gameState.isTerminal();
+
+  // Avoid going back unless there is no other choice
+  if (node.numLegalMoves > 1) {
+    auto [x, y] = node.gameState.pos[node.gameState.playerToMove];
+    auto [lastX, lastY] = node.gameState.lastPos[node.gameState.playerToMove];
+    for (int k = 0; k < NUM_MOVES; ++k) {
+      if (node.isLegalMove[k] && x + dx[k] == lastX && y + dy[k] == lastY) {
+        node.isLegalMove[k] = false;
+        --node.numLegalMoves;
+        break;
+      }
+    }
+  }
+}
+
 Node* newNode(const State& gameState) {
   if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
     cerr << "Out of preallocated nodes" << endl;
@@ -19,8 +36,7 @@ Node* newNode(const State& gameState) {
 
   auto& node = nodes[numNodes];
   node.gameState = gameState;
-  node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
-  node.isTerminal = node.gameState.isTerminal();
+  initializeNode(node);
   return &nodes[numNodes++];
 }
 
@@ -34,8 +50,7 @@ Node* newNode(const State& gameState, Node* parent, MoveEnum move) {
   node.parent = parent;
   node.gameState = gameState;
   node.gameState.performMove(move);
-  node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
-  node.isTerminal = node.gameState.isTerminal();
+  initializeNode(node);
   return &nodes[numNodes++];
 }
 
@@ -46,31 +61,23 @@ inline bool Node::isFullyExpanded() const {
 inline double Node::getUCT() const {
   assert(numVisits > 0);
   // We never call this function on root, so parent is always non-null
-  // UCT = (numVisits - sumScore) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
-  return 1 - winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
+  // UCT = (numVisits - sumResult) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
+  return 1.0 - winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
 }
 
 Node* Node::getBestChild() const {
-  static vector<Node*> candidates(NUM_MOVES);
-
-  if (numVisits < MTCS_MIN_VISITS) {
-    // Select randomly if the Node has not been visited often enough
-    candidates.clear();
-    for (int k = 0; k < NUM_MOVES; ++k) {
-      if (children[k]) {
-        candidates.push_back(children[k]);
-      }
-    }
-
-    return candidates[Random::rand(candidates.size())];
-  }
-
   Node* bestChild = nullptr;
   double bestScore = -1e9;
   for (int k = 0; k < NUM_MOVES; ++k) {
     if (!children[k]) {
       continue;
     }
+
+    if (children[k]->numVisits < MCTS_MIN_VISITS) {
+      // If any child has not been visited often enough, return it
+      return children[k];
+    }
+
     double score = children[k]->getUCT();
     if (score > bestScore) {
       bestScore = score;
@@ -85,6 +92,16 @@ MonteCarloTreeSearch::MonteCarloTreeSearch(const State& startState) {
   root = newNode(startState);
 }
 
+void MonteCarloTreeSearch::printStats() const {
+  cerr << "Root: " << root->numVisits << " visits, win rate: " << root->winRate << endl;
+  for (int k = 0; k < NUM_MOVES; ++k) {
+    if (!root->children[k]) {
+      continue;
+    }
+    cerr << "Child " << k << ": " << root->children[k]->numVisits << " visits, win rate: " << root->children[k]->winRate << endl;
+  }
+}
+
 MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {
   // Perform numIterations iterations of MCTS
   while (numIterations--) {
@@ -93,13 +110,13 @@ MoveEnum MonteCarloTreeSearch::findBestMove(int numIterations) {
 
   // Find the most visited child and return the corresponding move
   int bestMove = -1;
-  int mostVisited = 0;
+  int maxNumVisits = 0;
   for (int k = 0; k < NUM_MOVES; ++k) {
     if (!root->children[k]) {
       continue;
     }
-    if (root->children[k]->numVisits > mostVisited) {
-      mostVisited = root->children[k]->numVisits;
+    if (root->children[k]->numVisits > maxNumVisits) {
+      maxNumVisits = root->children[k]->numVisits;
       bestMove = k;
     }
   }
@@ -139,6 +156,16 @@ void MonteCarloTreeSearch::search() {
   // Simulation phase
   // Play out the game randomly from the new node until the end
   int lastMove[2] = {-1, -1};
+  for (int i = 0; i < 2; ++i) {
+    auto [x, y] = cur->gameState.pos[i];
+    auto [lastX, lastY] = cur->gameState.lastPos[i];
+    for (int k = 0; k < 4; ++k) {
+      if (x + dx[k] == lastX && y + dy[k] == lastY) {
+        lastMove[i] = k;
+        break;
+      }
+    }
+  }
   State tmpState = cur->gameState;
   while (!tmpState.isTerminal()) {
     auto move = getRandomMove(tmpState, lastMove[tmpState.playerToMove]);
@@ -170,34 +197,21 @@ MoveEnum MonteCarloTreeSearch::getRandomMove(State& state, int lastMove) const {
   state.getLegalMoves(isLegalMove, numLegalMoves);
 
   auto [x, y] = state.pos[state.playerToMove];
-  auto [hx, hy] = Heuristic::GetHighestHeatPosition(state, state.playerToMove);
-
-#define BIAS_HEAT 10
-#define BIAS_SHIELD 10
-
-  memset(prob, 0, sizeof(prob));
-  if (hx < x) {
-    prob[UP] += BIAS_HEAT;
-  }
-  if (hx > x) {
-    prob[DOWN] += BIAS_HEAT;
-  }
-  if (hy < y) {
-    prob[LEFT] += BIAS_HEAT;
-  }
-  if (hy > y) {
-    prob[RIGHT] += BIAS_HEAT;
-  }
+  bool shield = state.hasShield[state.playerToMove];
 
   for (int k = 0; k < NUM_MOVES; ++k) {
     // Avoid going back unless there is no other choice
     if (isLegalMove[k] && ((k ^ 1) != lastMove || numLegalMoves == 1)) {
-      prob[k] += 1;
+      prob[k] = 1;
 
       int nx = x + dx[k];
       int ny = y + dy[k];
       if (state.at[nx][ny] == SHIELD_CELL) {
-        prob[k] += BIAS_SHIELD;
+        if (!shield) {
+          prob[k] += 25;
+        }
+      } else if (state.at[nx][ny] != DANGER_CELL) {
+        prob[k] += (state.at[nx][ny] << 3);
       }
     } else {
       prob[k] = 0;

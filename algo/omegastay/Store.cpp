@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstring>
 #include <fstream>
+#include <iostream>
 #include <queue>
 
 State rootState;
@@ -10,6 +11,7 @@ State rootState;
 namespace Store {
   int M, N, K, HALF_K;
   int currentTurn;
+  GamePhaseEnum gamePhase;
 
   int dist[2][15][15][15][15];
   int numLegalMoves[2][15][15];
@@ -24,6 +26,7 @@ namespace Store {
     fin.read((char*)&K, sizeof(K));
     fin.read((char*)&HALF_K, sizeof(HALF_K));
     fin.read((char*)&currentTurn, sizeof(currentTurn));
+    fin.read((char*)&gamePhase, sizeof(gamePhase));
     fin.read((char*)&dist, sizeof(dist));
     fin.read((char*)&numLegalMoves, sizeof(numLegalMoves));
     fin.read((char*)&isLegalMove, sizeof(isLegalMove));
@@ -38,6 +41,7 @@ namespace Store {
     fout.write((char*)&K, sizeof(K));
     fout.write((char*)&HALF_K, sizeof(HALF_K));
     fout.write((char*)&currentTurn, sizeof(currentTurn));
+    fout.write((char*)&gamePhase, sizeof(gamePhase));
     fout.write((char*)&dist, sizeof(dist));
     fout.write((char*)&numLegalMoves, sizeof(numLegalMoves));
     fout.write((char*)&isLegalMove, sizeof(isLegalMove));
@@ -126,10 +130,14 @@ namespace Store {
       }
     }
 
+    // Set rootState's lastPos
+    rootState.lastPos[0] = rootState.lastPos[1] = {-1, -1};
+
     // Initialize other fields of store
     // M, N, K, HALF_K is already set in main::readInput()
     Store::currentTurn = 1;
     Store::pastState = rootState;
+    Store::gamePhase = EARLY_GAME;
   }
 
   void update() {
@@ -155,10 +163,20 @@ namespace Store {
       }
     }
 
-    // Update score, gold, lastPos
+    // Update rootState's lastPos
+    rootState.lastPos[0] = Store::pastState.pos[0];
+    rootState.lastPos[1] = Store::pastState.pos[1];
+
+    // Set current game phase
     {
-      rootState.lastPos[0] = Store::pastState.pos[0];
-      rootState.lastPos[1] = Store::pastState.pos[1];
+      int sum = rootState.gold[0] + rootState.gold[1];
+      if (sum <= THRESHOLD_EARLY_GAME) {
+        Store::gamePhase = GamePhaseEnum::EARLY_GAME;
+      } else if (sum <= THRESHOLD_MID_GAME) {
+        Store::gamePhase = GamePhaseEnum::MID_GAME;
+      } else {
+        Store::gamePhase = GamePhaseEnum::LATE_GAME;
+      }
     }
 
     // Update other fields

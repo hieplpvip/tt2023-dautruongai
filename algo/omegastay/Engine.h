@@ -7,12 +7,10 @@
 
 extern std::vector<Position> shieldPos;
 
-namespace Ignition {
+namespace MCTSEngine {
   // Find starting position (turn 1)
   void findStartingPosition();
-}
 
-namespace TurboFan {
   // Find next move (turn 2 and later)
   void findNextMove();
 }
