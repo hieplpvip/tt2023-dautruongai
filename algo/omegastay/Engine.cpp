@@ -4,14 +4,16 @@
 #include "Heuristic.h"
 #include "MCTS.h"
 #include "Random.h"
+#include "State.h"
 #include "Store.h"
 #include "Utility.h"
+#include <vector>
 using namespace std;
-
-vector<Position> shieldPos;
 
 namespace MCTSEngine {
   void findStartingPositionOld() {
+    vector<Position> shieldPos;
+
     // Find starting position
     // For now, we just find the nearest-to-shield empty cell
     int minDistToShield = INF;
@@ -91,7 +93,7 @@ namespace MCTSEngine {
 #endif
 
     // Find best move using Monte Carlo tree search
-    MonteCarloTreeSearch mcts(rootState);
+    MCTS::Node* root = MCTS::newNode(rootState);
     int lastMove = -1;
 #if defined(LIMIT_NUMBER_OF_ITERATIONS) || defined(ENABLE_DEBUG_MODE)
     int count = 0;
@@ -102,7 +104,7 @@ namespace MCTSEngine {
 #else
     while (true) {
 #endif
-      auto move = mcts.findBestMove(MCTS_ITERATIONS);
+      auto move = MCTS::findBestMove(root, MCTS_ITERATIONS);
       if (move != lastMove) {
         lastMove = move;
         int x = rootState.pos[0].x + dx[move];

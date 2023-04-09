@@ -43,7 +43,6 @@ bool readInput() {
         rootState.at[i][j] = DANGER_CELL;
       } else if (s[0] == 'S') {
         rootState.at[i][j] = SHIELD_CELL;
-        shieldPos.emplace_back(i, j);
       } else {
         rootState.at[i][j] = stoi(s);
       }
