@@ -11,35 +11,6 @@
 using namespace std;
 
 namespace MCTSEngine {
-  void findStartingPositionOld() {
-    vector<Position> shieldPos;
-
-    // Find starting position
-    // For now, we just find the nearest-to-shield empty cell
-    int minDistToShield = INF;
-    vector<array<int, 2>> candidates;
-    REPL_ALL_CELL(x, y) {
-      if (rootState.at[x][y] == EMPTY_CELL) {
-        for (auto [shieldX, shieldY] : shieldPos) {
-          int dist = Store::dist[0][x][y][shieldX][shieldY];
-          if (dist < minDistToShield) {
-            minDistToShield = dist;
-            candidates.clear();
-            candidates.push_back({x, y});
-          } else if (dist == minDistToShield) {
-            candidates.push_back({x, y});
-          }
-        }
-      }
-    }
-    assert(!candidates.empty());
-
-    // Randomly choose one of the candidates
-    int idx = Random::rand(candidates.size());
-    auto [x, y] = candidates[idx];
-    printFinalMove(x, y);
-  }
-
   void findStartingPosition() {
     // Find top 10 candidates using heuristics
     auto candidates = Heuristic::GetCandidates(rootState);
