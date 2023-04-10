@@ -1,4 +1,5 @@
 #include "Minimax.h"
+#include "Heuristic.h"
 #include "Random.h"
 #include "Store.h"
 #include "Utility.h"
@@ -72,7 +73,8 @@ bool readInput() {
 }
 
 void makeFirstMove() {
-  auto [score, move] = MiniMax::MaxStartNode(2 * -INF, 2 * INF, 0);
+  auto candidates = Heuristic::GetCandidates(rootState);
+  auto [score, move] = MiniMax::MaxStartNode(2 * -INF, 2 * INF, 0, candidates);
   printFinalMove(move.x, move.y);
 }
 

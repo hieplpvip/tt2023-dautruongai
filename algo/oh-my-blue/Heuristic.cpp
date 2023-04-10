@@ -9,7 +9,7 @@
 
 constexpr int NUM_CANDIDATES = 10;
 constexpr int HEAT_RADIUS = 2;   // If the radius is too large, it will detect the gold in sparse areas
-constexpr int ENEMY_RADIUS = 2;  // If radius too large, it will miss a lot of gold, otherwise it may come close to enemy
+constexpr int ENEMY_RADIUS = 3;  // If radius too large, it will miss a lot of gold, otherwise it may come close to enemy
 constexpr int SHIELD_VALUE = 7;
 constexpr int BONUS = 10;
 
@@ -40,18 +40,23 @@ namespace Heuristic {
         val = 0;
       } else if (state.at[x][y] == SHIELD_CELL) {
         // In late game, don't pick up shield
-        if (state.hasShield[player] || Store::gamePhase == GamePhaseEnum::LATE_GAME) {
-          val = 0;
-        } else {
-          val = SHIELD_VALUE;
-        }
+        // if (player == PlayerEnum::ENEMY || state.hasShield[player] || Store::gamePhase == GamePhaseEnum::LATE_GAME) {
+        //   val = 0;
+        // } else {
+        //   val = SHIELD_VALUE;
+        // }
+
+        val = 0;
       } else {
         val = state.at[x][y];
       }
 
       // Reduce gold value if enemy is too close
-      if (dist(1 - player, x, y) <= std::min(ENEMY_RADIUS, dist(player, x, y))) {
-        val = 2.f / 3 * val;
+      // if (dist(1 - player, x, y) <= std::min(ENEMY_RADIUS, dist(player, x, y))) {
+      //   val = 2.f / 3 * val;
+      // }
+      if (dist(1 - player, x, y) <= dist(player, x, y)) {
+        val = 1.f / 3 * val;
       }
 
       // If cannot reach the cell in turn left, ignore
@@ -145,16 +150,19 @@ namespace Heuristic {
   }
 
   score_t Evaluate(double gold, int distance) {
-    score_t val = 0;
+    // score_t val = 0;
 
-    if (Store::gamePhase == GamePhaseEnum::EARLY_GAME || Store::gamePhase == GamePhaseEnum::MID_GAME) {
-      // Heuristic: reduce the value of the cell if it is far from the player
-      val = gold * (BONUS - sqrt(distance));
-    } else {
-      // Heuristic: increase the gold value by squaring
-      val = BONUS * sqr(gold + 1) / sqrt(distance + 1);
-    }
+    // if (Store::gamePhase == GamePhaseEnum::EARLY_GAME || Store::gamePhase == GamePhaseEnum::MID_GAME) {
+    //   // Heuristic: reduce the value of the cell if it is far from the player
+    //   val = gold * (BONUS - sqrt(distance));
+    // } else {
+    //   // Heuristic: increase the gold value by squaring
+    //   val = BONUS * sqr(gold + 1) / sqrt(distance + 1);
+    // }
 
-    return std::max(val, (double)0);
+    // return std::max(val, (double)0);
+
+    return sqr(gold + 1) / sqrt(distance + 1);
+    // return gold / (distance + 1);
   }
 }
