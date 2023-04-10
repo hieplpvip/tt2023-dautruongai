@@ -6,7 +6,10 @@
 #include <cmath>
 #include <iostream>
 
+#define sqr(a) ((a) * (a))
 #define dist(player, x, y) (Store::dist[hasShield[player]][pos[player].x][pos[player].y][x][y])
+
+constexpr int SHIELD_VALUE = 7;
 
 bool State::isTerminal() const {
   if (turnLeft == 0 || (eliminated[0] && eliminated[1])) {
@@ -58,14 +61,16 @@ void State::performMove(PlayerEnum player, MoveEnum move) {
       for (int i = 0; i < 2; ++i) {
         auto [x, y] = pos[i];
         if (at[x][y] == SHIELD_CELL) {
-          if (!hasShield[i] && Store::gamePhase != GamePhaseEnum::LATE_GAME) {
-            score[i] += Heuristic::Evaluate(SHIELD_CELL, Store::K - turnLeft - Store::currentTurn + 3);
+          if (i != PlayerEnum::ENEMY && !hasShield[i] && Store::gamePhase != GamePhaseEnum::LATE_GAME) {
+            // score[i] += Heuristic::Evaluate(SHIELD_VALUE, Store::K - turnLeft - Store::currentTurn + 3);
+            score[i] += sqr(SHIELD_VALUE + 1);
           }
           hasShield[i] = true;
           at[x][y] = EMPTY_CELL;
         } else if (at[x][y] != DANGER_CELL && at[x][y] != EMPTY_CELL) {
           gold[i] += at[x][y];
-          score[i] += Heuristic::Evaluate(at[x][y], Store::K - turnLeft - Store::currentTurn + 3);
+          // score[i] += Heuristic::Evaluate(at[x][y], Store::K - turnLeft - Store::currentTurn + 3);
+          score[i] += sqr(at[x][y] + 1);
           at[x][y] = EMPTY_CELL;
         }
       }
