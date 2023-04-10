@@ -77,12 +77,12 @@ int main() {
   if (firstTurn) {
     Store::init();
     Store::save();
-    MCTSEngine::findStartingPosition();
+    Engine::findStartingPosition();
   } else {
     Store::load();
     Store::update();
     Store::save();
-    MCTSEngine::findNextMove();
+    Engine::findNextMove();
   }
   return 0;
 }

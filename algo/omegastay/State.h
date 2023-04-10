@@ -74,6 +74,14 @@ struct State {
   int getResult() const;
 
   /*
+   * Get the score of the game from perspective of first player.
+   * This function can be called only when the state is terminal.
+   *
+   * @return gold[0] - gold[1]
+   */
+  int getScore() const;
+
+  /*
    * Get legal moves for the current player.
    */
   void getLegalMoves(bool *isLegalMove, int &numLegalMoves) const;

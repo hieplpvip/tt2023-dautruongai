@@ -1,7 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-namespace MCTSEngine {
+namespace Engine {
   // Find starting position (turn 1)
   void findStartingPosition();
 
