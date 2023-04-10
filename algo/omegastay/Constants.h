@@ -16,7 +16,7 @@
 // Comment out to disable logging
 // #define ENABLE_LOGGING
 
-// If number of turns left is smaller than this value, NegaMax is used instead of MCTS
+// If number of turns left is at most this value, NegaMax is used instead of MCTS
 // The effective maximum depth of NegaMax would be 2 * NEGAMAX_MAX_TURN_LEFT
 #define NEGAMAX_MAX_TURN_LEFT 8
 
