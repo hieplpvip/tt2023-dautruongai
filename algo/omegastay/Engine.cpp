@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Heuristic.h"
 #include "MCTS.h"
+#include "Negamax.h"
 #include "Random.h"
 #include "State.h"
 #include "Store.h"
@@ -10,7 +11,7 @@
 #include <iostream>
 #include <vector>
 
-namespace MCTSEngine {
+namespace Engine {
   void findStartingPosition() {
     // Get symmetric positions
     static std::vector<Position> sym[20][20];
@@ -148,6 +149,18 @@ namespace MCTSEngine {
   }
 
   void findNextMove() {
+    if (rootState.turnLeft <= NEGAMAX_MAX_TURN_LEFT) {
+      // Use NegaMax for optimal play
+      auto [_score, pos] = NegaMax::negamax(rootState, -INF, INF, rootState.turnLeft > 8);
+
+#ifdef ENABLE_LOGGING
+      std::cerr << "NegaMax score: " << _score << std::endl;
+#endif
+
+      printFinalMove(pos.x, pos.y);
+      return;
+    }
+
 #ifdef TAKE_SHIELD_IMMEDIATELY
     if (!rootState.hasShield[0] && rootState.gold[0] > rootState.gold[1]) {
       // Take shield if not taken yet, but only when we are having more gold
