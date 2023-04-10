@@ -5,7 +5,7 @@
 #include <utility>
 
 namespace NegaMax {
-  std::pair<score_t, Position> negamax(State& state, int alpha, int beta);
+  std::pair<score_t, Position> negamax(State& state, int alpha, int beta, bool avoidGoingBack);
 }
 
 #endif

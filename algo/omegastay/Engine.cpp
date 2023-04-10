@@ -151,7 +151,7 @@ namespace Engine {
   void findNextMove() {
     if (rootState.turnLeft <= NEGAMAX_MAX_TURN_LEFT) {
       // Use NegaMax for optimal play
-      auto [_score, pos] = NegaMax::negamax(rootState, -INF, INF);
+      auto [_score, pos] = NegaMax::negamax(rootState, -INF, INF, rootState.turnLeft > 8);
 
 #ifdef ENABLE_LOGGING
       std::cerr << "NegaMax score: " << _score << std::endl;

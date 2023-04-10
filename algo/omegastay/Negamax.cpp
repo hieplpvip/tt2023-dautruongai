@@ -2,7 +2,7 @@
 #include <algorithm>
 
 namespace NegaMax {
-  std::pair<score_t, Position> negamax(State& state, int alpha, int beta) {
+  std::pair<score_t, Position> negamax(State& state, int alpha, int beta, bool avoidGoingBack) {
     if (state.isTerminal()) {
       return {state.getScore(), {-1, -1}};
     }
@@ -10,6 +10,19 @@ namespace NegaMax {
     int numLegalMoves;
     bool isLegalMove[NUM_MOVES];
     state.getLegalMoves(isLegalMove, numLegalMoves);
+
+    // Avoid going back unless there is no other choice
+    if (avoidGoingBack && numLegalMoves > 1) {
+      auto [x, y] = state.pos[state.playerToMove];
+      auto [lastX, lastY] = state.lastPos[state.playerToMove];
+      for (int k = 0; k < NUM_MOVES; ++k) {
+        if (isLegalMove[k] && x + dx[k] == lastX && y + dy[k] == lastY) {
+          isLegalMove[k] = false;
+          --numLegalMoves;
+          break;
+        }
+      }
+    }
 
     int bestScore = -INF;
     Position bestPos = {-1, -1};
@@ -21,7 +34,7 @@ namespace NegaMax {
       State childState = state;
       childState.performMove(static_cast<MoveEnum>(k));
 
-      auto [score, pos] = negamax(childState, -beta, -alpha);
+      auto [score, pos] = negamax(childState, -beta, -alpha, avoidGoingBack);
       score = -score;
 
       if (score > bestScore) {
