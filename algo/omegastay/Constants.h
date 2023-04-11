@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 // Take shield immediately if it standing next to one and not having shield yet,
-// but only when we are having more gold
+// but only when we are having more gold or opponent is not standing next to shield
 // Comment out to disable
 #define TAKE_SHIELD_IMMEDIATELY
 

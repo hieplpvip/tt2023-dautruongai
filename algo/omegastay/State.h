@@ -3,6 +3,7 @@
 
 #include "Constants.h"
 #include "Utility.h"
+#include <cmath>
 
 struct Position {
   int x;
@@ -10,6 +11,10 @@ struct Position {
 
   Position() {}
   Position(int _x, int _y) : x(_x), y(_y) {}
+
+  inline bool isAdjacent(const Position &other) const {
+    return abs(x - other.x) + abs(y - other.y) == 1;
+  }
 
   inline bool operator==(const Position &other) const {
     return x == other.x && y == other.y;

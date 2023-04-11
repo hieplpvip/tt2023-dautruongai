@@ -162,8 +162,7 @@ namespace Engine {
     }
 
 #ifdef TAKE_SHIELD_IMMEDIATELY
-    if (!rootState.hasShield[0] && rootState.gold[0] > rootState.gold[1]) {
-      // Take shield if not taken yet, but only when we are having more gold
+    if (!rootState.hasShield[0]) {
       auto [x, y] = rootState.pos[0];
       for (int k = 0; k < 4; ++k) {
         int nx = x + dx[k];
@@ -172,8 +171,11 @@ namespace Engine {
 #ifdef ENABLE_LOGGING
           std::cerr << "Take shield " << nx + 1 << ' ' << ny + 1 << std::endl;
 #endif
-          printFinalMove(nx, ny);
-          return;
+          if (rootState.gold[0] > rootState.gold[1] || !rootState.pos[1].isAdjacent({nx, ny})) {
+            // Take shield when we are having more gold or opponent is not standing next to shield
+            printFinalMove(nx, ny);
+            return;
+          }
         }
       }
     }
@@ -194,7 +196,7 @@ namespace Engine {
         }
       }
 
-      if ((Store::gamePhase == LATE_GAME && gold >= 3) || (rootState.turnLeft <= 5 && gold > 0)) {
+      if (Store::gamePhase == LATE_GAME && gold >= 3) {
 #ifdef ENABLE_LOGGING
         std::cerr << "Take " << gold << " gold " << best_x + 1 << ' ' << best_y + 1 << std::endl;
 #endif
