@@ -146,6 +146,14 @@ namespace Engine {
 #endif
       }
     }
+
+#ifdef ENABLE_LOGGING
+    for (int i = 0; i < k; ++i) {
+      auto [x, y] = candidates[i].second;
+      auto node = child[i].first;
+      std::cerr << "Position " << x + 1 << ' ' << y + 1 << ": " << node->numVisits << " visits, win rate: " << (1 - node->winRate) << std::endl;
+    }
+#endif
   }
 
   void findNextMove() {
