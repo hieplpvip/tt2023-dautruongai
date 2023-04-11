@@ -79,12 +79,12 @@ namespace Minimax {
   std::pair<score_t, Position> MaxNode(score_t alpha, score_t beta, int depth, State &state) {
     // Check terminal state
     if (state.isTerminal()) {
-      return std::make_pair(state.getResult(), state.pos[0]);
+      return std::make_pair(state.getHeuristicResult(), state.pos[0]);
     }
 
     // Check max depth
     if (depth >= MINIMAX_MAX_DEPTH) {
-      return std::make_pair(state.getScore(), state.pos[0]);
+      return std::make_pair(state.getHeuristicScore(), state.pos[0]);
     }
 
     std::vector<std::pair<score_t, MoveEnum>> moves;

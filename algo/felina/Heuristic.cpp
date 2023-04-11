@@ -8,7 +8,7 @@
 #define dist(player, u, v) Store::dist[state.hasShield[player]][state.pos[player].x][state.pos[player].y][u][v]
 
 constexpr int HEAT_RADIUS = 2;  // If the radius is too large, it will detect the gold in sparse areas
-constexpr int SHIELD_VALUE = 15;
+constexpr int SHIELD_VALUE = 7;
 
 namespace Heuristic {
   // Preallocated heat map for faster computation
