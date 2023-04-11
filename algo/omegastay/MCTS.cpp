@@ -122,7 +122,16 @@ namespace MCTS {
       if (!root->children[k]) {
         continue;
       }
-      std::cerr << "Child " << k << ": " << root->children[k]->numVisits << " visits, win rate: " << root->children[k]->winRate << std::endl;
+      auto child = root->children[k];
+      std::cerr << "-------------------------------" << std::endl;
+      std::cerr << "Child " << k << ": " << child->numVisits << " visits, win rate: " << child->winRate << std::endl;
+      for (int h = 0; h < NUM_MOVES; ++h) {
+        if (!child->children[h]) {
+          continue;
+        }
+        auto grandChild = child->children[h];
+        std::cerr << "Grandchild " << h << ": " << grandChild->numVisits << " visits, win rate: " << grandChild->winRate << std::endl;
+      }
     }
   }
 
