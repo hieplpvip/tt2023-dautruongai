@@ -221,7 +221,7 @@ namespace Engine {
 #endif
 
     // Find best move using Monte Carlo tree search
-    MCTS::Node* root = MCTS::newNode(rootState);
+    MCTS::Node* root = MCTS::newRootNode();
     int countIterations = 0;
     int lastMove = -1;
     while (countIterations < MCTS_MAX_ITERATIONS) {
