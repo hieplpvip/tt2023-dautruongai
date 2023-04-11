@@ -7,7 +7,6 @@
 #define sqr(a) ((a) * (a))
 #define dist(player, u, v) Store::dist[state.hasShield[player]][state.pos[player].x][state.pos[player].y][u][v]
 
-constexpr int NUM_CANDIDATES = 10;
 constexpr int HEAT_RADIUS = 2;   // If the radius is too large, it will detect the gold in sparse areas
 constexpr int ENEMY_RADIUS = 3;  // If radius too large, it will miss a lot of gold, otherwise it may come close to enemy
 constexpr int SHIELD_VALUE = 7;
@@ -123,7 +122,7 @@ namespace Heuristic {
     }
   }
 
-  std::vector<std::pair<score_t, Position>> GetCandidates(State& state) {
+  std::vector<std::pair<score_t, Position>> GetCandidates(State& state, int numCandidates) {
     GetHeatMap(state);
 
     std::vector<std::pair<score_t, Position>> candidates;
@@ -131,11 +130,22 @@ namespace Heuristic {
       if (state.at[x][y] != EMPTY_CELL) {
         continue;
       }
-      candidates.emplace_back(table[x + 1][y + 1], Position(x, y));
+      bool adjacentToShieldOrGold = false;
+      for (int k = 0; k < NUM_MOVES; ++k) {
+        int nx = x + dx[k];
+        int ny = y + dy[k];
+        if (isValidPos(nx, ny) && (state.at[nx][ny] == SHIELD_CELL || (state.at[nx][ny] != DANGER_CELL && state.at[nx][ny] != EMPTY_CELL))) {
+          adjacentToShieldOrGold = true;
+          break;
+        }
+      }
+      if (adjacentToShieldOrGold) {
+        candidates.emplace_back(table[x + 1][y + 1], Position(x, y));
+      }
     }
 
     sort(candidates.rbegin(), candidates.rend());
-    candidates.resize(std::min((int)candidates.size(), NUM_CANDIDATES));
+    candidates.resize(std::min((int)candidates.size(), numCandidates));
     return candidates;
   }
 

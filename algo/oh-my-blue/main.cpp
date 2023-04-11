@@ -73,7 +73,7 @@ bool readInput() {
 }
 
 void makeFirstMove() {
-  auto candidates = Heuristic::GetCandidates(rootState);
+  auto candidates = Heuristic::GetCandidates(rootState, 10);
   auto [score, move] = MiniMax::MaxStartNode(2 * -INF, 2 * INF, 0, candidates);
   printFinalMove(move.x, move.y);
 }
