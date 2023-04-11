@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Heuristic.h"
 #include "MCTS.h"
+#include "Minimax.h"
 #include "Negamax.h"
 #include "Random.h"
 #include "State.h"
@@ -214,6 +215,11 @@ namespace Engine {
     }
 #endif
 
+    auto [_minimaxScore, minimaxMove] = Minimax::MaxNode(2 * -INF, 2 * INF, 0, rootState);
+#ifdef ENABLE_LOGGING
+    std::cerr << "Minimax found best move " << minimaxMove.x + 1 << ' ' << minimaxMove.y + 1 << ' ' << _minimaxScore << std::endl;
+#endif
+
     // Find best move using Monte Carlo tree search
     MCTS::Node* root = MCTS::newNode(rootState);
     int countIterations = 0;
@@ -229,7 +235,7 @@ namespace Engine {
         printFinalMove(x, y);
 
 #ifdef ENABLE_LOGGING
-        std::cerr << "Found new best move " << x + 1 << ' ' << y + 1 << ' ' << countIterations << std::endl;
+        std::cerr << "MCTS found new best move " << x + 1 << ' ' << y + 1 << ' ' << countIterations << std::endl;
 #endif
       }
     }

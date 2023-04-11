@@ -63,7 +63,7 @@ struct State {
    * This function can be called only when the state is terminal.
    *
    * @return 0 if draw, INF if player 1 wins, otherwise -INF.
-   * The score will be add into this to encourage player countinuing their move.
+   * The score will be add into this to encourage player continuing their move.
    */
   score_t getResult() const;
 

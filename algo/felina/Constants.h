@@ -36,6 +36,10 @@ constexpr int THRESHOLD_EARLY_GAME = 15;
 // The effective maximum depth of Negamax would be 2 * NEGAMAX_MAX_TURN_LEFT
 constexpr int NEGAMAX_MAX_TURN_LEFT = 10;
 
+// Maximum search depth of Minimax
+// A value of x means each player can make x / 2 moves
+constexpr int MINIMAX_MAX_DEPTH = 18;
+
 // Number of nodes to be preallocated to avoid overhead of new
 constexpr int NUMBER_OF_PREALLOCATED_NODES = 500000;
 

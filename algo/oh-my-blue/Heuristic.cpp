@@ -59,7 +59,7 @@ namespace Heuristic {
       }
 
       // If cannot reach the cell in turn left, ignore
-      if (dist(player, x, y) >= state.turnLeft) {
+      if (dist(player, x, y) > state.turnLeft) {
         val = 0;
       }
 
