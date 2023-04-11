@@ -1,6 +1,9 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// Comment out to disable logging
+// #define ENABLE_LOGGING
+
 using score_t = double;
 
 constexpr int INF = 1e9;

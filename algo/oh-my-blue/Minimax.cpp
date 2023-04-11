@@ -153,9 +153,11 @@ namespace MiniMax {
         alpha = bestScore;
       }
 
-      // if (depth == 0) {
-      //   std::cerr << "Move: " << move << " Score: " << score << std::endl;
-      // }
+#ifdef ENABLE_LOGGING
+      if (depth == 0) {
+        std::cerr << "Move: " << move << " Score: " << score << std::endl;
+      }
+#endif
     }
 
     return std::make_pair(bestScore, bestPos);
