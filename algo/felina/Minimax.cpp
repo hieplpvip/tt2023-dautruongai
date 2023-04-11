@@ -4,6 +4,7 @@
 #include "Store.h"
 #include <iostream>
 #include <algorithm>
+#include <cassert>
 
 #define isLegalMove(player, move) (Store::isLegalMove[state.hasShield[player]][state.pos[player].x][state.pos[player].y][move])
 #define dist(a, b) (abs(a.x - b.x) + abs(a.y - b.y))
@@ -82,7 +83,7 @@ namespace Minimax {
     }
 
     // Check max depth
-    if (depth >= MAX_DEPTH) {
+    if (depth >= MINIMAX_MAX_DEPTH) {
       return std::make_pair(state.getScore(), state.pos[0]);
     }
 
@@ -114,7 +115,8 @@ namespace Minimax {
     // Sort direction by heat
     for (int i = 0; i < (int)moves.size(); ++i) {
       State nextState = state;
-      nextState.performMove(PlayerEnum::ME, moves[i].second);
+      assert(nextState.playerToMove == 0);
+      nextState.performMove(moves[i].second);
       moves[i].first = Heuristic::GetHighestHeat(nextState, PlayerEnum::ME);
 
       int cell = nextState.at[nextState.pos[PlayerEnum::ME].x][nextState.pos[PlayerEnum::ME].y];
@@ -134,7 +136,8 @@ namespace Minimax {
     for (auto [_, move] : moves) {
       // Perform the move
       State nextState = state;
-      nextState.performMove(PlayerEnum::ME, move);
+      assert(nextState.playerToMove == 0);
+      nextState.performMove(move);
 
       // Get the score of the move
       auto [score, pos] = MinNode(alpha, beta, depth + 1, nextState);
@@ -192,7 +195,8 @@ namespace Minimax {
     // Sort direction by heat
     for (int i = 0; i < (int)moves.size(); ++i) {
       State nextState = state;
-      nextState.performMove(PlayerEnum::ENEMY, moves[i].second);
+      assert(nextState.playerToMove == 1);
+      nextState.performMove(moves[i].second);
       moves[i].first = Heuristic::GetHighestHeat(nextState, PlayerEnum::ENEMY);
 
       int cell = nextState.at[nextState.pos[PlayerEnum::ENEMY].x][nextState.pos[PlayerEnum::ENEMY].y];
@@ -211,7 +215,8 @@ namespace Minimax {
     for (auto [_, move] : moves) {
       // Perform the move
       State nextState = state;
-      nextState.performMove(PlayerEnum::ENEMY, move);
+      assert(nextState.playerToMove == 1);
+      nextState.performMove(move);
 
       // Get the score of the move
       auto [score, pos] = MaxNode(alpha, beta, depth + 1, nextState);

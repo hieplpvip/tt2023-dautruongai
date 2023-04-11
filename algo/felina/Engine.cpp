@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Heuristic.h"
 #include "MCTS.h"
+#include "Minimax.h"
 #include "Negamax.h"
 #include "Random.h"
 #include "State.h"

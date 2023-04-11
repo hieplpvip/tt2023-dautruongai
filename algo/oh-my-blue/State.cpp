@@ -3,7 +3,6 @@
 #include "Heuristic.h"
 #include <algorithm>
 #include <cassert>
-#include <cmath>
 #include <iostream>
 
 #define sqr(a) ((a) * (a))

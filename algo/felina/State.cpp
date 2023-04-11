@@ -1,9 +1,14 @@
 #include "State.h"
 #include "Store.h"
+#include "Heuristic.h"
 #include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <iostream>
+
+#define sqr(a) ((a) * (a))
+
+constexpr int SHIELD_VALUE = 7;
 
 bool State::isTerminal() const {
   if (playerToMove != 0) {
@@ -31,6 +36,20 @@ int State::getResult() const {
 
 int State::getScore() const {
   return gold[0] - gold[1];
+}
+
+score_t State::getHeuristicResult() const {
+  if (gold[0] > gold[1]) {
+    return INF + hscore[0] - hscore[1];
+  }
+  if (gold[0] < gold[1]) {
+    return -INF + hscore[0] - hscore[1];
+  }
+  return hscore[0] - hscore[1];
+}
+
+score_t State::getHeuristicScore() {
+  return (hscore[0] + Heuristic::GetHighestHeat(*this, PlayerEnum::ME)) - (hscore[1] + Heuristic::GetHighestHeat(*this, PlayerEnum::ENEMY));
 }
 
 const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};
@@ -69,10 +88,14 @@ void State::performMove(MoveEnum move) {
       for (int i = 0; i < 2; ++i) {
         auto [x, y] = pos[i];
         if (at[x][y] == SHIELD_CELL) {
+          if (i == 0 && !hasShield[i] && Store::gamePhase != GamePhaseEnum::LATE_GAME) {
+            hscore[i] += sqr(SHIELD_VALUE + 1);
+          }
           hasShield[i] = true;
           at[x][y] = EMPTY_CELL;
         } else if (at[x][y] != DANGER_CELL && at[x][y] != EMPTY_CELL) {
           gold[i] += at[x][y];
+          hscore[i] += sqr(at[x][y] + 1);
           at[x][y] = EMPTY_CELL;
         }
       }

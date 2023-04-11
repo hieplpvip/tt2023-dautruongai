@@ -57,6 +57,9 @@ struct State {
   // Gold collected by players
   int gold[2];
 
+  // Heuristic score of players
+  score_t hscore[2];
+
   // Whether players have shield
   bool hasShield[2];
 
@@ -85,6 +88,23 @@ struct State {
    * @return gold[0] - gold[1]
    */
   int getScore() const;
+
+  /*
+   * Get the result of the game from perspective of first player.
+   * This function can be called only when the state is terminal.
+   *
+   * @return 0 if draw, INF if player 1 wins, otherwise -INF.
+   * The score will be add into this to encourage player continuing their move.
+   */
+  score_t getHeuristicResult() const;
+
+  /*
+   * Get the score of the game from perspective of first player.
+   * This function can be called only when the minimax search reach max depth.
+   *
+   * @return the score (with heuristic) difference between two players.
+   */
+  score_t getHeuristicScore();
 
   /*
    * Get legal moves for the current player.
