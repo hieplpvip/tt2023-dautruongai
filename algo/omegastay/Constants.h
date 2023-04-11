@@ -21,7 +21,7 @@
 #define NEGAMAX_MAX_TURN_LEFT 10
 
 // Number of MCTS iterations
-#define MAX_ITERATIONS 500
+#define MAX_ITERATIONS 250
 
 // Number of nodes to be preallocated to avoid overhead of new
 #define NUMBER_OF_PREALLOCATED_NODES 1000000
