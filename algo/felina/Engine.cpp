@@ -207,6 +207,14 @@ namespace Engine {
     }
 #endif
 
+    {
+      auto [score, move] = Minimax::MaxNode(2 * -INF, 2 * INF, 0, rootState);
+#ifdef ENABLE_LOGGING
+      std::cerr << "Minimax found best move " << move.x + 1 << ' ' << move.y + 1 << ' ' << score << std::endl;
+#endif
+      // printFinalMove(move.x, move.y);
+    }
+
     // Find best move using Monte Carlo tree search
     MCTS::Node* root = MCTS::newNode(rootState);
     int countIterations = 0;
@@ -222,10 +230,13 @@ namespace Engine {
         printFinalMove(x, y);
 
 #ifdef ENABLE_LOGGING
-        std::cerr << "Found new best move " << x + 1 << ' ' << y + 1 << ' ' << countIterations << std::endl;
-        MCTS::printStats(root);
+        std::cerr << "MCTS found new best move " << x + 1 << ' ' << y + 1 << ' ' << countIterations << std::endl;
 #endif
       }
     }
+
+#ifdef ENABLE_LOGGING
+    MCTS::printStats(root);
+#endif
   }
 }

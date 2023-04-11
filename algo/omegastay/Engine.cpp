@@ -222,9 +222,12 @@ namespace Engine {
 
 #ifdef ENABLE_LOGGING
         std::cerr << "Found new best move " << x + 1 << ' ' << y + 1 << ' ' << countIterations << std::endl;
-        MCTS::printStats(root);
 #endif
       }
     }
+
+#ifdef ENABLE_LOGGING
+    MCTS::printStats(root);
+#endif
   }
 }
