@@ -73,8 +73,54 @@ bool readInput() {
 }
 
 void makeFirstMove() {
+  // Get symmetric positions
+  static std::vector<Position> sym[20][20];
+  {
+    bool horizontal = true;
+    bool vertical = true;
+    bool main_diagonal = (Store::M == Store::N);
+    bool anti_diagonal = (Store::M == Store::N);
+
+    REPL_ALL_CELL(i, j) {
+      if (rootState.at[i][j] != rootState.at[Store::M - i - 1][j]) {
+        horizontal = false;
+      }
+      if (rootState.at[i][j] != rootState.at[i][Store::N - j - 1]) {
+        vertical = false;
+      }
+
+      if (Store::M == Store::N) {
+        if (rootState.at[i][j] != rootState.at[j][i]) {
+          main_diagonal = false;
+        }
+        if (rootState.at[i][j] != rootState.at[Store::M - i - 1][Store::N - j - 1]) {
+          anti_diagonal = false;
+        }
+      }
+    }
+
+    REPL_ALL_CELL(i, j) {
+      sym[i][j].clear();
+      sym[i][j].emplace_back(i, j);
+      if (horizontal) {
+        sym[i][j].emplace_back(Store::M - i - 1, j);
+      }
+      if (vertical) {
+        sym[i][j].emplace_back(i, Store::N - j - 1);
+      }
+      if (main_diagonal) {
+        sym[i][j].emplace_back(j, i);
+      }
+      if (anti_diagonal) {
+        sym[i][j].emplace_back(Store::M - i - 1, Store::N - j - 1);
+      }
+    }
+  }
+
   auto candidates = Heuristic::GetCandidates(rootState, 10);
   auto [score, move] = Minimax::MaxStartNode(2 * -INF, 2 * INF, 0, candidates);
+  auto& A = sym[move.x][move.y];
+  move = A[Random::rand(A.size())];
   printFinalMove(move.x, move.y);
 }
 
