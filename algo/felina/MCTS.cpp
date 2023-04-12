@@ -10,10 +10,6 @@ namespace MCTS {
   static int numNodes = 0;
   static std::vector<Node> nodes(NUMBER_OF_PREALLOCATED_NODES);
 
-  // Used to make sure that first two levels of the tree are properly assessed
-  constexpr int MIN_VISITS_BY_DEPTH[] = {12000, 3000};
-  constexpr int SIZE_OF_MIN_VISITS_BY_DEPTH = sizeof(MIN_VISITS_BY_DEPTH) / sizeof(MIN_VISITS_BY_DEPTH[0]);
-
   Node* newRootNode() {
     if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
       std::cerr << "Out of preallocated nodes" << std::endl;
@@ -93,12 +89,18 @@ namespace MCTS {
   double Node::getUCT() const {
     assert(numVisits > 0);
     // We never call this function on root, so parent is always non-null
-    // UCT = (numVisits - sumResult) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
-    return -winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
+    // UCT = -sumResult / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
+    return -averageResult + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
   }
 
   Node* Node::getBestChild(int depth) const {
-    int minVisits = (depth < SIZE_OF_MIN_VISITS_BY_DEPTH) ? MIN_VISITS_BY_DEPTH[depth] : MCTS_MIN_VISITS;
+    // Make sure that first two levels of the tree are visited enough times
+    int minVisits = MCTS_MIN_VISITS;
+    if (depth == 0) {
+      minVisits = MCTS_DEPTH1_MIN_VISITS * numLegalMoves;
+    } else if (depth == 1) {
+      minVisits = MCTS_DEPTH1_MIN_VISITS;
+    }
 
     Node* bestChild = nullptr;
     double bestScore = -INF;
@@ -123,20 +125,20 @@ namespace MCTS {
   }
 
   void printStats(const Node* root) {
-    std::cerr << "Root: " << root->numVisits << " visits, win rate: " << root->winRate << std::endl;
+    std::cerr << "Root: " << root->numVisits << " visits, win rate: " << root->averageResult << std::endl;
     for (int k = 0; k < NUM_MOVES; ++k) {
       if (!root->children[k]) {
         continue;
       }
       auto child = root->children[k];
       std::cerr << "-------------------------------" << std::endl;
-      std::cerr << "Child " << k << ": " << child->numVisits << " visits, win rate: " << child->winRate << std::endl;
+      std::cerr << "Child " << k << ": " << child->numVisits << " visits, win rate: " << child->averageResult << std::endl;
       for (int h = 0; h < NUM_MOVES; ++h) {
         if (!child->children[h]) {
           continue;
         }
         auto grandChild = child->children[h];
-        std::cerr << "Grandchild " << h << ": " << grandChild->numVisits << " visits, win rate: " << grandChild->winRate << std::endl;
+        std::cerr << "Grandchild " << h << ": " << grandChild->numVisits << " visits, win rate: " << grandChild->averageResult << std::endl;
       }
     }
   }
@@ -216,14 +218,14 @@ namespace MCTS {
 
     // Backpropagation phase
     // Update the scores of all the nodes in the path from cur to root
-    double result = tmpState.getResult();
+    int result = tmpState.getResult();
     if (cur->gameState.playerToMove == 1) {
       result = -result;
     }
     do {
       cur->numVisits++;
-      cur->sumScore += result;
-      cur->winRate = (double)cur->sumScore / cur->numVisits;
+      cur->sumResult += result;
+      cur->averageResult = (double)cur->sumResult / cur->numVisits;
       cur->sqrtLogNumVisits = sqrt(log(cur->numVisits));
       cur->CDivSqrtNumVisits = MCTS_C / sqrt(cur->numVisits);
       cur = cur->parent;

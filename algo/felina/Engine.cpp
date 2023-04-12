@@ -215,9 +215,9 @@ namespace Engine {
     }
 #endif
 
-    auto [_minimaxScore, minimaxMove] = Minimax::MaxNode(2 * -INF, 2 * INF, 0, rootState);
+    auto [_minimaxScore, _minimaxMove] = Minimax::MaxNode(2 * -INF, 2 * INF, 0, rootState);
 #ifdef ENABLE_LOGGING
-    std::cerr << "Minimax found best move " << minimaxMove.x + 1 << ' ' << minimaxMove.y + 1 << ' ' << _minimaxScore << std::endl;
+    std::cerr << "Minimax found best move " << _minimaxMove.x + 1 << ' ' << _minimaxMove.y + 1 << ' ' << _minimaxScore << std::endl;
 #endif
 
     // Find best move using Monte Carlo tree search

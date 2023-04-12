@@ -30,8 +30,7 @@ bool State::isTerminal() const {
   return false;
 }
 
-double State::getResult() const {
-  // return (gold[0] > gold[1]) ? 1 : 0;
+int State::getResult() const {
   if (gold[0] > gold[1]) {
     return 1;
   } else if (gold[0] < gold[1]) {
