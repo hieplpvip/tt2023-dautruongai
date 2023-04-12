@@ -47,8 +47,9 @@ namespace MCTS {
 
     /*
      * Return the best child of the node
+     * depth is the depth of the node in the tree
      */
-    Node* getBestChild() const;
+    Node* getBestChild(int depth) const;
   };
 
   // Create a new root node from the root state, not avoid going back

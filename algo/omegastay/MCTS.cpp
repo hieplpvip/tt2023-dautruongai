@@ -93,7 +93,15 @@ namespace MCTS {
     return -averageResult + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
   }
 
-  Node* Node::getBestChild() const {
+  Node* Node::getBestChild(int depth) const {
+    // Make sure that first two levels of the tree are visited enough times
+    int minVisits = MCTS_MIN_VISITS;
+    if (depth == 0) {
+      minVisits = MCTS_DEPTH1_MIN_VISITS * numLegalMoves;
+    } else if (depth == 1) {
+      minVisits = MCTS_DEPTH1_MIN_VISITS;
+    }
+
     Node* bestChild = nullptr;
     double bestScore = -INF;
     for (int k = 0; k < NUM_MOVES; ++k) {
@@ -101,7 +109,7 @@ namespace MCTS {
         continue;
       }
 
-      if (children[k]->numVisits < MCTS_MIN_VISITS) {
+      if (children[k]->numVisits < minVisits) {
         // If any child has not been visited often enough, return it
         return children[k];
       }
@@ -165,7 +173,7 @@ namespace MCTS {
     // until we reach a non fully-expanded node
     int depth = 0;
     while (cur->isFullyExpanded()) {
-      cur = cur->getBestChild();
+      cur = cur->getBestChild(depth);
       ++depth;
     }
 
