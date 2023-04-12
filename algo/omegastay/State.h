@@ -65,7 +65,7 @@ struct State {
 
   /*
    * Check if the state is terminal:
-   * - playerToMove == 0 (i.e. both players have moved)
+   * - playerToMove == ME (i.e. both players have moved)
    * - otherwise following rules
    */
   bool isTerminal() const;

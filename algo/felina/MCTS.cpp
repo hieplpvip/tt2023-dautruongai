@@ -219,7 +219,7 @@ namespace MCTS {
     // Backpropagation phase
     // Update the scores of all the nodes in the path from cur to root
     int result = tmpState.getResult();
-    if (cur->gameState.playerToMove == 1) {
+    if (cur->gameState.playerToMove == ENEMY) {
       result = -result;
     }
     do {
