@@ -82,7 +82,7 @@ namespace Minimax {
     }
 
     // Check max depth
-    if (depth >= MAX_DEPTH) {
+    if (depth >= MINIMAX_MAX_DEPTH) {
       return std::make_pair(state.getScore(), state.pos[0]);
     }
 

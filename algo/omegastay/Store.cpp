@@ -3,7 +3,6 @@
 #include <cassert>
 #include <cstring>
 #include <fstream>
-#include <iostream>
 #include <queue>
 
 State rootState;

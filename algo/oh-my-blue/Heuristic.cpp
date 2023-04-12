@@ -27,7 +27,6 @@ namespace Heuristic {
 
     if (state.turnLeft > Store::HALF_K && state.turnLeft - Store::HALF_K <= dist(player, Store::M / 2, Store::N / 2)) {
       // Still in the first half of the game
-      // Approximate treasure value
       state.at[Store::M / 2][Store::N / 2] = std::max(1, abs(state.gold[0] - state.gold[1]) * 3 / 4);
     }
 
