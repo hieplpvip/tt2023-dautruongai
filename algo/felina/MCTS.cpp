@@ -94,7 +94,7 @@ namespace MCTS {
     assert(numVisits > 0);
     // We never call this function on root, so parent is always non-null
     // UCT = (numVisits - sumResult) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
-    return 1.0 - winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
+    return -winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
   }
 
   Node* Node::getBestChild(int depth) const {
@@ -218,7 +218,7 @@ namespace MCTS {
     // Update the scores of all the nodes in the path from cur to root
     double result = tmpState.getResult();
     if (cur->gameState.playerToMove == 1) {
-      result = 1.0 - result;
+      result = -result;
     }
     do {
       cur->numVisits++;
@@ -227,7 +227,7 @@ namespace MCTS {
       cur->sqrtLogNumVisits = sqrt(log(cur->numVisits));
       cur->CDivSqrtNumVisits = MCTS_C / sqrt(cur->numVisits);
       cur = cur->parent;
-      result = 1.0 - result;
+      result = -result;
     } while (cur != nullptr);
   }
 
