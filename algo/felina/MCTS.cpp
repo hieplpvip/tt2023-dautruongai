@@ -125,20 +125,20 @@ namespace MCTS {
   }
 
   void printStats(const Node* root) {
-    std::cerr << "Root: " << root->numVisits << " visits, win rate: " << root->averageResult << std::endl;
+    std::cerr << "Root: " << root->numVisits << " visits, average result: " << root->averageResult << std::endl;
     for (int k = 0; k < NUM_MOVES; ++k) {
       if (!root->children[k]) {
         continue;
       }
       auto child = root->children[k];
       std::cerr << "-------------------------------" << std::endl;
-      std::cerr << "Child " << k << ": " << child->numVisits << " visits, win rate: " << child->averageResult << std::endl;
+      std::cerr << "Child " << k << ": " << child->numVisits << " visits, average result: " << child->averageResult << std::endl;
       for (int h = 0; h < NUM_MOVES; ++h) {
         if (!child->children[h]) {
           continue;
         }
         auto grandChild = child->children[h];
-        std::cerr << "Grandchild " << h << ": " << grandChild->numVisits << " visits, win rate: " << grandChild->averageResult << std::endl;
+        std::cerr << "Grandchild " << h << ": " << grandChild->numVisits << " visits, average result: " << grandChild->averageResult << std::endl;
       }
     }
   }
