@@ -151,7 +151,7 @@ namespace Engine {
     for (int i = 0; i < k; ++i) {
       auto [x, y] = candidates[i].second;
       auto node = child[i].first;
-      std::cerr << "Position " << x + 1 << ' ' << y + 1 << ": " << node->numVisits << " visits, win rate: " << (1 - node->winRate) << std::endl;
+      std::cerr << "Position " << x + 1 << ' ' << y + 1 << ": " << node->numVisits << " visits, average result: " << (1 - node->averageResult) << std::endl;
     }
 #endif
   }

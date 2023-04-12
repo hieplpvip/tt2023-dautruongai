@@ -89,8 +89,8 @@ namespace MCTS {
   double Node::getUCT() const {
     assert(numVisits > 0);
     // We never call this function on root, so parent is always non-null
-    // UCT = (numVisits - sumResult) / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
-    return 1.0 - winRate + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
+    // UCT = -sumResult / numVisits + MCTS_C * sqrt(log(parent->numVisits) / numVisits)
+    return -averageResult + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
   }
 
   Node* Node::getBestChild() const {
@@ -117,12 +117,21 @@ namespace MCTS {
   }
 
   void printStats(const Node* root) {
-    std::cerr << "Root: " << root->numVisits << " visits, win rate: " << root->winRate << std::endl;
+    std::cerr << "Root: " << root->numVisits << " visits, average result: " << root->averageResult << std::endl;
     for (int k = 0; k < NUM_MOVES; ++k) {
       if (!root->children[k]) {
         continue;
       }
-      std::cerr << "Child " << k << ": " << root->children[k]->numVisits << " visits, win rate: " << root->children[k]->winRate << std::endl;
+      auto child = root->children[k];
+      std::cerr << "-------------------------------" << std::endl;
+      std::cerr << "Child " << k << ": " << child->numVisits << " visits, average result: " << child->averageResult << std::endl;
+      for (int h = 0; h < NUM_MOVES; ++h) {
+        if (!child->children[h]) {
+          continue;
+        }
+        auto grandChild = child->children[h];
+        std::cerr << "Grandchild " << h << ": " << grandChild->numVisits << " visits, average result: " << grandChild->averageResult << std::endl;
+      }
     }
   }
 
@@ -201,16 +210,16 @@ namespace MCTS {
     // Update the scores of all the nodes in the path from cur to root
     int result = tmpState.getResult();
     if (cur->gameState.playerToMove == 1) {
-      result = 1 - result;
+      result = -result;
     }
     do {
       cur->numVisits++;
-      cur->sumScore += result;
-      cur->winRate = (double)cur->sumScore / cur->numVisits;
+      cur->sumResult += result;
+      cur->averageResult = (double)cur->sumResult / cur->numVisits;
       cur->sqrtLogNumVisits = sqrt(log(cur->numVisits));
       cur->CDivSqrtNumVisits = MCTS_C / sqrt(cur->numVisits);
       cur = cur->parent;
-      result = 1 - result;
+      result = -result;
     } while (cur != nullptr);
   }
 

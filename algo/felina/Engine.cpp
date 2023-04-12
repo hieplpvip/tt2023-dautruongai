@@ -152,7 +152,7 @@ namespace Engine {
     for (int i = 0; i < k; ++i) {
       auto [x, y] = candidates[i].second;
       auto node = child[i].first;
-      std::cerr << "Position " << x + 1 << ' ' << y + 1 << ": " << node->numVisits << " visits, win rate: " << (1 - node->winRate) << std::endl;
+      std::cerr << "Position " << x + 1 << ' ' << y + 1 << ": " << node->numVisits << " visits, average result: " << (1 - node->averageResult) << std::endl;
     }
 #endif
   }
@@ -215,13 +215,13 @@ namespace Engine {
     }
 #endif
 
-    auto [_minimaxScore, minimaxMove] = Minimax::MaxNode(2 * -INF, 2 * INF, 0, rootState);
 #ifdef ENABLE_LOGGING
-    std::cerr << "Minimax found best move " << minimaxMove.x + 1 << ' ' << minimaxMove.y + 1 << ' ' << _minimaxScore << std::endl;
+    auto [minimaxScore, minimaxMove] = Minimax::MaxNode(2 * -INF, 2 * INF, 0, rootState);
+    std::cerr << "Minimax found best move " << minimaxMove.x + 1 << ' ' << minimaxMove.y + 1 << ' ' << minimaxScore << std::endl;
 #endif
 
     // Find best move using Monte Carlo tree search
-    MCTS::Node* root = MCTS::newNode(rootState);
+    MCTS::Node* root = MCTS::newRootNode();
     int countIterations = 0;
     int lastMove = -1;
     while (countIterations < MCTS_MAX_ITERATIONS) {

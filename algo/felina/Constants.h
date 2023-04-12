@@ -14,7 +14,7 @@
 #define NDEBUG
 
 // Comment out to disable logging
-#define ENABLE_LOGGING
+// #define ENABLE_LOGGING
 
 #include <cmath>
 
@@ -43,7 +43,7 @@ constexpr int MINIMAX_MAX_DEPTH = 18;
 // Number of nodes to be preallocated to avoid overhead of new
 constexpr int NUMBER_OF_PREALLOCATED_NODES = 500000;
 
-// Number of MCTS iterations
+// Total number of MCTS iterations
 constexpr int MCTS_MAX_ITERATIONS = 250;
 
 // Number of iterations of MCTS in one run
@@ -51,6 +51,9 @@ constexpr int MCTS_NUM_SIMULATIONS = 1000;
 
 // Number of visits until a node can be selected using UCT instead of randomly
 constexpr int MCTS_MIN_VISITS = 10;
+
+// Number of visits of node at depth 1 (0-indexed) until it can be selected using UCT instead of randomly
+constexpr int MCTS_DEPTH1_MIN_VISITS = 5000;
 
 // C in the UCT formula
 const double MCTS_C = sqrt(2);

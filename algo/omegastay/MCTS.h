@@ -28,10 +28,10 @@ namespace MCTS {
     int numVisits = 0;
 
     // Sum of score of all visits from the perspective of the player who just has moved
-    int sumScore = 0;
+    int sumResult = 0;
 
     // Values used for fast calculation of UCT
-    double winRate = 0, sqrtLogNumVisits = 0, CDivSqrtNumVisits = 0;
+    double averageResult = 0, sqrtLogNumVisits = 0, CDivSqrtNumVisits = 0;
 
     // Cached value of gameState.isTerminal()
     bool isTerminal = false;
