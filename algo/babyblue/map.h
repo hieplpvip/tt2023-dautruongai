@@ -7,7 +7,7 @@ class Map {
 public:
   Map();
 
-  void Read(ifstream &inp, int n, int m, int hasShield);
+  void Read(ifstream &inp, int _n, int _m);
   void Print(ofstream &out);
 
   bool isValid(int x, int y, int s);

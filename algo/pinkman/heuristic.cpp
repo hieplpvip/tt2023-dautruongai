@@ -10,21 +10,21 @@ int Heuristic::bfs(Map &sea, int u, int v, int _u, int _v, int s, int lim, int r
   visited[u][v] = 0;
 
   while (!Q.empty()) {
-    auto [u, v] = Q.front();
+    auto [x, y] = Q.front();
     Q.pop();
 
-    if (sea.val[u][v] > 0 && (visited[u][v] < dist(u, v, _u, _v) || dist(u, v, _u, _v) > EZONE)) {
-      gold.push_back(sea.val[u][v] - visited[u][v] + BONUS_RATE);
+    if (sea.val[x][y] > 0 && (visited[x][y] < dist(x, y, _u, _v) || dist(x, y, _u, _v) > EZONE)) {
+      gold.push_back(sea.val[x][y] - visited[x][y] + BONUS_RATE);
     }
 
     for (int i = 0; i < NDIR; ++i) {
-      int a = u + dx[i];
-      int b = v + dy[i];
+      int a = x + dx[i];
+      int b = y + dy[i];
       if (!sea.isValid(a, b, s) || visited[a][b] != -1) {
         continue;
       }
 
-      visited[a][b] = visited[u][v] + 1;
+      visited[a][b] = visited[x][y] + 1;
       if (visited[a][b] < range) {
         Q.emplace(a, b);
       }
@@ -41,7 +41,7 @@ int Heuristic::bfs(Map &sea, int u, int v, int _u, int _v, int s, int lim, int r
   return res;
 }
 
-int Heuristic::bfs2(Map &sea, int u, int v, int _u, int _v, int s, int lim) {
+int Heuristic::bfs2(Map &sea, int u, int v, int _u, int _v, int s) {
   if (!sea.isValid(u, v, s)) {
     return -INF;
   }
@@ -53,21 +53,21 @@ int Heuristic::bfs2(Map &sea, int u, int v, int _u, int _v, int s, int lim) {
   visited[u][v] = 0;
 
   while (!Q.empty()) {
-    auto [u, v] = Q.front();
+    auto [x, y] = Q.front();
     Q.pop();
 
-    if (sea.val[u][v] > 0 && visited[u][v] <= dist(u, v, _u, _v)) {
-      return sea.val[u][v];
+    if (sea.val[x][y] > 0 && visited[x][y] <= dist(x, y, _u, _v)) {
+      return sea.val[x][y];
     }
 
     for (int i = 0; i < NDIR; ++i) {
-      int a = u + dx[i];
-      int b = v + dy[i];
+      int a = x + dx[i];
+      int b = y + dy[i];
       if (!sea.isValid(a, b, s) || visited[a][b] != -1) {
         continue;
       }
 
-      visited[a][b] = visited[u][v] + 1;
+      visited[a][b] = visited[x][y] + 1;
       Q.emplace(a, b);
     }
   }

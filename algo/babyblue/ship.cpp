@@ -15,9 +15,9 @@ void Ship::Move(int dir) {
   y += dy[dir];
 }
 
-void Ship::Place(int x, int y) {
-  this->x = x;
-  this->y = y;
+void Ship::Place(int _x, int _y) {
+  this->x = _x;
+  this->y = _y;
 }
 
 void Ship::Print(ofstream &out) {

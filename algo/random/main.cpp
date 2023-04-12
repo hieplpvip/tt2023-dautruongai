@@ -59,9 +59,9 @@ void first_turn() {
   // Find a starting positions next to shield
   vector<pair<int, int>> candidates;
   for (auto [x, y] : shield_pos) {
-    for (int k = 0; k < 4; ++k) {
-      int u = x + dx[k];
-      int v = y + dy[k];
+    for (int t = 0; t < 4; ++t) {
+      int u = x + dx[t];
+      int v = y + dy[t];
       if (is_valid(u, v) && mat[u][v] == FREE) {
         candidates.emplace_back(u, v);
       }
@@ -82,9 +82,9 @@ void random_play() {
   int shield_x = -1, shield_y = -1;
   vector<pair<int, int>> free, danger;
 
-  for (int k = 0; k < 4; ++k) {
-    int u = our_x + dx[k];
-    int v = our_y + dy[k];
+  for (int t = 0; t < 4; ++t) {
+    int u = our_x + dx[t];
+    int v = our_y + dy[t];
     if (!is_valid(u, v)) continue;
 
     if (mat[u][v] == FREE) {

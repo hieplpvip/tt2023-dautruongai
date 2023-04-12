@@ -39,7 +39,7 @@ int dist(int x1, int y1, int x2, int y2) {
   return abs(x1 - x2) + abs(y1 - y2);
 }
 
-void cal_len(int x, int y, int s, int id) {
+void cal_len(int s, int id) {
   for (int i = 1; i <= n; i++) {
     for (int j = 1; j <= m; j++) {
       len[id][i][j] = -1;
@@ -51,7 +51,7 @@ void cal_len(int x, int y, int s, int id) {
 
   len[id][x_1][y_1] = 1;
   while (!q.empty()) {
-    int x = q.front().first, y = q.front().second;
+    auto [x, y] = q.front();
     q.pop();
 
     for (int i = 0; i < 4; ++i) {
@@ -121,8 +121,8 @@ int dfs(int x, int y, int dep = 0) {
 }
 
 void cal_val() {
-  cal_len(x_1, y_1, s_1, 1);
-  cal_len(x_2, y_2, s_2, 2);
+  cal_len(s_1, 1);
+  cal_len(s_2, 2);
 
   int mx_len = 0;
 
@@ -149,12 +149,12 @@ void cal_val() {
             x += (game_map[i][j] - '0') * 1.75;
 
           // Find path with maximum gold
-          int v = dfs(i, j);
+          int t = dfs(i, j);
           // if the path is closer to the other player, it is penalized (for the case when chasing the other player)
           if (len[2][i][j] < len[1][i][j])
-            x += -1.25 * v / (2 * len[2][i][j] + 1);
+            x += -1.25 * t / (2 * len[2][i][j] + 1);
           else  // rush to this path = ez win
-            x += 1.25 * v / (2 * len[1][i][j] + 1);
+            x += 1.25 * t / (2 * len[1][i][j] + 1);
         }
 
         if (game_map[i][j] == '0' || game_map[i][j] == 'D') {
@@ -211,8 +211,8 @@ void cal_val() {
 
         // cout << i << ' ' << j << ' ' << val[i][j].first << ' ' << val[i][j].second << '\n';
 
-        for (int k = 0; k < 4; k++) {
-          int nx = i + dx[k], ny = j + dy[k];
+        for (int t = 0; t < 4; t++) {
+          int nx = i + dx[t], ny = j + dy[t];
           if (!can_go(nx, ny, s_1)) continue;
           if (len[1][nx][ny] != v - 1) continue;
 
@@ -255,15 +255,15 @@ void cook() {
       for (int j = 1; j <= m; j++) {
         if (game_map[i][j] == 'D') continue;
 
-        int val = dfs(i, j, 0) / 2 + calculate_locality(i, j) - dist(i, j, (n + 1) / 2, (m + 1) / 2);
-        for (int k = 0; k < 4; k++) {
-          int nx = i + dx[k], ny = j + dy[k];
+        int tmp = dfs(i, j, 0) / 2 + calculate_locality(i, j) - dist(i, j, (n + 1) / 2, (m + 1) / 2);
+        for (int t = 0; t < 4; t++) {
+          int nx = i + dx[t], ny = j + dy[t];
           if (!can_go(nx, ny, 0)) continue;
           if (game_map[nx][ny] != '0') continue;
 
-          if (val >= best_val) {
-            if (val > best_val) {
-              best_val = val;
+          if (tmp >= best_val) {
+            if (tmp > best_val) {
+              best_val = tmp;
               st.clear();
             }
             st.emplace_back(nx, ny);

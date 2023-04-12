@@ -1,6 +1,6 @@
 #include "minimax.h"
 
-MinimaxAgent::MinimaxAgent(){};
+MinimaxAgent::MinimaxAgent() {}
 
 void MinimaxAgent::Input(ifstream &inp) {
   int n, m;

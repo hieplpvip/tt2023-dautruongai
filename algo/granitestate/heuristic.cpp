@@ -31,14 +31,14 @@ tuple<score_t, int, int> Heuristic::BestPlace(Map &sea, Ship &myShip, Ship &enem
 // (1) Select KSEED positions having the highest gold in the range RANGE
 // (2) Score is the difference between myShipScore and enemyShipScore
 // (3) If myShip drown (two ship collide or meet barrier), return -INF
-score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int y, int range, int k, int totalTurn) {
+score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int sx, int sy, int range, int k, int totalTurn) {
   if (!sea.isValid(myShip.x, myShip.y, myShip.s))
     return -INF;
 
   score_t val;
   int n = sea.n, m = sea.m;
   int u = myShip.x, v = myShip.y, s = myShip.s;
-  int _u = enemyShip.x, _v = enemyShip.y, _s = enemyShip.s;
+  int _u = enemyShip.x, _v = enemyShip.y;
   // int range = (n + m) / 5;
 
   vector<score_t> score;
@@ -50,8 +50,8 @@ score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int 
     sea.val[n / 2 + 1][m / 2 + 1] = 5 * ((myShip.g - enemyShip.g) * 3 / 4) / (k - totalTurn / 2 + 2);
   }
 
-  Q.emplace(x, y);
-  visited[x][y] = 0;
+  Q.emplace(sx, sy);
+  visited[sx][sy] = 0;
 
   while (!Q.empty()) {
     auto [x, y] = Q.front();
@@ -124,7 +124,7 @@ score_t Heuristic::Evaluate(Map &sea, Ship &myShip, Ship &enemyShip, int x, int 
 tuple<score_t, int, int> Heuristic::HighestHeat(Map &sea, Ship &myShip, Ship &enemyShip, int range, int k, int totalTurn, bool ignoreShield, bool debug) {
   int n = sea.n, m = sea.m;
   int u = myShip.x, v = myShip.y, s = myShip.s;
-  int _u = enemyShip.x, _v = enemyShip.y, _s = enemyShip.s;
+  int _u = enemyShip.x, _v = enemyShip.y;
   score_t val;
 
   if (ignoreShield) {

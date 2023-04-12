@@ -1,14 +1,14 @@
 #include "minimax.h"
 #include "constant.h"
 
-MinimaxAgent::MinimaxAgent(){};
+MinimaxAgent::MinimaxAgent() {}
 
 void MinimaxAgent::Input(ifstream &inp) {
   inp >> n >> m >> k;
   myShip.Read(inp);
   enemyShip.Read(inp);
   myShip.ReadInfo(inp);
-  sea.Read(inp, n, m, myShip.s);
+  sea.Read(inp, n, m);
 }
 
 void MinimaxAgent::Load(ifstream &sav) {
@@ -21,7 +21,7 @@ void MinimaxAgent::Load(ifstream &sav) {
     sav >> totalTurn;
     sav >> lastMove;
     enemyShip.ReadInfo(sav);
-    oldsea.Read(sav, n, m, 0);
+    oldsea.Read(sav, n, m);
 
     if (oldsea.at[enemyShip.x][enemyShip.y] == "S") {
       enemyShip.s = 1;

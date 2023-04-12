@@ -27,9 +27,9 @@ int main() {
       }
     }
 
-    for (int k = 0; k < MAPLIST_LEN; ++k) {
-      if (m == MAP_M[k] && n == MAP_N[k] && A == MAPS[k]) {
-        algo = ALGOS[k];
+    for (int i = 0; i < MAPLIST_LEN; ++i) {
+      if (m == MAP_M[i] && n == MAP_N[i] && A == MAPS[i]) {
+        algo = ALGOS[i];
         break;
       }
     }

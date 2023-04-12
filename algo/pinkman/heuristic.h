@@ -14,7 +14,7 @@ private:
 
   // Return value of the first (gold) reached
   // Ignore gold if enemy can come first
-  static int bfs2(Map &sea, int u, int v, int _u, int _v, int s, int lim);
+  static int bfs2(Map &sea, int u, int v, int _u, int _v, int s);
 
 public:
   // (1) Find position where the ship can be placed to maximize the number of point in the range of RANGE
