@@ -83,7 +83,7 @@ void State::performMove(MoveEnum move) {
     assert(isValidPos(x, y) && (at[x][y] != DANGER_CELL || hasShield[playerToMove]));
   }
 
-  if (playerToMove == 1) {
+  if (playerToMove == ENEMY) {
     // Both players have moved. Update the game state.
     if (pos[0] == pos[1] || (pos[0] == lastPos[1] && pos[1] == lastPos[0])) {
       // Move to same cell or swap cells. Eliminate both.

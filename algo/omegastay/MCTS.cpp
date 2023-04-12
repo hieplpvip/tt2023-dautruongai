@@ -10,12 +10,35 @@ namespace MCTS {
   static int numNodes = 0;
   static std::vector<Node> nodes(NUMBER_OF_PREALLOCATED_NODES);
 
-  void initializeNode(Node& node) {
+  Node* newRootNode() {
+    if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
+      std::cerr << "Out of preallocated nodes" << std::endl;
+      exit(1);
+    }
+
+    auto& node = nodes[numNodes];
+    node.gameState = rootState;
+    node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
+    node.isTerminal = node.gameState.isTerminal();
+    return &nodes[numNodes++];
+  }
+
+  Node* newNode(const State& gameState, Node* parent, MoveEnum move, int depth) {
+    if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
+      std::cerr << "Out of preallocated nodes" << std::endl;
+      exit(1);
+    }
+
+    auto& node = nodes[numNodes];
+    node.parent = parent;
+    node.gameState = gameState;
+    node.gameState.performMove(move);
     node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
     node.isTerminal = node.gameState.isTerminal();
 
-    // Avoid going back unless there is no other choice
-    if (node.numLegalMoves > 1) {
+    // Avoid going back except for the first two levels of the tree
+    // or when there is no other choice
+    if (node.numLegalMoves > 1 && depth >= 2) {
       auto [x, y] = node.gameState.pos[node.gameState.playerToMove];
       auto [lastX, lastY] = node.gameState.lastPos[node.gameState.playerToMove];
       for (int k = 0; k < NUM_MOVES; ++k) {
@@ -26,31 +49,7 @@ namespace MCTS {
         }
       }
     }
-  }
 
-  Node* newNode(const State& gameState) {
-    if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
-      std::cerr << "Out of preallocated nodes" << std::endl;
-      exit(1);
-    }
-
-    auto& node = nodes[numNodes];
-    node.gameState = gameState;
-    initializeNode(node);
-    return &nodes[numNodes++];
-  }
-
-  Node* newNode(const State& gameState, Node* parent, MoveEnum move) {
-    if (numNodes == NUMBER_OF_PREALLOCATED_NODES) {
-      std::cerr << "Out of preallocated nodes" << std::endl;
-      exit(1);
-    }
-
-    auto& node = nodes[numNodes];
-    node.parent = parent;
-    node.gameState = gameState;
-    node.gameState.performMove(move);
-    initializeNode(node);
     return &nodes[numNodes++];
   }
 
@@ -76,8 +75,9 @@ namespace MCTS {
     node.gameState = gameState;
     node.gameState.pos[node.gameState.playerToMove] = startPos;
     node.gameState.playerToMove = static_cast<PlayerEnum>(1 - node.gameState.playerToMove);
-    if (node.gameState.playerToMove == 0) {
-      initializeNode(node);
+    if (node.gameState.playerToMove == ME) {
+      node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
+      node.isTerminal = node.gameState.isTerminal();
     }
     return &nodes[numNodes++];
   }
@@ -93,7 +93,15 @@ namespace MCTS {
     return -averageResult + CDivSqrtNumVisits * parent->sqrtLogNumVisits;
   }
 
-  Node* Node::getBestChild() const {
+  Node* Node::getBestChild(int depth) const {
+    // Make sure that first two levels of the tree are visited enough times
+    int minVisits = MCTS_MIN_VISITS;
+    if (depth == 0) {
+      minVisits = MCTS_DEPTH1_MIN_VISITS * numLegalMoves;
+    } else if (depth == 1) {
+      minVisits = MCTS_DEPTH1_MIN_VISITS;
+    }
+
     Node* bestChild = nullptr;
     double bestScore = -INF;
     for (int k = 0; k < NUM_MOVES; ++k) {
@@ -101,7 +109,7 @@ namespace MCTS {
         continue;
       }
 
-      if (children[k]->numVisits < MCTS_MIN_VISITS) {
+      if (children[k]->numVisits < minVisits) {
         // If any child has not been visited often enough, return it
         return children[k];
       }
@@ -163,8 +171,10 @@ namespace MCTS {
     // Selection phase
     // Traverse the tree from root, selecting the best child at each step
     // until we reach a non fully-expanded node
+    int depth = 0;
     while (cur->isFullyExpanded()) {
-      cur = cur->getBestChild();
+      cur = cur->getBestChild(depth);
+      ++depth;
     }
 
     // Expansion phase
@@ -176,7 +186,7 @@ namespace MCTS {
           continue;
         }
 
-        Node* child = newNode(cur->gameState, cur, static_cast<MoveEnum>(k));
+        Node* child = newNode(cur->gameState, cur, static_cast<MoveEnum>(k), depth);
         assert(child != nullptr);
         cur->children[k] = child;
         cur->numChildren++;
@@ -209,7 +219,7 @@ namespace MCTS {
     // Backpropagation phase
     // Update the scores of all the nodes in the path from cur to root
     int result = tmpState.getResult();
-    if (cur->gameState.playerToMove == 1) {
+    if (cur->gameState.playerToMove == ENEMY) {
       result = -result;
     }
     do {

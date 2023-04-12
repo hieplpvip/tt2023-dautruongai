@@ -48,6 +48,9 @@ constexpr int MCTS_NUM_SIMULATIONS = 1000;
 // Number of visits until a node can be selected using UCT instead of randomly
 constexpr int MCTS_MIN_VISITS = 10;
 
+// Number of visits of node at depth 1 (0-indexed) until it can be selected using UCT instead of randomly
+constexpr int MCTS_DEPTH1_MIN_VISITS = 5000;
+
 // C in the UCT formula
 const double MCTS_C = sqrt(2);
 

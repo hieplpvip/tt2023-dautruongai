@@ -27,7 +27,7 @@ namespace MCTS {
     // Number of visits through this node
     int numVisits = 0;
 
-    // Sum of score of all visits from the perspective of the player who just has moved
+    // Sum of result of all visits from the perspective of the player who just has moved
     int sumResult = 0;
 
     // Values used for fast calculation of UCT
@@ -45,16 +45,20 @@ namespace MCTS {
      */
     double getUCT() const;
 
-    // Return the best child of the node
-    Node* getBestChild() const;
+    /*
+     * Return the best child of the node
+     * depth is the depth of the node in the tree
+     */
+    Node* getBestChild(int depth) const;
   };
 
-  // Create a new node from the given game state
-  Node* newNode(const State& gameState);
+  // Create a new root node from the root state, not avoid going back
+  Node* newRootNode();
 
   // Create a new node from the given game state and parent node,
   // after performing the given move
-  Node* newNode(const State& gameState, Node* parent, MoveEnum move);
+  // depth is the depth of parent
+  Node* newNode(const State& gameState, Node* parent, MoveEnum move, int depth);
 
   // Create a new node from the given game state
   Node* newStartNode(const State& gameState);

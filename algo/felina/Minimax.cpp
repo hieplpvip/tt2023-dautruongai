@@ -115,7 +115,7 @@ namespace Minimax {
     // Sort direction by heat
     for (int i = 0; i < (int)moves.size(); ++i) {
       State nextState = state;
-      assert(nextState.playerToMove == 0);
+      assert(nextState.playerToMove == ME);
       nextState.performMove(moves[i].second);
       moves[i].first = Heuristic::GetHighestHeat(nextState, PlayerEnum::ME);
 
@@ -136,7 +136,7 @@ namespace Minimax {
     for (auto [_, move] : moves) {
       // Perform the move
       State nextState = state;
-      assert(nextState.playerToMove == 0);
+      assert(nextState.playerToMove == ME);
       nextState.performMove(move);
 
       // Get the score of the move
@@ -195,7 +195,7 @@ namespace Minimax {
     // Sort direction by heat
     for (int i = 0; i < (int)moves.size(); ++i) {
       State nextState = state;
-      assert(nextState.playerToMove == 1);
+      assert(nextState.playerToMove == ENEMY);
       nextState.performMove(moves[i].second);
       moves[i].first = Heuristic::GetHighestHeat(nextState, PlayerEnum::ENEMY);
 
@@ -215,7 +215,7 @@ namespace Minimax {
     for (auto [_, move] : moves) {
       // Perform the move
       State nextState = state;
-      assert(nextState.playerToMove == 1);
+      assert(nextState.playerToMove == ENEMY);
       nextState.performMove(move);
 
       // Get the score of the move
