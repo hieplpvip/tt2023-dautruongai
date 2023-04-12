@@ -208,9 +208,9 @@ namespace MCTS {
 
     // Backpropagation phase
     // Update the scores of all the nodes in the path from cur to root
-    int result = tmpState.getResult();
+    double result = tmpState.getResult();
     if (cur->gameState.playerToMove == 1) {
-      result = 1 - result;
+      result = 1.0 - result;
     }
     do {
       cur->numVisits++;
@@ -219,7 +219,7 @@ namespace MCTS {
       cur->sqrtLogNumVisits = sqrt(log(cur->numVisits));
       cur->CDivSqrtNumVisits = MCTS_C / sqrt(cur->numVisits);
       cur = cur->parent;
-      result = 1 - result;
+      result = 1.0 - result;
     } while (cur != nullptr);
   }
 
