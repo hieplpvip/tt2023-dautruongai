@@ -78,7 +78,7 @@ namespace Engine {
 
           // Warmup
           for (int t = 0; t < MCTS_MIN_VISITS; ++t) {
-            MCTS::search(secondPlayerNode);
+            MCTS::search(secondPlayerNode, 2);
           }
         }
       }
@@ -119,7 +119,7 @@ namespace Engine {
         }
 
         // Run MCTS from the selected node
-        MCTS::search(bestSecondNode);
+        MCTS::search(bestSecondNode, 2);
       }
 
       // Find the most chosen position
