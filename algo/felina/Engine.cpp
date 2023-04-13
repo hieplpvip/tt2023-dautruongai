@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Heuristic.h"
 #include "MCTS.h"
+#include "MapList.h"
 #include "Minimax.h"
 #include "Negamax.h"
 #include "Random.h"
@@ -9,11 +10,57 @@
 #include "Store.h"
 #include "Utility.h"
 #include <cassert>
+#include <fstream>
 #include <iostream>
 #include <vector>
 
 namespace Engine {
+  bool checkHardcodedStartPositions() {
+    std::ifstream inp("MAP.INP");
+
+    // Ignore first 3 lines
+    {
+      int tmp;
+      inp >> tmp >> tmp >> tmp;
+      inp >> tmp >> tmp >> tmp >> tmp;
+      inp >> tmp >> tmp;
+    }
+
+    // Read map
+    std::vector<char> A(Store::M * Store::N);
+    for (char& c : A) {
+      inp >> c;
+    }
+    inp.close();
+
+    // Find in map list
+    int index = -1;
+    for (int i = 0; i < MAPLIST_LEN; ++i) {
+      if (Store::M == MAP_M[i] && Store::N == MAP_N[i] && A == MAPS[i]) {
+        index = i;
+        break;
+      }
+    }
+    if (index == -1) {
+      return false;
+    }
+
+    auto& candidates = START_POSITIONS[index];
+    auto [x, y] = candidates[Random::rand(candidates.size())];
+    printFinalMove(x, y);
+
+#ifdef ENABLE_LOGGING
+    std::cerr << "Start at hardcoded position " << x + 1 << ' ' << y + 1 << std::endl;
+#endif
+
+    return true;
+  }
+
   void findStartingPosition() {
+    if (checkHardcodedStartPositions()) {
+      return;
+    }
+
     // Get symmetric positions
     static std::vector<Position> sym[20][20];
     {
