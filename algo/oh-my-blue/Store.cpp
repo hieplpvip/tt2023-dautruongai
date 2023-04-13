@@ -49,18 +49,21 @@ namespace Store {
   }
 
   void init() {
-    // Calculate dist using BFS
+    // Calculate dist
     {
       std::queue<Position> q;
 
       REPL_ALL_CELL(x1, y1) {
         REPL_ALL_CELL(x2, y2) {
-          Store::dist[0][x1][y1][x2][y2] = Store::dist[1][x1][y1][x2][y2] = INF;
+          Store::dist[0][x1][y1][x2][y2] = INF;
+
+          // We can move to any cell with shield, hence Manhattan distance
+          Store::dist[1][x1][y1][x2][y2] = abs(x1 - x2) + abs(y1 - y2);
         }
       }
 
 #define dist(x, y) Store::dist[0][sx][sy][x][y]
-      // No shield
+      // No shield, use BFS
       REPL_ALL_CELL(sx, sy) {
         if (rootState.at[sx][sy] == DANGER_CELL) {
           continue;
@@ -75,26 +78,6 @@ namespace Store {
             int nx = x + dx[k];
             int ny = y + dy[k];
             if (isValidPos(nx, ny) && rootState.at[nx][ny] != DANGER_CELL && dist(nx, ny) == INF) {
-              dist(nx, ny) = dist(x, y) + 1;
-              q.emplace(nx, ny);
-            }
-          }
-        }
-      }
-#undef dist
-
-#define dist(x, y) Store::dist[1][sx][sy][x][y]
-      // With shield
-      REPL_ALL_CELL(sx, sy) {
-        dist(sx, sy) = 0;
-        q.emplace(sx, sy);
-        while (!q.empty()) {
-          auto [x, y] = q.front();
-          q.pop();
-          for (int k = 0; k < NUM_MOVES; ++k) {
-            int nx = x + dx[k];
-            int ny = y + dy[k];
-            if (isValidPos(nx, ny) && dist(nx, ny) == INF) {
               dist(nx, ny) = dist(x, y) + 1;
               q.emplace(nx, ny);
             }
