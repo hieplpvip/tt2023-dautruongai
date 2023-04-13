@@ -165,13 +165,12 @@ namespace MCTS {
     return static_cast<MoveEnum>(bestMove);
   }
 
-  void search(Node* root) {
+  void search(Node* root, int depth) {
     Node* cur = root;
 
     // Selection phase
     // Traverse the tree from root, selecting the best child at each step
     // until we reach a non fully-expanded node
-    int depth = 0;
     while (cur->isFullyExpanded()) {
       cur = cur->getBestChild(depth);
       ++depth;
