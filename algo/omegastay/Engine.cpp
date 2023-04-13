@@ -12,6 +12,37 @@
 #include <vector>
 
 namespace Engine {
+  std::vector<Position> getNearestToShield() {
+    std::vector<Position> shields;
+    REPL_ALL_CELL(x, y) {
+      if (rootState.at[x][y] == SHIELD_CELL) {
+        shields.emplace_back(x, y);
+      }
+    }
+
+    int minDist = INF;
+    std::vector<Position> res;
+    REPL_ALL_CELL(x, y) {
+      if (rootState.at[x][y] != EMPTY_CELL) {
+        continue;
+      }
+
+      int dist = INF;
+      for (auto [sx, sy] : shields) {
+        dist = std::min(dist, Store::dist[0][x][y][sx][sy]);
+      }
+
+      if (dist < minDist) {
+        minDist = dist;
+        res.clear();
+        res.emplace_back(x, y);
+      } else if (dist == minDist) {
+        res.emplace_back(x, y);
+      }
+    }
+    return res;
+  }
+
   void findStartingPosition() {
     // Get symmetric positions
     static std::vector<Position> sym[20][20];
@@ -57,28 +88,32 @@ namespace Engine {
       }
     }
 
-    // Find top 10 candidates using heuristics
-    auto candidates = Heuristic::GetCandidates(rootState, 10);
-    int k = candidates.size();
+    // Get at most 5 candidates that are nearest to the shield
+    std::vector<Position> candidates = getNearestToShield();
+    candidates.resize(std::min((int)candidates.size(), 5));
+#ifdef ENABLE_LOGGING
+    std::cerr << "Number of candidates: " << candidates.size() << std::endl;
+#endif
 
     // Initialize MCTS tree
     // First two levels need to be handled specially
     MCTS::Node* root = MCTS::newStartNode(rootState);
     std::vector<std::pair<MCTS::Node*, std::vector<MCTS::Node*>>> child;
+    int k = candidates.size();
     for (int i = 0; i < k; ++i) {
-      auto [x1, y1] = candidates[i].second;
+      auto [x1, y1] = candidates[i];
       MCTS::Node* firstPlayerNode = MCTS::newStartNode(rootState, root, {x1, y1});
       child.push_back({firstPlayerNode, {}});
 
       for (int j = 0; j < k; ++j) {
         if (j != i) {
-          auto [x2, y2] = candidates[j].second;
+          auto [x2, y2] = candidates[j];
           MCTS::Node* secondPlayerNode = MCTS::newStartNode(firstPlayerNode->gameState, firstPlayerNode, {x2, y2});
           child.back().second.push_back(secondPlayerNode);
 
           // Warmup
           for (int t = 0; t < MCTS_MIN_VISITS; ++t) {
-            MCTS::search(secondPlayerNode);
+            MCTS::search(secondPlayerNode, 2);
           }
         }
       }
@@ -119,7 +154,7 @@ namespace Engine {
         }
 
         // Run MCTS from the selected node
-        MCTS::search(bestSecondNode);
+        MCTS::search(bestSecondNode, 2);
       }
 
       // Find the most chosen position
@@ -149,7 +184,7 @@ namespace Engine {
 
 #ifdef ENABLE_LOGGING
     for (int i = 0; i < k; ++i) {
-      auto [x, y] = candidates[i].second;
+      auto [x, y] = candidates[i];
       auto node = child[i].first;
       std::cerr << "Position " << x + 1 << ' ' << y + 1 << ": " << node->numVisits << " visits, average result: " << (1 - node->averageResult) << std::endl;
     }

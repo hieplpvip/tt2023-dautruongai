@@ -75,7 +75,7 @@ namespace MCTS {
   MoveEnum findBestMove(Node* root, int numIterations);
 
   // Perform an iteration of Monte Carlo tree search
-  void search(Node* root);
+  void search(Node* root, int depth = 0);
 
   // Return a random move from the given state
   MoveEnum getRandomMove(State& state, int lastMove);
