@@ -36,9 +36,9 @@ namespace MCTS {
     node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
     node.isTerminal = node.gameState.isTerminal();
 
-    // Avoid going back except for the first two levels of the tree
-    // or when there is no other choice
-    if (node.numLegalMoves > 1 && depth >= 2) {
+    // Avoid going back if having more than 3 legal moves
+    // except for the first two levels of the tree
+    if (node.numLegalMoves > 3 && depth >= 2) {
       auto [x, y] = node.gameState.pos[node.gameState.playerToMove];
       auto [lastX, lastY] = node.gameState.lastPos[node.gameState.playerToMove];
       for (int k = 0; k < NUM_MOVES; ++k) {

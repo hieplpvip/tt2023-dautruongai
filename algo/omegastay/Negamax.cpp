@@ -11,8 +11,8 @@ namespace Negamax {
     bool isLegalMove[NUM_MOVES];
     state.getLegalMoves(isLegalMove, numLegalMoves);
 
-    // Avoid going back unless there is no other choice
-    if (avoidGoingBack && numLegalMoves > 1) {
+    // Avoid going back if having more than 3 legal moves
+    if (avoidGoingBack && numLegalMoves > 3) {
       auto [x, y] = state.pos[state.playerToMove];
       auto [lastX, lastY] = state.lastPos[state.playerToMove];
       for (int k = 0; k < NUM_MOVES; ++k) {
