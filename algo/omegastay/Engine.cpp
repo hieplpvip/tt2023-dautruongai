@@ -176,10 +176,10 @@ namespace Engine {
         int nx = x + dx[k];
         int ny = y + dy[k];
         if (isValidPos(nx, ny) && rootState.at[nx][ny] == SHIELD_CELL) {
-#ifdef ENABLE_LOGGING
-          std::cerr << "Take shield " << nx + 1 << ' ' << ny + 1 << std::endl;
-#endif
           if (rootState.gold[0] > rootState.gold[1] || !rootState.pos[1].isAdjacent({nx, ny})) {
+#ifdef ENABLE_LOGGING
+            std::cerr << "Take shield " << nx + 1 << ' ' << ny + 1 << std::endl;
+#endif
             // Take shield when we are having more gold or opponent is not standing next to shield
             printFinalMove(nx, ny);
             return;
