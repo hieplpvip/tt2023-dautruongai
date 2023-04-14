@@ -1,4 +1,5 @@
 #include "AlgoList.h"
+#include "BabyBlue.h"
 #include "Constants.h"
 #include "Engine.h"
 #include "Minimax.h"
@@ -121,10 +122,10 @@ int main() {
 
   switch (Store::algo) {
     case ALGO_BABYBLUE:
-      assert(false);
 #ifdef ENABLE_LOGGING
       std::cerr << "Running BabyBlue" << std::endl;
 #endif
+      BabyBlue::run();
       break;
 
     case ALGO_OHMYBLUE:
