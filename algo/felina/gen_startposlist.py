@@ -4,7 +4,7 @@ import os
 
 
 def main():
-    with open('startpos.txt', 'r', encoding='utf8') as f:
+    with open('startposlist.txt', 'r', encoding='utf8') as f:
         rows = f.readlines()
 
     rows = [row for row in rows if not row.startswith('#')]
@@ -41,8 +41,8 @@ def main():
             MAPS.append('{' + ', '.join(map(lambda x: f"'{x}'", s)) + '}')
 
     output = \
-"""#ifndef START_POS_H
-#define START_POS_H
+"""#ifndef START_POS_LIST_H
+#define START_POS_LIST_H
 
 #include "Constants.h"
 #include "State.h"
