@@ -188,6 +188,7 @@ namespace BabyBlue {
   }
 
   void MinimaxAgent::Load() {
+    lastMove = -1;
     if (myShip.x != 0) {
       totalTurn = Store::K;
       for (int i = 0; i < 4; ++i) {
@@ -202,7 +203,6 @@ namespace BabyBlue {
       enemyShip.s = rootState.hasShield[1];
     } else {
       totalTurn = k;
-      lastMove = -1;
       enemyShip.g = 0, enemyShip.s = 0;
     }
 
