@@ -3,9 +3,7 @@
 
 #include "State.h"
 #include "Store.h"
-#include <bits/stdc++.h>
-
-using namespace std;
+#include <string>
 
 namespace BabyBlue {
   constexpr int MAXN = 20;

@@ -1,5 +1,12 @@
 #include "BabyBlue.h"
 #include "Random.h"
+#include <algorithm>
+#include <fstream>
+#include <queue>
+#include <utility>
+#include <vector>
+
+using namespace std;
 
 namespace BabyBlue {
 #define sqr(a) ((a) * (a))
