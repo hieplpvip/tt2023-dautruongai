@@ -1,0 +1,33 @@
+official/map_01: omegastay > ohmyblue > babyblue
+official/map_02: babyblue > omegastay > ohmyblue > babyblue
+official/map_03: omegastay > ohmyblue > babyblue
+official/map_04: ohmyblue > omegastay = babyblue
+official/map_05: babyblue > omegastay > ohmyblue > babyblue
+official/map_06: omegastay = babyblue, omegastay = ohmyblue, babyblue > ohmyblue
+official/map_07: ohmyblue > omegastay > babyblue
+official/map_08: omegastay > ohmyblue = babyblue
+official/map_09: omegastay = ohmyblue > babyblue
+official/map_10: omegastay > ohmyblue > babyblue
+official/map_11: omegastay = ohmyblue > babyblue
+official/map_12: omegastay > babyblue > ohmyblue
+official/map_13: omegastay = ohmyblue = babyblue
+official/map_14: omegastay = ohmyblue > babyblue
+official/map_15: babyblue > ohmyblue > omegastay
+official/map_16: babyblue > omegastay = ohmyblue
+official/map_17: omegastay > ohmyblue > babyblue
+official/map_18: omegastay = ohmyblue > babyblue
+official/map_19: omegastay = ohmyblue = babyblue
+official/map_20: omegastay > ohmyblue > babyblue
+official/map_21: omegastay > ohmyblue > babyblue
+official/map_23: omegastay > babyblue > ohmyblue
+official/map_24: omegastay > ohmyblue = babyblue
+official/map_25: omegastay > babyblue > ohmyblue
+official/map_26: omegastay > babyblue > ohmyblue
+official/map_27: omegastay > ohmyblue > babyblue
+official/map_28: omegastay > ohmyblue = babyblue
+official/map_29: omegastay = ohmyblue, omegastay > babyblue, babyblue > ohmyblue
+official/map_30: omegastay > ohmyblue > babyblue
+official/map_31: omegastay = ohmyblue = babyblue
+official/map_32: omegastay > ohmyblue = babyblue
+official/map_33: omegastay > ohmyblue > babyblue
+official/map_34: omegastay > ohmyblue > babyblue
