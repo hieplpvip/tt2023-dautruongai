@@ -64,6 +64,6 @@ namespace BabyBlue {
   };
 
   void run();
-};
+}
 
 #endif
