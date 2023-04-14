@@ -8,6 +8,7 @@
 State rootState;
 
 namespace Store {
+  Algorithm algo;
   int M, N, K, HALF_K;
   int currentTurn;
   GamePhaseEnum gamePhase;
@@ -20,6 +21,7 @@ namespace Store {
 
   void load() {
     std::ifstream fin("STATE.OUT", std::ios::binary);
+    fin.read((char*)&algo, sizeof(algo));
     fin.read((char*)&M, sizeof(M));
     fin.read((char*)&N, sizeof(N));
     fin.read((char*)&K, sizeof(K));
@@ -35,6 +37,7 @@ namespace Store {
 
   void save() {
     std::ofstream fout("STATE.OUT", std::ios::binary);
+    fout.write((char*)&algo, sizeof(algo));
     fout.write((char*)&M, sizeof(M));
     fout.write((char*)&N, sizeof(N));
     fout.write((char*)&K, sizeof(K));

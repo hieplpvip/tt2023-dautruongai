@@ -1,6 +1,7 @@
 #ifndef STORE_H
 #define STORE_H
 
+#include "Constants.h"
 #include "State.h"
 
 #define isValidPos(x, y) (0 <= x && x < Store::M && 0 <= y && y < Store::N)
@@ -16,6 +17,9 @@ extern State rootState;
  * Persistent store for program state.
  */
 namespace Store {
+  // Which algorithm to run
+  extern Algorithm algo;
+
   // Number of rows
   extern int M;
 

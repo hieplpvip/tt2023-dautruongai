@@ -16,6 +16,9 @@
 // Comment out to disable logging
 // #define ENABLE_LOGGING
 
+// Comment out to print "From Seno with love <3"
+// #define PRINT_MESSAGE
+
 #include <cmath>
 
 using score_t = double;
@@ -78,6 +81,12 @@ enum GamePhaseEnum {
   EARLY_GAME = 0,
   MID_GAME = 1,
   LATE_GAME = 2,
+};
+
+enum Algorithm {
+  ALGO_BABYBLUE = 0,
+  ALGO_OHMYBLUE = 1,
+  ALGO_OMEGASTAY = 2,
 };
 
 constexpr int NUM_MOVES = 4;

@@ -1,10 +1,13 @@
+#include "AlgoList.h"
 #include "Constants.h"
 #include "Engine.h"
+#include "Minimax.h"
 #include "Store.h"
 #include "Random.h"
 #include <cassert>
 #include <chrono>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 /*
@@ -71,6 +74,36 @@ bool readInput() {
   return firstTurn;
 }
 
+void chooseAlgo() {
+  std::ifstream inp("MAP.INP");
+
+  // Ignore first 3 lines
+  {
+    int tmp;
+    inp >> tmp >> tmp >> tmp;
+    inp >> tmp >> tmp >> tmp >> tmp;
+    inp >> tmp >> tmp;
+  }
+
+  // Read map
+  std::vector<char> A(Store::M * Store::N);
+  for (char& c : A) {
+    inp >> c;
+  }
+  inp.close();
+
+  // Default to OmegaStay
+  Store::algo = ALGO_OMEGASTAY;
+
+  // Find in map list
+  for (int i = 0; i < AlgoList::MAPLIST_LEN; ++i) {
+    if (Store::M == AlgoList::MAP_M[i] && Store::N == AlgoList::MAP_N[i] && A == AlgoList::MAPS[i]) {
+      Store::algo = AlgoList::ALGOS[i];
+      break;
+    }
+  }
+}
+
 int main() {
   // Seed our random number generator
   Random::seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
@@ -78,13 +111,40 @@ int main() {
   bool firstTurn = readInput();
   if (firstTurn) {
     Store::init();
+    chooseAlgo();
     Store::save();
-    Engine::findStartingPosition();
   } else {
     Store::load();
     Store::update();
     Store::save();
-    Engine::findNextMove();
   }
+
+  switch (Store::algo) {
+    case ALGO_BABYBLUE:
+      assert(false);
+#ifdef ENABLE_LOGGING
+      std::cerr << "Running BabyBlue" << std::endl;
+#endif
+      break;
+
+    case ALGO_OHMYBLUE:
+#ifdef ENABLE_LOGGING
+      std::cerr << "Running oh-my-blue" << std::endl;
+#endif
+      Minimax::run();
+      break;
+
+    case ALGO_OMEGASTAY:
+#ifdef ENABLE_LOGGING
+      std::cerr << "Running OmegaStay" << std::endl;
+#endif
+      Engine::run();
+      break;
+  }
+
+#ifdef PRINT_MESSAGE
+  std::cerr << "From Seno with love <3" << std::endl;
+#endif
+
   return 0;
 }
