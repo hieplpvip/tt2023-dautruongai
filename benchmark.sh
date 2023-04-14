@@ -5,6 +5,7 @@ echo "YOU HAVE BEEN WARNED"
 
 rm -rf results && mkdir results
 
+judge/run_many.py maps/list_official.txt bin/felina       bin/omegastay                --times 20 --num-threads 10 >results/felina_vs_omegastay.txt
 judge/run_many.py maps/list_official.txt bin/felina       bin/oh-my-blue               --times 20 --num-threads 10 >results/felina_vs_ohmyblue.txt
 judge/run_many.py maps/list_official.txt bin/felina       bin/granitestate             --times 20 --num-threads 10 >results/felina_vs_granitestate.txt
 judge/run_many.py maps/list_official.txt bin/felina       bin/babyblue                 --times 20 --num-threads 10 >results/felina_vs_babyblue.txt
