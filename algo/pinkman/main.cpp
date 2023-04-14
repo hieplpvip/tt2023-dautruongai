@@ -17,4 +17,8 @@ int main() {
   agent.Save(sav);
   out.close();
   sav.close();
+
+#ifdef PRINT_MESSAGE
+  std::cerr << "From Seno with love <3" << std::endl;
+#endif
 }

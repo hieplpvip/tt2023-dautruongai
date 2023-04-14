@@ -59,4 +59,8 @@ int main() {
       // cerr << "Running BabyBlue\n";
       return BabyBlue::main();
   }
+
+#ifdef PRINT_MESSAGE
+  std::cerr << "From Seno with love <3" << std::endl;
+#endif
 }

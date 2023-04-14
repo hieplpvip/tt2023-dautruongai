@@ -5,6 +5,7 @@
 #include <cassert>
 #include <chrono>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 /*
@@ -86,6 +87,10 @@ int main() {
   }
 
   Engine::run();
+
+#ifdef PRINT_MESSAGE
+  std::cerr << "From Seno with love <3" << std::endl;
+#endif
 
   return 0;
 }

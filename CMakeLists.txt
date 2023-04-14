@@ -9,6 +9,12 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wfloat-equal -Wduplicated-cond -Wca
 set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=undefined -fno-sanitize-recover -fstack-protector")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -s -flto -ffat-lto-objects -feliminate-unused-debug-types -fno-stack-protector -fno-trapping-math")
 
+option(PRINT_FROM_SENO_WITH_LOVE "Print From Seno with love <3" off)
+
+IF(PRINT_FROM_SENO_WITH_LOVE)
+    add_compile_definitions(PRINT_MESSAGE)
+endif(PRINT_FROM_SENO_WITH_LOVE)
+
 if(WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "-static")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)

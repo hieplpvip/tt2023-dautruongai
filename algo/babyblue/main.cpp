@@ -19,4 +19,8 @@ int main() {
   ofstream sav("STATE.OUT");
   agent.Save(sav);
   sav.close();
+
+#ifdef PRINT_MESSAGE
+  std::cerr << "From Seno with love <3" << std::endl;
+#endif
 }

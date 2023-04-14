@@ -144,5 +144,10 @@ int main() {
     Store::save();
     makeMove();
   }
+
+#ifdef PRINT_MESSAGE
+  std::cerr << "From Seno with love <3" << std::endl;
+#endif
+
   return 0;
 }
