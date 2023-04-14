@@ -79,12 +79,13 @@ int main() {
   if (firstTurn) {
     Store::init();
     Store::save();
-    Engine::findStartingPosition();
   } else {
     Store::load();
     Store::update();
     Store::save();
-    Engine::findNextMove();
   }
+
+  Engine::run();
+
   return 0;
 }

@@ -2,10 +2,10 @@
 #include "Engine.h"
 #include "Heuristic.h"
 #include "MCTS.h"
-#include "MapList.h"
 #include "Minimax.h"
 #include "Negamax.h"
 #include "Random.h"
+#include "StartPosList.h"
 #include "State.h"
 #include "Store.h"
 #include "Utility.h"
@@ -35,8 +35,8 @@ namespace Engine {
 
     // Find in map list
     int index = -1;
-    for (int i = 0; i < MAPLIST_LEN; ++i) {
-      if (Store::M == MAP_M[i] && Store::N == MAP_N[i] && A == MAPS[i]) {
+    for (int i = 0; i < StartPosList::MAPLIST_LEN; ++i) {
+      if (Store::M == StartPosList::MAP_M[i] && Store::N == StartPosList::MAP_N[i] && A == StartPosList::MAPS[i]) {
         index = i;
         break;
       }
@@ -45,7 +45,7 @@ namespace Engine {
       return false;
     }
 
-    auto& candidates = START_POSITIONS[index];
+    auto& candidates = StartPosList::START_POSITIONS[index];
     auto [x, y] = candidates[Random::rand(candidates.size())];
     printFinalMove(x, y);
 
@@ -56,6 +56,7 @@ namespace Engine {
     return true;
   }
 
+  // Find starting position (turn 1)
   void findStartingPosition() {
     if (checkHardcodedStartPositions()) {
       return;
@@ -204,6 +205,7 @@ namespace Engine {
 #endif
   }
 
+  // Find next move (turn 2 and later)
   void findNextMove() {
     if (rootState.turnLeft <= NEGAMAX_MAX_TURN_LEFT) {
       // Use Negamax for optimal play
@@ -290,5 +292,13 @@ namespace Engine {
 #ifdef ENABLE_LOGGING
     MCTS::printStats(root);
 #endif
+  }
+
+  void run() {
+    if (Store::currentTurn == 1) {
+      findStartingPosition();
+    } else {
+      findNextMove();
+    }
   }
 }

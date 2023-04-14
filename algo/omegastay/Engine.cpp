@@ -12,6 +12,7 @@
 #include <vector>
 
 namespace Engine {
+  // Find starting position (turn 1)
   void findStartingPosition() {
     // Get symmetric positions
     static std::vector<Position> sym[20][20];
@@ -156,6 +157,7 @@ namespace Engine {
 #endif
   }
 
+  // Find next move (turn 2 and later)
   void findNextMove() {
     if (rootState.turnLeft <= NEGAMAX_MAX_TURN_LEFT) {
       // Use Negamax for optimal play
@@ -237,5 +239,13 @@ namespace Engine {
 #ifdef ENABLE_LOGGING
     MCTS::printStats(root);
 #endif
+  }
+
+  void run() {
+    if (Store::currentTurn == 1) {
+      findStartingPosition();
+    } else {
+      findNextMove();
+    }
   }
 }

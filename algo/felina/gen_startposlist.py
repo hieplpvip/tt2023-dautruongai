@@ -4,7 +4,7 @@ import os
 
 
 def main():
-    with open('maplist.txt', 'r', encoding='utf8') as f:
+    with open('startposlist.txt', 'r', encoding='utf8') as f:
         rows = f.readlines()
 
     rows = [row for row in rows if not row.startswith('#')]
@@ -41,30 +41,32 @@ def main():
             MAPS.append('{' + ', '.join(map(lambda x: f"'{x}'", s)) + '}')
 
     output = \
-"""#ifndef MAP_LIST_H
-#define MAP_LIST_H
+"""#ifndef START_POS_LIST_H
+#define START_POS_LIST_H
 
 #include "Constants.h"
 #include "State.h"
 #include <vector>
 
+namespace StartPosList {
 """
-    output += f'constexpr int MAPLIST_LEN = {MAPLIST_LEN};\n\n'
-    output += f'constexpr int MAP_M[MAPLIST_LEN] = {{{", ".join(map(str, MAP_M))}}};\n\n'
-    output += f'constexpr int MAP_N[MAPLIST_LEN] = {{{", ".join(map(str, MAP_N))}}};\n\n'
-    output += 'const std::vector<char> MAPS[MAPLIST_LEN] = {\n'
+    output += f'  constexpr int MAPLIST_LEN = {MAPLIST_LEN};\n\n'
+    output += f'  constexpr int MAP_M[MAPLIST_LEN] = {{{", ".join(map(str, MAP_M))}}};\n\n'
+    output += f'  constexpr int MAP_N[MAPLIST_LEN] = {{{", ".join(map(str, MAP_N))}}};\n\n'
+    output += '  const std::vector<char> MAPS[MAPLIST_LEN] = {\n'
     for m in MAPS:
-        output += f'    {m},\n'
-    output += '};\n\n'
-    output += '// 0-indexed\n'
-    output += 'const std::vector<Position> START_POSITIONS[MAPLIST_LEN] = {\n'
+        output += f'      {m},\n'
+    output += '  };\n\n'
+    output += '  // 0-indexed\n'
+    output += '  const std::vector<Position> START_POSITIONS[MAPLIST_LEN] = {\n'
     for pos in START_POSITIONS:
         s = ', '.join(map(lambda x: f'{{{x[0] - 1}, {x[1] - 1}}}', pos))
-        output += f'    {{{s}}},\n'
-    output += '};\n\n'
+        output += f'      {{{s}}},\n'
+    output += '  };\n'
+    output += '}\n\n'
     output += '#endif\n'
 
-    with open('MapList.h', 'w', encoding='utf8') as f:
+    with open('StartPosList.h', 'w', encoding='utf8') as f:
         f.write(output)
 
 
