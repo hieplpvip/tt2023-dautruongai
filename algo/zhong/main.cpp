@@ -71,8 +71,8 @@ vector<string> generateBase4Sequences(int length) {
 }
 
 // Function to check if we are going out of the map
-bool isOutOfMap(int x, int y, int M, int N) {
-  return !((1 <= x && x <= M) && (1 <= y && y <= N));
+bool isOutOfMap(int x, int y, int _M, int _N) {
+  return !((1 <= x && x <= _M) && (1 <= y && y <= _N));
 }
 
 // Function to update x and y based on mov
@@ -241,7 +241,7 @@ string chooseStep() {
   vector<string> moves = generateBase4Sequences(min(7, K));
   string result = "";
   long long gold_max = -1;
-  for (int k = 0; k < moves.size(); k++) {
+  for (int k = 0; k < (int)moves.size(); k++) {
     int Xi_temp = Xi;
     int Yi_temp = Yi;
     long long val = calculateGoldAndPotential(Xi_temp, Yi_temp, moves[k], B);

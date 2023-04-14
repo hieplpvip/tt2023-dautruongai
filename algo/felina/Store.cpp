@@ -127,6 +127,7 @@ namespace Store {
 
   void update() {
     assert(rootState.turnLeft < Store::K);
+    assert(Store::currentTurn < Store::K);
 
     // Update opponent's shield and gold
     {
