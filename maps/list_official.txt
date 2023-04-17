@@ -19,6 +19,7 @@ official/map_18.txt
 official/map_19.txt
 official/map_20.txt
 official/map_21.txt
+official/map_22.txt
 official/map_23.txt
 official/map_24.txt
 official/map_25.txt
@@ -31,3 +32,4 @@ official/map_31.txt
 official/map_32.txt
 official/map_33.txt
 official/map_34.txt
+official/map_35.txt
