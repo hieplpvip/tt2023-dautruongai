@@ -37,10 +37,10 @@ constexpr int THRESHOLD_EARLY_GAME = 15;
 constexpr int NEGAMAX_MAX_TURN_LEFT = 10;
 
 // Number of nodes to be preallocated to avoid overhead of new
-constexpr int NUMBER_OF_PREALLOCATED_NODES = 500000;
+constexpr int NUMBER_OF_PREALLOCATED_NODES = 1000000;
 
 // Total number of MCTS iterations
-constexpr int MCTS_MAX_ITERATIONS = 250;
+constexpr int MCTS_MAX_ITERATIONS = 500;
 
 // Number of iterations of MCTS in one run
 constexpr int MCTS_NUM_SIMULATIONS = 1000;
