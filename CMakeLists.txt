@@ -10,10 +10,15 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=undefined -fno-sanitize-recover -fstack
 set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -s -flto -ffat-lto-objects -feliminate-unused-debug-types -fno-stack-protector -fno-trapping-math")
 
 option(PRINT_FROM_SENO_WITH_LOVE "Print From Seno with love <3" off)
+option(TUNE_FOR_X86 "Tune for x86" off)
 
 IF(PRINT_FROM_SENO_WITH_LOVE)
     add_compile_definitions(PRINT_MESSAGE)
 endif(PRINT_FROM_SENO_WITH_LOVE)
+
+IF(TUNE_FOR_X86)
+    add_compile_options(-mavx2 -mbmi -mbmi2 -mpopcnt -mlzcnt)
+endif(TUNE_FOR_X86)
 
 if(WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "-static")
