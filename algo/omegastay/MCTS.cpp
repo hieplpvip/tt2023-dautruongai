@@ -18,7 +18,7 @@ namespace MCTS {
 
     auto& node = nodes[numNodes];
     node.gameState = rootState;
-    node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
+    node.gameState.getLegalMoves(node.isLegalMove, node.numLegalMoves);
     node.isTerminal = node.gameState.isTerminal();
     return &nodes[numNodes++];
   }
@@ -33,7 +33,7 @@ namespace MCTS {
     node.parent = parent;
     node.gameState = gameState;
     node.gameState.performMove(move);
-    node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
+    node.gameState.getLegalMoves(node.isLegalMove, node.numLegalMoves);
     node.isTerminal = node.gameState.isTerminal();
 
     // Avoid going back if having more than 3 legal moves
@@ -42,8 +42,8 @@ namespace MCTS {
       auto [x, y] = node.gameState.pos[node.gameState.playerToMove];
       auto [lastX, lastY] = node.gameState.lastPos[node.gameState.playerToMove];
       for (int k = 0; k < NUM_MOVES; ++k) {
-        if (node.isLegalMove[k] && x + dx[k] == lastX && y + dy[k] == lastY) {
-          node.isLegalMove[k] = false;
+        if (BIT(node.isLegalMove, k) && x + dx[k] == lastX && y + dy[k] == lastY) {
+          node.isLegalMove ^= (1 << k);
           --node.numLegalMoves;
           break;
         }
@@ -76,7 +76,7 @@ namespace MCTS {
     node.gameState.pos[node.gameState.playerToMove] = startPos;
     node.gameState.playerToMove = static_cast<PlayerEnum>(1 - node.gameState.playerToMove);
     if (node.gameState.playerToMove == ME) {
-      node.gameState.getLegalMoves(&node.isLegalMove[0], node.numLegalMoves);
+      node.gameState.getLegalMoves(node.isLegalMove, node.numLegalMoves);
       node.isTerminal = node.gameState.isTerminal();
     }
     return &nodes[numNodes++];
@@ -181,7 +181,7 @@ namespace MCTS {
     // create a new child node for an untried move
     if (!cur->isTerminal) {
       for (int k = 0; k < NUM_MOVES; ++k) {
-        if (!cur->isLegalMove[k] || cur->children[k]) {
+        if (!BIT(cur->isLegalMove, k) || cur->children[k]) {
           continue;
         }
 
@@ -234,8 +234,8 @@ namespace MCTS {
 
   MoveEnum getRandomMove(State& state, int lastMove) {
     static int prob[NUM_MOVES];
-    static int numLegalMoves;
-    static bool isLegalMove[NUM_MOVES];
+    static char numLegalMoves;
+    static char isLegalMove;
     state.getLegalMoves(isLegalMove, numLegalMoves);
 
     auto [x, y] = state.pos[state.playerToMove];
@@ -243,7 +243,7 @@ namespace MCTS {
 
     for (int k = 0; k < NUM_MOVES; ++k) {
       // Avoid going back unless there is no other choice
-      if (isLegalMove[k] && ((k ^ 1) != lastMove || numLegalMoves == 1)) {
+      if (BIT(isLegalMove, k) && ((k ^ 1) != lastMove || numLegalMoves == 1)) {
         prob[k] = 1;
 
         int nx = x + dx[k];

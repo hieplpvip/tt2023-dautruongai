@@ -21,8 +21,8 @@ namespace MCTS {
     Node* children[NUM_MOVES] = {};
 
     // Number of legal moves
-    int numLegalMoves = 0;
-    bool isLegalMove[NUM_MOVES] = {};
+    char numLegalMoves = 0;
+    char isLegalMove = 0;
 
     // Number of visits through this node
     int numVisits = 0;

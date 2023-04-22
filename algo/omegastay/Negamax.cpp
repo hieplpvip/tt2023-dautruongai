@@ -7,8 +7,8 @@ namespace Negamax {
       return {state.getScore(), {-1, -1}};
     }
 
-    int numLegalMoves;
-    bool isLegalMove[NUM_MOVES];
+    char numLegalMoves;
+    char isLegalMove;
     state.getLegalMoves(isLegalMove, numLegalMoves);
 
     // Avoid going back if having more than 3 legal moves
@@ -16,8 +16,8 @@ namespace Negamax {
       auto [x, y] = state.pos[state.playerToMove];
       auto [lastX, lastY] = state.lastPos[state.playerToMove];
       for (int k = 0; k < NUM_MOVES; ++k) {
-        if (isLegalMove[k] && x + dx[k] == lastX && y + dy[k] == lastY) {
-          isLegalMove[k] = false;
+        if (BIT(isLegalMove, k) && x + dx[k] == lastX && y + dy[k] == lastY) {
+          isLegalMove ^= (1 << k);
           --numLegalMoves;
           break;
         }
@@ -27,7 +27,7 @@ namespace Negamax {
     int bestScore = -INF;
     Position bestPos = {-1, -1};
     for (int k = 0; k < NUM_MOVES; ++k) {
-      if (!isLegalMove[k]) {
+      if (!BIT(isLegalMove, k)) {
         continue;
       }
 

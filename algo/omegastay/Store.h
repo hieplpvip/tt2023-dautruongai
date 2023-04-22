@@ -47,14 +47,14 @@ namespace Store {
    * shield = 0 means we **DO NOT** have shield
    * shield = 1 means we DO** have shield
    */
-  extern int numLegalMoves[2][15][15];
+  extern char numLegalMoves[2][15][15];
 
   /*
    * isLegalMoveNoShield[shield][i][j][k] is true if we can move from cell (i, j) to cell (i + dx[k], j + dy[k])
    * shield = 0 means we **DO NOT** have shield
    * shield = 1 means we DO** have shield
    */
-  extern bool isLegalMove[2][15][15][NUM_MOVES];
+  extern char isLegalMove[2][15][15];
 
   // Game state of previous turn
   extern State pastState;

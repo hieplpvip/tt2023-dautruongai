@@ -89,7 +89,7 @@ struct State {
   /*
    * Get legal moves for the current player.
    */
-  void getLegalMoves(bool *isLegalMove, int &numLegalMoves) const;
+  void getLegalMoves(char &isLegalMove, char &numLegalMoves) const;
 
   /*
    * Perform a move.

@@ -13,8 +13,8 @@ namespace Store {
   GamePhaseEnum gamePhase;
 
   int dist[2][15][15][15][15];
-  int numLegalMoves[2][15][15];
-  bool isLegalMove[2][15][15][NUM_MOVES];
+  char numLegalMoves[2][15][15];
+  char isLegalMove[2][15][15];
 
   State pastState;
 
@@ -100,12 +100,12 @@ namespace Store {
           if (isValidPos(nx, ny)) {
             // With shield
             ++Store::numLegalMoves[1][x][y];
-            Store::isLegalMove[1][x][y][k] = true;
+            Store::isLegalMove[1][x][y] |= (1 << k);
 
             if (rootState.at[nx][ny] != DANGER_CELL) {
               // No shield
               ++Store::numLegalMoves[0][x][y];
-              Store::isLegalMove[0][x][y][k] = true;
+              Store::isLegalMove[0][x][y] |= (1 << k);
             }
           }
         }

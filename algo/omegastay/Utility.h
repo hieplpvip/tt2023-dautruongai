@@ -1,6 +1,8 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+#define BIT(x, i) (((x) >> (i)) & 1)
+
 /*
  * Prints the final move to the output file.
  * Override the output file if exists.

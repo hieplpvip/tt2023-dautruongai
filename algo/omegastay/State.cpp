@@ -39,12 +39,10 @@ int State::getScore() const {
   return gold[0] - gold[1];
 }
 
-const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};
-
-void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
+void State::getLegalMoves(char &isLegalMove, char &numLegalMoves) const {
   if (eliminated[playerToMove]) {
     numLegalMoves = 1;
-    memcpy(isLegalMove, isLegalMoveWhenEliminated, NUM_MOVES * sizeof(bool));
+    isLegalMove = 1;
     return;
   }
 
@@ -52,7 +50,7 @@ void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
   int y = pos[playerToMove].y;
   int shield = hasShield[playerToMove];
   numLegalMoves = Store::numLegalMoves[shield][x][y];
-  memcpy(isLegalMove, Store::isLegalMove[shield][x][y], NUM_MOVES * sizeof(bool));
+  isLegalMove = Store::isLegalMove[shield][x][y];
 }
 
 void State::performMove(MoveEnum move) {
