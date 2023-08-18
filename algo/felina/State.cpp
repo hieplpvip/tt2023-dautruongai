@@ -58,7 +58,7 @@ score_t State::getHeuristicScore() {
   return (hscore[0] + Heuristic::GetHighestHeat(*this, PlayerEnum::ME)) - (hscore[1] + Heuristic::GetHighestHeat(*this, PlayerEnum::ENEMY));
 }
 
-const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};
+static const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};
 
 void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
   if (eliminated[playerToMove]) {

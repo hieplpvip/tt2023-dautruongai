@@ -39,7 +39,7 @@ int State::getScore() const {
   return gold[0] - gold[1];
 }
 
-const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};
+static const bool isLegalMoveWhenEliminated[NUM_MOVES] = {true, false, false, false};
 
 void State::getLegalMoves(bool *isLegalMove, int &numLegalMoves) const {
   if (eliminated[playerToMove]) {
